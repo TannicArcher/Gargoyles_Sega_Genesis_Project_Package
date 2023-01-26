@@ -1,0 +1,104 @@
+chop L3M1 specific animations : 1 secs/frame : palette 3
+L3M1 ANIMATION CONVERTION ...
+rem ** CHOP the animations **
+call spr gg7101 %1 %2
+chop /t1 /b254 /r253 /c240 /p0 gg7101.anm
+Used 3 sprites, with a total of 10 characters, in 0.0 seconds
+Used 5 sprites, with a total of 19 characters, in 0.0 seconds
+Used 4 sprites, with a total of 17 characters, in 0.0 seconds
+Used 4 sprites, with a total of 14 characters, in 0.0 seconds
+Used 2 sprites, with a total of 7 characters, in 0.0 seconds
+Used 3 sprites, with a total of 15 characters, in 0.0 seconds
+Used 3 sprites, with a total of 19 characters, in 0.0 seconds
+Used 6 sprites, with a total of 19 characters, in 0.0 seconds
+call spr gg7102 %1 %2
+chop /t1 /b254 /r253 /c240 /p0 gg7102.anm
+Used 2 sprites, with a total of 5 characters, in 0.0 seconds
+Used 1 sprites, with a total of 4 characters, in 0.0 seconds
+Used 1 sprites, with a total of 6 characters, in 0.0 seconds
+Used 1 sprites, with a total of 6 characters, in 0.0 seconds
+call spr gg7104 %1 %2
+chop /t1 /b254 /r253 /c240 /p0 gg7104.anm
+Used 2 sprites, with a total of 8 characters, in 0.0 seconds
+Used 2 sprites, with a total of 6 characters, in 0.0 seconds
+Used 3 sprites, with a total of 7 characters, in 0.0 seconds
+Used 3 sprites, with a total of 7 characters, in 0.0 seconds
+Used 2 sprites, with a total of 8 characters, in 0.0 seconds
+Used 2 sprites, with a total of 6 characters, in 0.0 seconds
+Used 3 sprites, with a total of 7 characters, in 0.0 seconds
+Used 1 sprites, with a total of 6 characters, in 0.0 seconds
+call spr gg7201 %1 %2
+chop /t1 /b254 /r253 /c240 /p0 gg7201.anm
+Used 2 sprites, with a total of 16 characters, in 0.0 seconds
+call spr gg7202 %1 %2
+chop /t1 /b254 /r253 /c240 /p0 gg7202.anm
+Used 3 sprites, with a total of 18 characters, in 0.0 seconds
+call spr gg7203 %1 %2
+chop /t1 /b254 /r253 /c240 /p0 gg7203.anm
+Used 1 sprites, with a total of 16 characters, in 0.0 seconds
+call spr gg7301 %1 %2
+chop /t1 /b254 /r253 /c240 /p0 gg7301.anm
+Used 1 sprites, with a total of 4 characters, in 0.0 seconds
+Used 1 sprites, with a total of 4 characters, in 0.0 seconds
+Used 2 sprites, with a total of 3 characters, in 0.0 seconds
+Used 1 sprites, with a total of 4 characters, in 0.0 seconds
+Used 2 sprites, with a total of 4 characters, in 0.0 seconds
+call spr gg7401 %1 1
+chop /t1 /b254 /r253 /c240 /p1 gg7401.anm
+Used 1 sprites, with a total of 2 characters, in 0.0 seconds
+Used 1 sprites, with a total of 4 characters, in 0.0 seconds
+Used 1 sprites, with a total of 4 characters, in 0.0 seconds
+Used 1 sprites, with a total of 4 characters, in 0.0 seconds
+Used 1 sprites, with a total of 2 characters, in 0.0 seconds
+call spr gg7402 %1 1
+chop /t1 /b254 /r253 /c240 /p1 gg7402.anm
+Used 1 sprites, with a total of 4 characters, in 0.0 seconds
+Used 1 sprites, with a total of 4 characters, in 0.0 seconds
+Used 1 sprites, with a total of 4 characters, in 0.0 seconds
+Used 2 sprites, with a total of 3 characters, in 0.0 seconds
+Used 1 sprites, with a total of 4 characters, in 0.0 seconds
+Used 1 sprites, with a total of 4 characters, in 0.0 seconds
+Used 2 sprites, with a total of 3 characters, in 0.0 seconds
+Used 1 sprites, with a total of 4 characters, in 0.0 seconds
+call spr gg7403 %1 %2
+chop /t1 /b254 /r253 /c240 /p0 gg7403.anm
+Used 1 sprites, with a total of 8 characters, in 0.0 seconds
+call spr gg7404 %1 %2
+chop /t1 /b254 /r253 /c240 /p0 gg7404.anm
+Used 1 sprites, with a total of 8 characters, in 0.0 seconds
+rem ** COLLECT the animations **
+call col gg7101
+collect gg7101.col
+call col gg7102
+collect gg7102.col
+call col gg7104
+collect gg7104.col
+call col gg7201
+collect gg7201.col
+call col gg7202
+collect gg7202.col
+call col gg7203
+collect gg7203.col
+call col gg7301
+collect gg7301.col
+call col gg7401
+collect gg7401.col
+call col gg7402
+collect gg7402.col
+call col gg7403
+collect gg7403.col
+call col gg7404
+collect gg7404.col
+call modany
+
+.ANY FILE FORMATTER V1.00CPS
+
+File to LOAD (Exclude .ANY suffix) :           ? 
+
+OK! All done.
+
+Another FILE (y/n)? 
+Not enough room to load C:\FONTLOAD high
+Please re-run OPTIMIZE.
+Loading low:
+Font updated. TSR enabled.

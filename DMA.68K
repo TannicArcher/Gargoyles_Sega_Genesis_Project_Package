@@ -1,0 +1,376 @@
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ DMA routines							   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ Entry: n/a								   บ
+; บ  Exit: n/a								   บ
+; บ  Used: n/a								   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ All the dma related routines are here				   บ
+; บ Hardware, VRAM/CRAM etc.						   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+DMA_2			move.w	dmaram,(a5)
+			move.w	dmaram+2,(a5)
+			move.l	dmaram,d0
+			bclr	#7,d0
+			move.l	d0,(a5)
+			move.l	(a1),(a6)
+			moveq	#2,d0
+.wait			and.w	(a5),d0
+			bne.s	.wait
+			rts
+
+
+HandleHardwareDMA	lea	vctrl,a5
+ 			lea	vdata,a6
+			
+;			move.w	#reg1+%00110100,(a5)
+						
+			tst.b	FullScroll_Hor
+			beq.s	.1
+			blit_vr	PixX_Copy,HScrl_TabA,2,vram
+			bra	.2
+.1			blit_vr	(PixX_Copy+hs_off),(HScrl_TabA+hs_off),($200-(hs_off/2)),vram
+.2			tst.b	FullScroll_Ver
+			beq.s	.3
+			blit_vr	PixY_Copy,0,2,vsram
+			bra.s	.4
+.3			blit_vr	PixY_Copy,0,40,vsram
+.4			blit_vr SprtAttr_RAM,Sprt_Base,$140,vram	;max 80 sprites*4 words
+
+			if	system=pal
+.spin			move.w	HVCOUNTER,d1
+			tst.w	d1
+			bmi.s	.spin
+			endif
+
+			blit_vr	Pal1,0,64,cram				;service colour
+			
+;			move.w	#reg1+%01110100,(a5)
+			rts
+
+
+_DMATransfer		equ	1
+_DMACopy		equ	2
+_DMAData		equ	3
+
+HandleDMAStack		move.l	DMA_Stack,a4
+			cmp.l	#TheStack,a4
+			bgt.s	.ok
+			jsr	WhitePalette
+.hang			POLL	0			
+			bra	.hang
+			move.l	#TheDmaStack,DMA_Stack
+			rts			
+.ok			cmp.l	#TheDmaStack,a4
+			beq.s	.noDMA
+			
+			move.w	(a4)+,d1
+			subq.w	#1,d1
+			asl.w	#2,d1
+			jsr	DMAJmp(pc,d1.w)
+			bra	HandleDMAStack		;loop to empty stack
+.noDMA			rts			
+
+DMAJmp			bra	DMATransfer
+			bra	DMACopy
+			bra	DMAData
+
+DMATransfer		moveq	#2,d0			;wait for it to finish
+.wait			and.w	(a5),d0
+			bne.s	.wait
+			
+			move.w	(a4)+,d0		;length
+			move.l	(a4)+,d2		;source
+			move.w	(a4)+,d3		;destination
+			move.l	a4,DMA_Stack		;restore stack
+		
+			move.l	d2,d6			;save source for later rewrite
+		
+			move.w	#reg19,d1		;format length
+			or.b	d0,d1			;lo
+			swap	d1
+			move.w	#reg20,d1		;hi
+			lsr.w	#8,d0
+			or.b	d0,d1
+
+			move.w	#reg21,d4		;format source
+			or.b	d2,d4			;lo
+			swap	d4
+			move.w	#reg22,d4		;mi
+			lsr.l	#8,d2
+			or.b	d2,d4
+			move.w	#reg23,d5		;hi
+			lsr.w	#8,d2
+			and.b	#$7f,d2
+			or.b	d2,d5		
+		
+			move.l	d1,(a5)			;lo/hi length
+			move.l	d4,(a5)			;lo/mi source
+			move.w	d5,(a5)			;hi source
+
+			move.w	d3,d4			;format destination
+			asl.l	#2,d3
+			move.w	d4,d3
+			swap	d3
+			and.l	#$3fff0003,d3		
+			or.l	#$40000080,d3		;vram
+			move.l	d3,dmaram		;write final from ram 
+			move.w	dmaram,(a5)		;just like Sega told us
+			move.w	dmaram+2,(a5)
+			
+			asl.l	#1,d6			;rewrite 1st data
+			move.l	d6,a1			;making sure we *2 the source addrs again
+			bclr	#7,d3			;clr the dma transfer bit for the destination
+			move.l	d3,(a5)			;and set
+			move.l	(a1),(a6)		;and write the 1st data
+			rts
+
+		
+DMACopy			rts
+
+DMAData			rts	
+
+
+	
+
+dmaon			move.w	#reg1+%01110100,vctrl
+       			rts
+dmaoff			move.w	#reg1+%01000100,vctrl
+       			rts
+
+
+vram_sw			move.l	d3,vctrl	;dmaram
+			bclr	#7,d3
+			move.l	d3,vctrl
+			move.l	(a1),vdata
+vram_sw_2		moveq	#2,d0
+.wait			and.w	vctrl,d0
+			bne.s	.wait
+			rts	
+
+
+HandleEdgeDMA		bsr	dma_lft
+			bsr	dma_top
+			bsr	dma_rte
+			bra	dma_bot	
+
+BlitCharset		lea	MapA_Buff,a1		;destination buffer
+			jsr	DecompressSWD		;decompress data
+			jsr	VRamAlloc_BF		;allocate the VRAM
+			move.l	d1,d6
+			move.w	d3,d0
+			lsr.w	#1,d0
+			lea	MapA_Buff,a0
+			jmp	dma_data
+
+
+BlitCharset_nv		lea	MapA_Buff,a1		;destination buffer
+			move.l	d6,-(sp)		;vram dest addrs
+			jsr	DecompressSWD		;decompress data
+			move.l	(sp)+,d6
+			move.w	d3,d0
+BlitCharset2		lsr.l	#1,d0
+			lea	MapA_Buff,a0
+			jmp	dma_data
+
+GetScreenAddrs		asl.w	#7,d2		;y=y*128
+			asl.w	#1,d1
+			add.w	d1,d2		;y=y+x
+			add.w	d2,d6		;base=base+y
+			jsr	get_address
+			move.l	d7,vctrl
+			rts
+
+
+ClrScrlA		move.l	#ScrlA_Base,d6
+			bra	ClrScrl
+ClrScrlB		move.l	#ScrlB_Base,d6
+ClrScrl			move.w	#reg15+2,vctrl
+			bsr	get_address
+			move.l	d7,vctrl
+			move.w	#(64*32)-1,d1
+.l1			move.w	#0,vdata
+			dbra	d1,.l1
+			rts
+ 
+ani_dma			macro
+			dc.l	(\1)/2		;source
+			dc.w	\2		;destination	
+			dc.w	\3/2		;length
+			dc.b	\4		;delay
+			dc.b	\5		;flags
+			endm
+  			
+
+CEnd			equ	-1
+CRep			equ	-2
+CPat			equ	-3
+CJmp			equ	-4
+
+
+HandleCharAnims		lea	CHAR_RAM,a0
+			moveq	#MaxChrs-1,d0
+.l1			tst.l	CH_AnSequence(a0)		;do we have a sequence?
+			beq	.nxt
+			bsr	AnimCh
+			lea	16(a0),a0
+.nxt			dbra	d0,.l1
+			rts
+
+
+AnimCh			move.b	CH_AnCmp(a0),d1
+			beq.s	.1stTime			;1st time around
+			cmp.b	CH_AnCnt(a0),d1
+			beq.s	.next
+			addq.b	#1,CH_AnCnt(a0)
+			rts
+											
+.next			clr.b	CH_AnCnt(a0)
+
+.1stTime		move.w	CH_AnDex(a0),d1			;index
+			move.l	CH_AnSequence(a0),a1		;sequence vec
+			add.w	d1,a1
+			move.l	0(a1),d2			;data
+			cmp.l	#CEnd,d2
+			beq.s	.end
+			cmp.l	#CRep,d2
+			beq.s	.rep
+			cmp.l	#CPat,d2
+			beq.s	.patch
+			cmp.l	#CJmp,d2
+			beq.s	.jump
+
+.doANM			move.b	8(a1),CH_AnCmp(a0)		;delay
+
+			move.l	DMA_Stack,a6
+			move.w	4(a1),-(a6)			;dest
+			move.l	0(a1),-(a6)			;source/2
+			move.w	6(a1),-(a6)			;len/2
+			move.w	#_DMATransfer,-(a6)		;flag this data package is a dma transfer
+			move.l	a6,DMA_Stack
+
+			add.w	#10,CH_AnDex(a0)
+			rts
+
+.end			clr.l	CH_AnSequence(a0)
+			clr.b	CH_AnFlags(a0)
+			rts
+
+.rep			clr.w	CH_AnDex(a0)
+			bra	.1stTime
+
+.patch			move.l	4(a1),a6			;get the patch
+			jmp	(a6)				;execute it
+
+.jump			move.l	4(a1),CH_AnSequence(a0)
+			clr.b	CH_AnFlags(a0)
+			clr.w	CH_AnDex(a0)
+			bra	.1stTime
+
+GetFreeCharAnim		lea	CHAR_RAM,a1
+			moveq	#MaxChrs-1,d1
+.l1			btst.b	#ch_onoff,CH_AnFlags(a1)
+			beq	FlagYES2
+			lea	16(a1),a1
+			dbra	d1,.l1
+			bra	FlagNO2
+
+SetupCharAnim		bsr	GetFreeCharAnim
+			bpl.s	.x
+			move.l	a2,CH_AnSequence(a1)
+			clr.w	CH_AnDex(a1)	
+			clr.l	CH_AnPatch(a1)	
+			bset.b	#ch_onoff,CH_AnFlags(a1)	
+			clr.b	CH_AnCnt(a1)	
+			clr.b	CH_AnCmp(a1)
+.x			rts	
+
+
+
+; - SPOT CHARACTER ANIMATION -----------------------------------------------
+
+;			; - List of Char # to be animated
+;AnL1			dc.w	1,2,3,4
+;
+;			; - Char # whose DATA is copied into above Chars
+;AnL1_1			dc.w	31,32,33,34,-1
+;AnL1_2			dc.w	0,1,2,3,4,5,6,7,-1
+;AnL1_3			dc.w	4,3,2,1,-1
+;AnL1_4			dc.w	1,2,1,2,-1
+;     
+;			; - Animation speed for each Char					
+;AnL1_D			dc.b	$7f,7,1,$1f,-1
+;			even
+;
+;			; - Vectors pointing to Char Animation Tables
+;AnL1_V			dc.l	AnL1_1,AnL1_2,AnL1_3,AnL1_4
+;
+			; - Vector pointing to animation char data for each level (collated into a file)
+;
+;			; - Vectors pointing to all of the above (for each level)
+;CAC_Vec			dc.l	AnL1		
+;CAA_Vec			dc.l	AnL1_V
+;CAD_Vec			dc.l	AnL1_D
+;
+;
+;HandleCharAnims	tst.b	char_an_num
+;			bmi	.x
+;			moveq	#0,d0
+;			move.b	char_an_num,d0
+;			asl.w	#2,d0
+;			
+;			lea	CAC_Vec,a0
+;			move.l	0(a0,d0.w),a1
+;			lea	CAA_Vec,a0
+;			move.l	0(a0,d0.w),a2
+;			lea	CAD_Vec,a0
+;			move.l	0(a0,d0.w),a5			
+;
+;			moveq	#0,d0
+;.l1			move.w	d0,d1
+;			asl.w	#1,d1
+;			move.w	d1,d2
+;			asl.w	#1,d1
+;			
+;			move.b	0(a5,d0.w),d3			;animation speed
+;			bmi	.x
+;			lea	CAnim_Del,a0
+;			addq.b	#1,0(a0,d0.w)
+;			and.b	d3,0(a0,d0.w)
+;			bne	.nxt		
+;
+;			move.l	0(a2,d1.w),a0			;anim sequence
+;			move.w	0(a1,d2.w),d6			;destination char address
+;			asl.w	#5,d6
+;		
+;			lea	CAnim_Dex,a4			;anim index
+;.agin			moveq	#0,d3
+;			move.b	0(a4,d0.w),d3
+;			asl.w	#1,d3
+;			move.w	0(a0,d3.w),d5
+;			bpl.s	.1
+; 			clr.b	0(a4,d0.w)
+;			bra	.agin				;nxt	
+;
+;.1			addq.b	#1,0(a4,d0.w)
+;			
+;			ext.l	d5
+;			asl.l	#5,d5
+;			add.l	LevelCAnim,d5			;source char data
+;			lsr.l	#1,d5
+;
+;			move.l	DMA_Stack,a6
+;			move.w	d6,-(a6)			;dest
+;			move.l	d5,-(a6)			;source
+;			move.w	#16,-(a6)			;len
+;			move.w	#_DMATransfer,-(a6)		;flag this data package is a dma transfer
+;			move.l	a6,DMA_Stack
+;			
+;.nxt			addq.w	#1,d0
+;			bra	.l1	
+;
+;.x			rts
+
+
+			

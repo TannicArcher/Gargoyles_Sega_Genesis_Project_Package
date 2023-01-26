@@ -1,0 +1,792 @@
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ SEGA/Legal/Titlepage/Options					   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ Entry: n/a								   บ
+; บ  Exit: n/a								   บ
+; บ  Used: n/a								   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ All SHELL stuff happens here ...					   บ
+; บ 									   บ
+; บ 	SEGA LOGO Display						   บ
+; บ 	LEGAL SCREEN Display						   บ
+; บ 	DISNEY LOGO Display						   บ
+; บ 	TITLE SCREEN Logic						   บ
+; บ 	OPTIONS SCREEN Logic						   บ
+; บ 	LOSE MAN/RESTART Logic						   บ
+; บ 	GAME OVER/CONTINUE Logic					   บ
+; บ 	GAME WIN Logic							   บ
+; บ 	CREDITS Logic							   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+
+StartupSequence		;move.w	#Level31,levnum
+			;rts
+
+			bsr	SetupShell
+			if	logos_yn
+			bsr	SegaLogo
+			bsr	DisneyLogo
+			endif
+			if	titles_yn
+			bra	Titlepage
+			else	
+			rts
+			endif
+			
+		
+SetupShell		move.w	#$2700,sr
+			st.b	working
+			clr.b	service
+			jsr	InitVRamAlloc
+			bsr	SetMapLines				;map line table
+			bsr	Clean_DeComRam
+			bsr	InitOBJECTS
+			move.w	#ShellVBLANK,VBLANKPhase
+			move.w	#HorWholScroll!VerWholScroll,d0
+			bsr	SetScroll
+			st.b	FullScroll_Hor
+			st.b	FullScroll_Ver
+			bsr	ClrScrlA
+			bra	ClrScrlB
+	
+
+SegaLogo		lea	SegaLogoCHR,a0		;compressed chr data
+			moveq	#32,d6			;DMA Char data
+			bsr	BlitCharset_nv
+
+			move.l	#ScrlB_Base,d6		;screen base address
+			moveq	#12,d1			;x,y screen pos
+			moveq	#10,d2
+			bsr	GetScreenAddrs		;calc screen address
+			lea	SegaLogoMAP,a0		;logo map
+			moveq	#11,d0			;width
+			moveq	#3,d1			;height
+			moveq	#0,d4			;add
+			bsr	windowblock		;print block to screen
+
+			move.w	#$10,PixX_Copy+2	;position it
+
+			clr.b	working
+			st.b	service
+			clr.b	joy1
+			clr.b	d_joy1
+			move	#$2000,sr		;enable irq
+			
+			lea	SegaLogoPAL,a1		;fade
+			jsr	lite_fader
+			jsr	wait_fade
+
+			moveq	#$28,d7
+SegaLogoLOOP		jsr	WaitFrm	 		;cycle the sega logo
+			jsr	WaitFrm
+			lea	Pal1+4,a1
+			lea	SegaLogoCYCLE(pc,d7),a0
+			moveq	#11-1,d0
+SegaLogoCRAM		move.w	(a0)+,(a1)+
+			dbra	d0,SegaLogoCRAM
+			subq.w	#2,d7
+			bpl.s	SegaLogoLOOP
+
+			move.w	#3*hz5060,d1		;wait 5 secs
+			jsr	frame_delay2		
+			jsr	dark_fader		;fade
+			jmp	wait_fade
+
+SegaLogoCYCLE		DC.W	$EC0,$EA0,$E80,$E60,$E40,$E20,$E00,$C00
+			DC.W	$A00,$800,$600,$800,$A00,$C00,$E00,$E20
+			DC.W	$E40,$E60,$E80,$EA0,$EC0,$EA0,$E80,$E60
+			DC.W	$E40,$E20,$E00,$C00,$A00,$800,$600
+		
+SegaLogoPAL		DC.W	$000,$eee
+			DC.W	$ec0,$ea0,$e80,$e60,$e40,$e20,$e00,$c00
+			DC.W	$a00,$800,$600,$800,$a00,$c00,$e00,$e20
+			DC.W	$e40,$e60,$e80,$ea0,$ec0,$ea0,$e80,$e60
+			DC.W	$e40,$e20,$e00,$c00,$a00,$800,$600
+			ds.w	31
+
+SegaLogoMAP		DC.W	1,2,3,4,5,6,7,8,9,10,11,12
+			DC.W	13,14,15,16,17,18,19,20,21,22,23,24
+			DC.W	25,26,27,28,29,30,31,32,33,34,35,36
+			DC.W	37,38,39,40,41,42,43,44,45,46,47,48	
+				       
+
+
+windowblock		move.w	d0,d2			;dma a block x,y
+.l1			move.w	(a0)+,d3
+			add.w	d4,d3
+			move.w	d3,vdata
+			dbra	d2,.l1
+			add.w	#128,d6
+			jsr	get_address
+			move.l	d7,vctrl
+			dbra	d1,windowblock
+			rts
+
+
+
+; - DISNEY LOGO Display ----------------------------------------------------
+
+DisneyLogo		move.w	#$2700,sr
+			
+			jsr	InitVRamAlloc
+			bsr	InitOBJECTS
+
+			bsr	ClrScrlA
+			bsr	ClrScrlB
+			
+			lea	DisneyLogoCHR,a0	;compressed chr data
+			bsr	BlitCharset
+
+			lea	DisneyLogoMAP,a0	;compressed chr data
+			lea	MapA_Buff,a1		;destination buffer
+			jsr	DecompressSWD		;decompress data
+			move.l	#ScrlB_Base,d6
+			moveq	#0,d1			;print the logo to screen
+			moveq	#0,d2
+			bsr	GetScreenAddrs
+			lea	MapA_Buff,a0
+			moveq	#39,d0
+			moveq	#25,d1
+			moveq	#0,d4
+			bsr	windowblock
+
+			move.w	#4,PixX_Copy+2		;position it
+
+			clr.b	working
+			st.b	service
+			clr.b	joy1
+			clr.b	d_joy1
+			move	#$2000,sr		;enable irq
+			
+			lea	DisneyLogoPAL,a1	;fade
+			jsr	lite_fader
+			jsr	wait_fade
+
+			move.w	#3*hz5060,d1		;wait 5 secs
+			jsr	frame_delay		
+			jsr	dark_fader		;fade
+			jmp	wait_fade
+
+
+; - TITLEPAGE Logic --------------------------------------------------------
+
+Titlepage		move.w	#$2700,sr
+			
+			jsr	InitVRamAlloc
+			bsr	InitOBJECTS
+
+			bsr	ClrScrlA
+			bsr	ClrScrlB
+
+			lea	Font8x8CHR,a0		;compressed chr data
+			move.w	#Alpha_VRAM,d6		;DMA Char data
+			bsr	BlitCharset_nv
+			lea	TitlePageCHR,a0		;compressed chr data
+			bsr	BlitCharset
+
+			lea	TitlePageMAP,a0		;compressed chr data
+			lea	MapA_Buff,a1		;destination buffer
+			jsr	DecompressSWD		;decompress data
+			move.l	#ScrlB_Base,d6
+			moveq	#0,d1			;print the logo to screen
+			moveq	#0,d2
+			bsr	GetScreenAddrs
+			lea	MapA_Buff,a0
+			moveq	#39,d0
+			moveq	#27,d1
+			moveq	#0,d4
+			bsr	windowblock
+
+			bsr	Clean_DeComRam
+			
+			clr	PixX_Copy+2		;position it
+
+			bra	.aa
+			SPAWN_HI	Scratch1_MAX_Size
+			clr.b	OB_Var1(a0)
+			move.w	#Scratch_OB,OB_Type(a0)
+			move.w	#$a8,OB_Xpos(a0)
+			move.w	#$ec,OB_Ypos(a0)
+			bset.b	#ob_tidy,OB_Flag5(a0)
+			bset.b	#ob_noscroll,OB_Flag5(a0)
+			bset.b	#ob_nooff,OB_Flag2(a0)
+			bset.b	#ob_noclip,OB_Flag1(a0)
+			SPAWN_LO	Scratch2_MAX_Size
+			move.b	#1,OB_Var1(a0)
+			move.w	#Scratch_OB,OB_Type(a0)
+			move.w	#$a8,OB_Xpos(a0)
+			move.w	#$ec,OB_Ypos(a0)
+			bset.b	#ob_tidy,OB_Flag5(a0)
+			bset.b	#ob_noscroll,OB_Flag5(a0)
+			bset.b	#ob_nooff,OB_Flag2(a0)
+			bset.b	#ob_noclip,OB_Flag1(a0)
+			SPAWN_LO	Scratch3_MAX_Size
+			move.b	#2,OB_Var1(a0)
+			move.w	#Scratch_OB,OB_Type(a0)
+			move.w	#$a8,OB_Xpos(a0)
+			move.w	#$ec,OB_Ypos(a0)
+			bset.b	#ob_tidy,OB_Flag5(a0)
+			bset.b	#ob_noscroll,OB_Flag5(a0)
+			bset.b	#ob_nooff,OB_Flag2(a0)
+			bset.b	#ob_noclip,OB_Flag1(a0)
+			SPAWN_LO	Scratch4_MAX_Size
+			move.b	#3,OB_Var1(a0)
+			move.w	#Scratch_OB,OB_Type(a0)
+			move.w	#$a8,OB_Xpos(a0)
+			move.w	#$ec,OB_Ypos(a0)
+			bset.b	#ob_tidy,OB_Flag5(a0)
+			bset.b	#ob_noscroll,OB_Flag5(a0)
+			bset.b	#ob_nooff,OB_Flag2(a0)
+			bset.b	#ob_noclip,OB_Flag1(a0)
+		
+.aa			move.w	#HorWholScroll!VerWholScroll,d0			;rolling tube
+			bsr	SetScroll  				
+			st.b	FullScroll_Hor
+			st.b	FullScroll_Ver
+
+			lea	TitlePagePAL,a1		;fade
+			jsr	lite_fader
+
+			MUSIC	0
+			
+			clr.b	working
+			st.b	service
+			clr.b	joy1
+			clr.b	d_joy1
+			move	#$2000,sr		;enable irq
+			
+			jsr	wait_fade
+			
+.1a			tst.l	OB_AnSequence(a0)
+			bne.s	.1a
+			
+			clr.w	new_level
+
+			move	#$2700,sr
+			lea	ttxt1,a1
+			bsr	PrintString
+			lea	op1,a1
+			bsr	PrintString
+			bsr	PrintLevTxt
+			move	#$2000,sr
+			
+.selloop		bsr	WaitFrm
+			
+			btst.b	#up,d_joy1
+			bne	.up
+			btst.b	#down,d_joy1
+			bne	.down
+			btst.b	#start,d_joy1
+			beq.s	.selloop
+
+.start			move.w	new_level,levnum
+			jsr	dark_fader		;fade
+			jsr	wait_fade
+			bsr	ClrScrlA
+			bra	ClrScrlB
+			
+.up			subq.w	#1,new_level
+			bpl.s	.prnt
+			move.w	#MaxLevs-1,new_level
+			bra	.prnt
+.down			addq.w	#1,new_level
+			cmp.w	#MaxLevs,new_level
+			bne.s	.prnt
+			clr.w	new_level
+
+.prnt			bsr	PrintLevTxt
+			bra	.selloop
+
+
+; - OPTIONS PAGE Logic -----------------------------------------------------
+
+OptionScreen		
+;			move.w	#$2700,sr
+;			lea	DisneyLogoCHR,a0	;compressed chr data
+;			lea	MapA_Buff,a1		;destination buffer
+;			moveq	#SWD_2_Buffer,d2
+;			jsr	DecompressSWD		;decompress data
+;			moveq	#0,d6			;DMA Char data
+;			move.l	d3,d0			;d3=length
+;			lsr.l	#1,d0
+;			lea	MapA_Buff,a0
+;			jsr	dma_data
+;
+;			lea	DisneyLogoMAP,a0	;compressed chr data
+;			lea	MapA_Buff,a1		;destination buffer
+;			moveq	#SWD_2_Buffer,d2
+;			jsr	DecompressSWD		;decompress data
+;			moveq	#0,d1			;print the logo to screen
+;			moveq	#0,d2
+;			bsr	work_scrn_a
+;			lea	MapA_Buff,a0
+;			moveq	#39,d0
+;			moveq	#25,d1
+;			moveq	#0,d4
+;			bsr	windowblock
+;
+;			move.w	#-$8,PixX_Copy		;position it
+;			move.w	#-$20,PixY_Copy
+;
+;			move	#$2300,sr		;enable irq
+;			st.b	service			
+;			lea	DisneyLogoPAL,a1	;fade
+;			jsr	lite_fader
+;			jsr	wait_fade
+
+			
+PrintString		move.b	(a1)+,d1
+			bmi.s	.loop
+			beq.s	.1
+			cmp.b	#1,d1
+			bne.s	.3
+.2			move.l	#ScrlB_Base,d6
+			bra	.3
+.1			move.l	#ScrlA_Base,d6
+.3			move.b	(a1)+,d1		;x
+			move.b	(a1)+,d2		;y
+			ext.w	d1
+			ext.w	d2
+			bsr	GetScreenAddrs
+
+.loop			move.b	(a1)+,d1
+			ext.w	d1
+			beq.s	.fin
+			sub.w	#$1f,d1
+			add.w	#Alpha_Base+$8000,d1
+			move.w	d1,vdata
+			bra	.loop
+
+.fin			rts
+
+
+PrintLevTxt		lea	lttab,a1
+			move.w	new_level,d1
+			asl.w	#2,d1
+			move.l	0(a1,d1.w),a1
+			bra	PrintString
+			
+
+
+pfA			equ	0		;playfield A
+pfB			equ	1		;playfield B
+pfC			equ	2		;Custom
+
+;lttab			dc.l	l3p1t,l3p3t
+;			dc.l	ltst1
+;
+;op1			dc.b	pfA,5,22,"SELECT A LEVEL AND PRESS START",0
+;l3p1t			dc.b	pfA,5,24,"    L3:M1 - ROOFTOPS CHASE    ",0
+;l3p3t			dc.b	pfA,5,24,"    L3:M3 - ROOFTOP BATTLE    ",0
+;ltst1			dc.b	pfA,5,24,"   TEST - 3D COORD ROUTINES   ",0
+;ttxt1			dc.b	pfA,8,26,"BUILD: \#_month/\#_day/\#_year AT \#_hours:\#_minutes",0
+;ttxt2			dc.b	pfA,3,1,"GARGOYLES (SEGA) E3 DEMO - V01.\#_month",".","\#_day",0
+			even
+
+
+lttab			dc.l	l1p1t,l1p2t,l1p3t,l1p4t
+			dc.l	l2p1t,l2p2t,l2p3t,l2p4t
+			dc.l	l3p1t,l3p2t,l3p3t,l3p4t
+			dc.l	l4p1t,l4p2t,l4p3t,l4p4t
+			dc.l	l5p1t
+			dc.l	l6p1t,l6p2t,l6p3t,l6p4t
+			dc.l	l7p1t,l7p2t,l7p3t,l7p4t
+			dc.l	ltst3
+
+op1			dc.b	pfA,5,18,"SELECT LEVEL :",0
+l1p1t			dc.b	pfA,5,20,"L1:M1 - BATTLEFIELD #1           ",0
+l1p2t			dc.b	pfA,5,20,"L1:M2 - BATTLEFIELD #2           ",0
+l1p3t			dc.b	pfA,5,20,"L1:M3 - BATTLEFIELD #3           ",0
+l1p4t			dc.b	pfA,5,20,"L1:M4 - BATTLEFIELD BOSS         ",0
+
+l2p1t			dc.b	pfA,5,20,"L2:M1 - ROOKERY #1               ",0
+l2p2t			dc.b	pfA,5,20,"L2:M2 - ROOKERY #2               ",0
+l2p3t			dc.b	pfA,5,20,"L2:M3 - ROOKERY #3               ",0
+l2p4t			dc.b	pfA,5,20,"L2:M4 - ROOKERY BOSS             ",0
+
+l3p1t			dc.b	pfA,5,20,"L3:M1 - ROOFTOPS #1              ",0
+l3p2t			dc.b	pfA,5,20,"L3:M2 - ROOFTOPS #2              ",0
+l3p3t			dc.b	pfA,5,20,"L3:M3 - ROOFTOPS #3              ",0
+l3p4t			dc.b	pfA,5,20,"L3:M4 - ROOFTOPS BOSS            ",0
+
+l4p1t			dc.b	pfA,5,20,"L4:M1 - MUSEUM #1                ",0
+l4p2t			dc.b	pfA,5,20,"L4:M2 - MUSEUM #2                ",0
+l4p3t			dc.b	pfA,5,20,"L4:M3 - MUSEUM #3                ",0
+l4p4t			dc.b	pfA,5,20,"L4:M4 - MUSEUM BOSS              ",0
+
+l5p1t			dc.b	pfA,5,20,"L5:M1 - SUBWAY                   ",0
+
+l6p1t			dc.b	pfA,5,20,"L6:M1 - CASTLE #1                ",0
+l6p2t			dc.b	pfA,5,20,"L6:M2 - CASTLE #2                ",0
+l6p3t			dc.b	pfA,5,20,"L6:M3 - CASTLE #3                ",0
+l6p4t			dc.b	pfA,5,20,"L6:M4 - CASTLE BOSS              ",0
+
+l7p1t			dc.b	pfA,5,20,"L7:M1 - FORGE #1                 ",0
+l7p2t			dc.b	pfA,5,20,"L7:M2 - FORGE #2                 ",0
+l7p3t			dc.b	pfA,5,20,"L7:M3 - FORGE #3                 ",0
+l7p4t			dc.b	pfA,5,20,"L7:M4 - FORGE BOSS               ",0
+
+ltst3			dc.b	pfA,5,20,"TEST - PLAYROOM                  ",0
+
+ttxt1			dc.b	pfA,5,15,"BUILD - \#_month/\#_day/\#_year AT \#_hours:\#_minutes",0
+			even
+
+; - COLOUR DEBUG for Artists -----------------------------------------------
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ COLOUR DEBUG ROUTINE						   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ Entry: n/a								   บ
+; บ  Exit: n/a								   บ
+; บ  Used: n/a								   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ Allows the Artist/Programmer to manipulate the Genesis		   บ
+; บ colour palettes. Displays raw RGB values for the SEGA		   บ
+; บ (NOTE: these values should be multiplied by 2 for real SEGA		   บ
+; บ colours). Displays DPAINT RGB values.				   บ
+; บ 									   บ
+; บ This routine is functional but extremely Cheesey.			   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+CDtext1			dc.b	pfC,1,25,"PAL=0  : SEGA - R=0 G=0 B=0 : RGB=000",0
+CDtext2			dc.b	pfC,1,26,"COL=00 : DPAINT - R=00 G=00 B=00",0
+ct1			dc.b	pfC,5,26,"01",0
+ct2			dc.b	pfC,5,26,"02",0
+ct3			dc.b	pfC,5,26,"03",0
+ct4			dc.b	pfC,5,26,"04",0
+ct5			dc.b	pfC,5,26,"05",0
+ct6			dc.b	pfC,5,26,"06",0
+ct7			dc.b	pfC,5,26,"07",0
+ct8			dc.b	pfC,5,26,"08",0
+ct9			dc.b	pfC,5,26,"09",0
+ct10			dc.b	pfC,5,26,"10",0
+ct11			dc.b	pfC,5,26,"11",0
+ct12			dc.b	pfC,5,26,"12",0
+ct13			dc.b	pfC,5,26,"13",0
+ct14			dc.b	pfC,5,26,"14",0
+ct15			dc.b	pfC,5,26,"15",0
+ct16			dc.b	pfC,5,26,"16",0
+rgb0			dc.b	-1,"00",0
+rgb1			dc.b	-1,"14",0
+rgb2			dc.b	-1,"27",0
+rgb3			dc.b	-1,"39",0
+rgb4			dc.b	-1,"52",0
+rgb5			dc.b	-1,"64",0
+rgb6			dc.b	-1,"77",0
+rgb7			dc.b	-1,"89",0
+			even
+
+cttab			dc.l	ct1,ct2,ct3,ct4,ct5,ct6,ct7,ct8,ct9,ct10,ct11,ct12,ct13,ct14,ct15,ct16
+rgbtab			dc.l	rgb0,rgb1,rgb2,rgb3,rgb4,rgb5,rgb6,rgb7
+paltab			dc.l	Pal1,Pal2,Pal3,Pal4
+
+			bsr	DoColorDebug
+
+DoColorDebug		cmp.b	#$84,joy1
+			beq.s	ColorDebug
+.1			rts
+
+ColorDebug		move.w	#DebugVBLANK,VBLANKPhase
+
+			move.w	#reg17,vctrl
+			move.w	#reg18+$80+25,vctrl
+			move.w	#reg3+($d000>>10),vctrl
+
+			move.l	#$d000,d6
+			lea	CDtext1,a1
+			bsr	PrintString
+			move.l	#$d000,d6
+			lea	CDtext2,a1
+			bsr	PrintString
+			
+			clr.b	CD_Pal
+			clr.b	CD_Col
+			
+.selloop		bsr	WaitFrm
+			btst.b	#start,d_joy1
+			bne	.exit
+
+			bsr	PrintDebugBits
+	
+			btst.b	#up,d_joy1
+			bne.s	.palinc
+			btst.b	#down,d_joy1
+			bne.s	.paldec
+			btst.b	#left,d_joy1
+			bne.s	.coldec
+			btst.b	#right,d_joy1
+			bne.s	.colinc
+			
+			bra	.selloop
+
+.palinc			bsr	TestButABC
+			tst	d5
+			bmi	.selloop
+			addq.b	#1,CD_Pal
+			cmp.b	#4,CD_Pal
+			bne	.selloop
+			clr.b	CD_Pal
+			bra	.selloop
+.paldec			bsr	TestButABC
+			tst	d5
+			bmi	.selloop
+			subq.b	#1,CD_Pal
+			bpl	.selloop
+			move.b	#3,CD_Pal
+			bra	.selloop
+
+.colinc			addq.b	#1,CD_Col
+			cmp.b	#16,CD_Col
+			bne	.selloop
+			clr.b	CD_Col
+			bra	.selloop
+.coldec			subq.b	#1,CD_Col
+			bpl	.selloop
+			move.b	#15,CD_Col
+			bra	.selloop
+
+.exit			move.w	#GameVBLANK,VBLANKPhase
+			move.w	#reg17,vctrl
+			move.w	#reg18,vctrl
+			move.w	#reg3,vctrl
+			clr.l	joy1
+			clr.l	joy2
+			rts
+
+TestButABC		lea	paltab,a2			;pull color from palette
+			move.b	CD_Pal,d7
+			ext.w	d7
+			asl.w	#2,d7
+			move.l	0(a2,d7.w),a2
+			move.b	CD_Col,d7			;print RGB values
+			ext.w	d7
+			asl.w	#1,d7
+			
+			moveq	#0,d5
+			btst.b	#but_a,joy1
+			beq.s	.a
+			bsr	.red
+			moveq	#-1,d5
+.a			btst.b	#but_b,joy1
+			beq.s	.b
+			bsr	.green
+			moveq	#-1,d5
+.b			btst.b	#but_c,joy1
+			beq.s	.c
+			bsr	.blue
+			moveq	#-1,d5
+.c			rts
+
+.red			move.w	0(a2,d7.w),d1			;get col
+			move.w	d1,d2
+			and.w	#$0ff0,d2
+			btst.b	#down,joy1
+			bne.s	.rd
+.ra			add.w	#$0002,d1
+			bra	.r1
+.rd			sub.w	#$0002,d1
+.r1			and.w	#$000f,d1
+			bra	.xx
+
+.green			move.w	0(a2,d7.w),d1			;get col
+			move.w	d1,d2
+			and.w	#$0f0f,d2
+			btst.b	#down,joy1
+			bne.s	.gd
+.ga			add.w	#$0020,d1
+			bra	.g1
+.gd			sub.w	#$0020,d1
+.g1			and.w	#$00f0,d1
+			bra	.xx
+
+.blue			move.w	0(a2,d7.w),d1			;get col
+			move.w	d1,d2
+			and.w	#$00ff,d2
+			btst.b	#down,joy1
+			bne.s	.bd
+.ba			add.w	#$0200,d1
+			bra	.b1
+.bd			sub.w	#$0200,d1
+.b1			and.w	#$0f00,d1
+.xx			or.w	d2,d1
+			move.w	d1,0(a2,d7.w)
+			rts
+			
+			
+
+PrintDebugBits		move.l	#$d000,d6			;print palette #
+			moveq	#5,d1
+			moveq	#25,d2
+			bsr	GetScreenAddrs
+			move.b	CD_Pal,d1
+			ext.w	d1
+			addq.w	#1,d1
+			add.w	#("0"-$1f)+Alpha_Base+$8000,d1
+			move.w	d1,vdata
+
+			lea	cttab,a1			;print colour #
+			move.b	CD_Col,d7
+			asl.b	#2,d7
+			ext.w	d7
+			move.l	0(a1,d7.w),a1
+			move.l	#$d000,d6
+			bsr	PrintString
+
+			lea	paltab,a2			;pull color from palette
+			move.b	CD_Pal,d7
+			ext.w	d7
+			asl.w	#2,d7
+			move.l	0(a2,d7.w),a2
+			move.b	CD_Col,d7			;print RGB values
+			ext.w	d7
+			asl.w	#1,d7
+			move.w	0(a2,d7.w),d1
+			move.w	d1,-(sp)
+			and.w	#$000f,d1			;d4=red
+			lsr.w	#1,d1
+			move.w	d1,red
+			move.w	(sp)+,d1
+			move.w	d1,-(sp)
+			and.w	#$00f0,d1			;d4=green
+			lsr.w	#5,d1
+			move.w	d1,green
+			move.w	(sp)+,d1
+			and.w	#$0f00,d1			;d4=blue
+			lsr.w	#8,d1
+			lsr.w	#1,d1
+			move.w	d1,blue
+
+			move.l	#$d000,d6
+			moveq	#19,d1
+			moveq	#25,d2
+			bsr	GetScreenAddrs
+			move.w	red,d1
+			add.w	#("0"-$1f)+Alpha_Base+$8000,d1
+			move.w	d1,vdata
+			move.l	#$d000,d6
+			moveq	#23,d1
+			moveq	#25,d2
+			bsr	GetScreenAddrs
+			move.w	green,d1
+			add.w	#("0"-$1f)+Alpha_Base+$8000,d1
+			move.w	d1,vdata
+			move.l	#$d000,d6
+			moveq	#27,d1
+			moveq	#25,d2
+			bsr	GetScreenAddrs
+			move.w	blue,d1
+			add.w	#("0"-$1f)+Alpha_Base+$8000,d1
+			move.w	d1,vdata
+
+			move.l	#$d000,d6
+			moveq	#35,d1
+			moveq	#25,d2
+			bsr	GetScreenAddrs
+			move.w	red,d1
+			add.w	#("0"-$1f)+Alpha_Base+$8000,d1
+			move.w	d1,vdata
+			move.w	green,d1
+			add.w	#("0"-$1f)+Alpha_Base+$8000,d1
+			move.w	d1,vdata
+			move.w	blue,d1
+			add.w	#("0"-$1f)+Alpha_Base+$8000,d1
+			move.w	d1,vdata
+			
+			move.l	#$d000,d6
+			moveq	#21,d1
+			moveq	#26,d2
+			bsr	GetScreenAddrs
+			lea	rgbtab,a2
+			move.w	red,d1
+			asl.w	#2,d1
+			move.l	0(a2,d1.w),a1
+			bsr	PrintString
+			move.l	#$d000,d6
+			moveq	#26,d1
+			moveq	#26,d2
+			bsr	GetScreenAddrs
+			lea	rgbtab,a2
+			move.w	green,d1
+			asl.w	#2,d1
+			move.l	0(a2,d1.w),a1
+			bsr	PrintString
+			move.l	#$d000,d6
+			moveq	#31,d1
+			moveq	#26,d2
+			bsr	GetScreenAddrs
+			lea	rgbtab,a2
+			move.w	blue,d1
+			asl.w	#2,d1
+			move.l	0(a2,d1.w),a1
+			bsr	PrintString
+			
+			rts
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ INTRO/BETWEEN LEVELS/STORY Sequences				   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ Entry: n/a								   บ
+; บ  Exit: n/a								   บ
+; บ  Used: n/a								   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ All FLUFF stuff happens here ...					   บ
+; บ 									   บ
+; บ INTRODUCTION Sequence						   บ
+; บ STORY Sequences							   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+FluffSequenceTAB	dc.l	Fluff1,Fluff2
+
+FluffSequence		asl.w	#2,d1
+			lea	FluffSequenceTAB,a1
+			move.l	0(a1,d1.w),a1
+			jmp	(a1)
+
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ INTRO								   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+Fluff1			rts
+
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ GAME OVER								   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+gotxt1			dc.b	pfA,17,10,"GAME OVER",0
+			even
+
+Fluff2			jsr	dark_fader		;fade
+			jsr	wait_fade
+
+			jsr	InitVRamAlloc
+			bsr	InitOBJECTS
+			bsr	WaitFrm
+
+			bsr	SetupShell
+			st.b	working
+			clr.b	service
+			
+			lea	Font8x8CHR,a0		;compressed chr data
+			move.w	#Alpha_VRAM,d6		;DMA Char data
+			bsr	BlitCharset_nv
+			lea	TitlePageCHR,a0		;compressed chr data
+			bsr	BlitCharset
+
+			move.w	#-$8,PixX_Copy		;position it
+			move.w	#-$20,PixY_Copy
+
+			lea	gotxt1,a1
+			bsr	PrintString
+
+			move	#$2000,sr		;enable irq
+			st.b	service			
+			lea	TitlePagePAL,a1		;fade
+			jsr	lite_fader
+			jsr	wait_fade
+
+			move.w	#5*hz5060,d1		;wait 5 secs
+			jsr	frame_delay2		
+			bra	FlagYES
+

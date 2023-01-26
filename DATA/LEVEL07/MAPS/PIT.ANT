@@ -1,0 +1,8 @@
+;* Animation from room 'pit'
+;*
+AMAP_PIT0_START:
+	ani_dma L7M0FNL0_DATA+$2600,$0580,$0080,4,0	; Frame  1 ( 1) of  4
+	ani_dma L7M0FNL0_DATA+$2680,$0580,$0080,4,0	; Frame  2 ( 2) of  4
+	ani_dma L7M0FNL0_DATA+$2700,$0580,$0080,4,0	; Frame  3 ( 3) of  4
+	ani_dma L7M0FNL0_DATA+$2780,$0580,$0080,4,0	; Frame  4 ( 4) of  4
+	dc.l	CEnd

@@ -1,0 +1,19 @@
+	dc.b	'SEGA MEGA DRIVE '
+month	substr	_month*3-2,_month*3,"JANFEBMARAPRMAYJUNJULAUGSEPOCTNOVDEC"
+	dc.b	'(C)SEGA \#_year\.\month'
+	dc.b	'MAUI MALLARD                                    '
+	dc.b	'DONALD STARRING IN MAUI MALLARD                 '
+	dc.b	'GM MK-1192 -00'
+	dc.w	$1234
+	dc.b	'J               '
+	dc.l	$000000,$2fffff		;24 megabit
+	dc.l	$ff0000,$ffffff
+	dc.b	'            '
+	dc.b	'            '
+	dcb.b	$1f0-$1c8,' '
+ if europe=1
+	dc.b	'A               '	;europe pal
+ else
+	dc.b	'F               '	;universal
+ endif
+

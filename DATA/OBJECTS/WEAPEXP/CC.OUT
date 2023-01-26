@@ -1,0 +1,103 @@
+chop RaptorBot animations : 2 secs/frame : palette 4
+GOLIATH ANIMATION CONVERTION ...
+rem ** CHOP the animations **
+call spr gv0501 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gv0501.anm
+Used 4 sprites, with a total of 23 characters, in 0.0 seconds
+Used 3 sprites, with a total of 23 characters, in 0.0 seconds
+Used 4 sprites, with a total of 17 characters, in 0.0 seconds
+Used 3 sprites, with a total of 15 characters, in 0.0 seconds
+call spr gv0502 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gv0502.anm
+Used 5 sprites, with a total of 19 characters, in 0.0 seconds
+Used 3 sprites, with a total of 18 characters, in 0.0 seconds
+Used 5 sprites, with a total of 17 characters, in 0.0 seconds
+Used 4 sprites, with a total of 23 characters, in 0.0 seconds
+Used 3 sprites, with a total of 18 characters, in 0.0 seconds
+Used 3 sprites, with a total of 15 characters, in 0.0 seconds
+Used 2 sprites, with a total of 10 characters, in 0.0 seconds
+Used 3 sprites, with a total of 18 characters, in 0.0 seconds
+Used 2 sprites, with a total of 17 characters, in 0.0 seconds
+Used 4 sprites, with a total of 18 characters, in 0.0 seconds
+Used 3 sprites, with a total of 15 characters, in 0.0 seconds
+Used 4 sprites, with a total of 19 characters, in 0.0 seconds
+call spr gv0503 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gv0503.anm
+Used 6 sprites, with a total of 15 characters, in 0.0 seconds
+Used 5 sprites, with a total of 15 characters, in 0.0 seconds
+Used 3 sprites, with a total of 12 characters, in 0.0 seconds
+call spr gv0504 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gv0504.anm
+Used 3 sprites, with a total of 19 characters, in 0.0 seconds
+Used 3 sprites, with a total of 15 characters, in 0.0 seconds
+Used 3 sprites, with a total of 14 characters, in 0.0 seconds
+Used 4 sprites, with a total of 14 characters, in 0.0 seconds
+Used 5 sprites, with a total of 15 characters, in 0.0 seconds
+Used 5 sprites, with a total of 17 characters, in 0.0 seconds
+Used 5 sprites, with a total of 20 characters, in 0.0 seconds
+call spr gv0505 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gv0505.anm
+Used 3 sprites, with a total of 18 characters, in 0.0 seconds
+Used 3 sprites, with a total of 17 characters, in 0.0 seconds
+Used 4 sprites, with a total of 18 characters, in 0.0 seconds
+Used 3 sprites, with a total of 20 characters, in 0.0 seconds
+Used 3 sprites, with a total of 16 characters, in 0.0 seconds
+Used 4 sprites, with a total of 14 characters, in 0.0 seconds
+Used 3 sprites, with a total of 14 characters, in 0.0 seconds
+Used 3 sprites, with a total of 14 characters, in 0.0 seconds
+Used 2 sprites, with a total of 14 characters, in 0.0 seconds
+Used 4 sprites, with a total of 17 characters, in 0.0 seconds
+Used 5 sprites, with a total of 16 characters, in 0.0 seconds
+Used 4 sprites, with a total of 18 characters, in 0.0 seconds
+Used 7 sprites, with a total of 19 characters, in 0.0 seconds
+Used 5 sprites, with a total of 18 characters, in 0.0 seconds
+Used 4 sprites, with a total of 15 characters, in 0.0 seconds
+Used 4 sprites, with a total of 18 characters, in 0.0 seconds
+Used 4 sprites, with a total of 15 characters, in 0.0 seconds
+Used 3 sprites, with a total of 17 characters, in 0.0 seconds
+call spr gv0506 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gv0506.anm
+Used 5 sprites, with a total of 19 characters, in 0.0 seconds
+Used 3 sprites, with a total of 17 characters, in 0.0 seconds
+Used 2 sprites, with a total of 18 characters, in 0.0 seconds
+Used 3 sprites, with a total of 17 characters, in 0.0 seconds
+Used 5 sprites, with a total of 20 characters, in 0.0 seconds
+Used 4 sprites, with a total of 19 characters, in 0.0 seconds
+Used 4 sprites, with a total of 15 characters, in 0.0 seconds
+Used 5 sprites, with a total of 15 characters, in 0.0 seconds
+Used 5 sprites, with a total of 18 characters, in 0.0 seconds
+call spr gv0507 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gv0507.anm
+Used 4 sprites, with a total of 12 characters, in 0.0 seconds
+Used 2 sprites, with a total of 10 characters, in 0.0 seconds
+Used 2 sprites, with a total of 10 characters, in 0.0 seconds
+Used 2 sprites, with a total of 10 characters, in 0.0 seconds
+call spr gv0508 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gv0508.anm
+Used 4 sprites, with a total of 20 characters, in 0.0 seconds
+Used 4 sprites, with a total of 19 characters, in 0.0 seconds
+Used 4 sprites, with a total of 20 characters, in 0.0 seconds
+rem ** COLLECT the animations **
+call col gv0501
+collect gv0501.col
+call col gv0502
+collect gv0502.col
+call col gv0503
+collect gv0503.col
+call col gv0504
+collect gv0504.col
+call col gv0505
+collect gv0505.col
+call col gv0506
+collect gv0506.col
+call col gv0507
+collect gv0507.col
+call col gv0508
+collect gv0508.col
+call modany2
+
+.ANY FILE FORMATTER V1.00CPS
+
+Sequence # (2 letter prefix+seq # (gg01))? 
+
+OK! All done.

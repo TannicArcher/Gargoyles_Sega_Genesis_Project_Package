@@ -1,0 +1,67 @@
+RAPTOR_AI	AI_CB &		;Condition bits macro.
+ 	  	YES,&		;Proximity test check RIGHT.
+		YES,&		;Proximity test check LEFT.
+		YES,&		;Proximity test check ABOVE.
+		YES,&		;Proximity test check BELOW.
+		NO,&		;Player must be to the LEFT of the enemy.
+		NO,&		;Player must be to the RIGHT of the enemy.
+		YES,&		;Player must be FACING the enemy.
+		NO,&		;Player must have BACK towards enemy.
+		YES,&		;Player must be on the GROUND.
+		NO,&		;Player must be in the AIR.
+		NO,&		;Player must be on the CEILING.
+		NO,&		;Player must be on the WALL.
+		NO,&		;Player must be IDLING.
+		NO,&		;Player must be BEING HIT.
+		NO,&		;Player must be DIEING.
+		NO,&		;Player must be JUMPING.
+		NO,&		;Player must be FALLING.
+		NO,&		;Player must be ATTACKING.
+		NO,&		;Player must be GRABBING.
+		NO,&		;Unused.
+		NO,&		;Unused.
+		NO,&		;Unused.
+		NO,&		;Unused.
+		NO,&		;Unused.
+		NO,&		;Unused.
+		NO,&		;Unused.
+		NO,&		;Unused.
+		NO,&		;Unused.
+		NO,&		;Unused.
+		NO,&		;Unused.
+		NO		;Unused.	
+
+		AI_DATA	&	;AI Data macro.
+		$40,&		;Proximity to Player in X.
+		$20,&		;Proximity to Player in Y.
+		HALF_CHANCE,&	;Chance that called routine will NOT be called.
+		1,&		;Enemy data #1.
+		2,&		;Enemy data #1.
+		3,&		;Enemy data #1.
+		0,&		;Future expansion.
+		INIT_RAPTOR	;This routine is called if all conditions are met.	
+
+		AI_END_LIST	;End of AI list.		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

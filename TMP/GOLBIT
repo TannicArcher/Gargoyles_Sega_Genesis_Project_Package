@@ -1,0 +1,265 @@
+;; - CLIMB STAND (wall) LOGIC -----------------------------------------------------
+;
+;GolSetClimbWallStand	move.b	#GolClimbWallStandSTATE,OB_State(a0)
+;			clr.w	GolSprintFlg
+;			lea	GolClimbWallStandANM,a1
+;			bra	SetNewAnim
+;
+;GolClimbWallStandLOGIC	bsr	tst_d_button_a		;jump off wall
+;			bne	GolSetJump
+;
+;			btst.b	#up,joy1
+;			bne.s	.up
+;			btst.b	#down,joy1
+;			bne.s	.down
+;			rts
+;.up			st.b	walking_up
+;			clr.b	walking_down
+;			bra	.1
+;.down			clr.b	walking_up
+;			st.b	walking_down
+;.1			move.b	#GolClimbWallSTATE,OB_State(a0)
+;			lea	GolClimbWallANM,a1
+;			bra	SetNewAnim
+;
+;
+;; - CLIMB (wall) LOGIC -----------------------------------------------------
+;
+;GolClimbWallLOGIC	bsr	tst_d_button_a
+;			bne	GolSetJump
+;
+;			tst.b	walking_up
+;			bne.s	.up
+;			tst.b	walking_down
+;			bne.s	.down
+;			rts
+;
+;.up			btst.b	#up,joy1
+;			beq	GolSetClimbWallStand
+;			move.b	UnderHEAD,d2			;check for ceiling stop/transition 
+;			move.l	UnderHEAD_c,a1
+;			cmp.b	#SB_CeilingClimb,d2		;is this block a ceiling
+;			beq	GolSetClimbTransWC		;wall to ceiling transition
+;			tst.b	0(a1)				;stop at a contour	
+;			bne	GolSetClimbWallStand
+;			bsr	GolClimbOffWallU		;check for climbable 
+;			bmi	GolSetClimbTransWF		;trans to floor
+;			moveq	#GolClimbWallSpeed,d1		;else move up
+;			bra	MoveGolUp
+;
+;.down			btst.b	#down,joy1
+;			beq	GolSetClimbWallStand
+;			move.l	UnderFEET_c,a1
+;			tst.b	0(a1)
+;			bne	GolSetStand
+;			bsr	GolClimbOffWallD
+;			bpl	GolSetFallA
+;			moveq	#GolClimbWallSpeed,d1
+;			bsr	MoveGolDown
+;			rts
+;
+;GolClimbOffWallU	btst.b	#ob_xflp,OB_Flag1(a0)
+;			beq.s	.r
+;			move.b	UnderLEFTBOT,d2
+;			cmp.b	#SB_Climb2StandLR,d2
+;			beq.s	.y
+;			cmp.b	#SB_Climb2StandL,d2
+;			beq.s	.y
+;			bra	.n
+;.r			move.b	UnderRIGHTBOT,d2
+;			cmp.b	#SB_Climb2StandLR,d2
+;			beq.s	.y
+;			cmp.b	#SB_Climb2StandR,d2
+;			beq.s	.y
+;.n			tas	no
+;			rts
+;.y			tas	yes
+;			rts
+;
+;GolClimbOffWallD	btst.b	#ob_xflp,OB_Flag1(a0)
+;			beq.s	.r
+;			move.b	UnderLEFTBOT,d2
+;			cmp.b	#SB_ClimbRight,d2
+;			beq.s	.y
+;			bra	.a
+;.r			move.b	UnderRIGHTBOT,d2
+;			cmp.b	#SB_ClimbLeft,d2
+;			beq.s	.y
+;.a			cmp.b	#SB_Climb,d2
+;			beq.s	.y
+;			cmp.b	#SB_ClimbRope,d2
+;			beq.s	.y
+;.n			tas	no
+;			rts
+;.y			tas	yes
+;			rts
+;
+;
+;
+;
+;; - CLIMB WALL TO CEILING TRANSITION LOGIC ---------------------------------
+;
+;GolSetClimbTransWC	move.b	#GolClimbTransWCSTATE,OB_State(a0)
+;			and.w	#$fff0,OB_Ypos(a0)
+;			add.w	#$10,OB_Ypos(a0)	
+;			lea	GolClimbTransWCANM,a1
+;			bra	SetNewAnim
+;
+;GolClimbTransWCLOGIC	tst.l	OB_AnSequence(a0)   			;animation finished?
+;			bne.s	.no
+;			move.b	#GolClimbCeilStandSTATE,OB_State(a0)
+;;			move.w	#$20,d1					;temporary
+;;			bsr	MoveGolUp_Smooth
+;.no			rts
+;
+;
+;; - CLIMB CEILING TO WALL TRANSITION LOGIC ---------------------------------
+;
+;GolSetClimbTransCWR	bclr.b	#ob_xflp,OB_Flag1(a0)
+;			bra	GolSetClimbTransCW	
+;GolSetClimbTransCWL	bset.b	#ob_xflp,OB_Flag1(a0)
+;
+;GolSetClimbTransCW	move.w	#$18,d1					;temporary
+;			bsr	MoveGolDown_Smooth
+;			bra	GolSetClimbWallStand
+;			
+;GolClimbTransCWLOGIC	rts
+;
+;
+;; - CLIMB CEILING TO WALL TRANSITION LOGIC 2 -------------------------------
+;
+;GolSetClimbTransCWR2	bset.b	#ob_xflp,OB_Flag1(a0)
+;			move.w	#$1c,d1					;temporary
+;			bsr	MoveGolRight_NF_Smooth
+;			bra	GolSetClimbTransCW2	
+;GolSetClimbTransCWL2	bclr.b	#ob_xflp,OB_Flag1(a0)
+;			move.w	#$1c,d1					;temporary
+;			bsr	MoveGolLeft_NF_Smooth
+;	
+;GolSetClimbTransCW2	move.w	#$20,d1					;temporary
+;			bsr	MoveGolUp_Smooth
+;			bra	GolSetClimbWallStand
+;
+;GolClimbTransCW2LOGIC	rts
+;
+;
+;; - CLIMB WALL TO FLOOR TRANSITION LOGIC ---------------------------------
+;
+;GolSetClimbTransWF	move.b	#GolStandSTATE,OB_State(a0)
+;			move.w	#$20,d1					;temporary
+;			bsr	MoveGolUp_Smooth
+;			move.w	#$18,d1
+;			btst.b	#ob_xflp,OB_Flag1(a0)
+;			beq.s	.r
+;			bsr	MoveGolLeft_Smooth
+;			bra	GolSetStand
+;.r			bsr	MoveGolRight_Smooth
+;			bra	GolSetStand
+;			
+;GolClimbTransWFLOGIC	rts
+;
+;
+;; - CLIMB CEILING TO FLOOR TRANSITION LOGIC ---------------------------------
+;
+;GolSetClimbTransCFL	bclr.b	#ob_xflp,OB_Flag1(a0)
+;			bra	gstcf
+;GolSetClimbTransCFR	bset.b	#ob_xflp,OB_Flag1(a0)
+;gstcf			move.w	#$30,d1
+;			bsr	MoveGolUp_Smooth
+;			bra	GolSetStand
+;			
+;GolClimbTransCFLOGIC	rts
+;
+;
+;; - CLIMB STAND (ceiling) LOGIC --------------------------------------------
+;
+;GolSetClimbCeilStand	move.b	#GolClimbCeilStandSTATE,OB_State(a0)
+;			clr.w	GolSprintFlg
+;			lea	GolClimbCeilStandANM,a1
+;			bra	SetNewAnim
+;
+;GolClimbCeilStandLOGIC	bsr	tst_d_button_a		;if jump on ceiling
+;			bne	GolSetFallA		;then fall
+;	
+;			btst.b	#left,joy1		;check pad for left/right move
+;			bne.s	.left
+;			btst.b	#right,joy1
+;			bne.s	.right
+;			rts
+;.left			st.b	walking_left		;set left
+;			clr.b	walking_right
+;			bra	.1
+;.right			clr.b	walking_left		;set right
+;			st.b	walking_right
+;.1			move.b	#GolClimbCeilSTATE,OB_State(a0)	;lets climb a bit
+;			lea	GolClimbCeilANM,a1
+;			bra	SetNewAnim
+;
+;
+;
+;; - CLIMB (ceiling) LOGIC --------------------------------------------------
+;
+;GolClimbCeilLOGIC	bsr	tst_d_button_a			;if jump pressed
+;			bne	GolSetFallA			;make fall
+;
+;			tst.b	walking_left
+;			bne.s	.left
+;			tst.b	walking_right
+;			bne.s	.right
+;			rts
+;.left			btst.b	#left,joy1
+;			beq	GolSetClimbCeilStand
+;			move.b	UnderLEFT,d2			;check for wall stop/transition 
+;			cmp.b	#SB_Climb,d2			;is this block a climbable
+;			beq	GolSetClimbTransCWL
+;			cmp.b	#SB_ClimbRight,d2		;is this block a climbable
+;			beq	GolSetClimbTransCWL
+;			move.b	UnderTOP,d2
+;			cmp.b	#SB_Crawl2StandL,d2		;is this a transition block?
+;			beq	GolSetClimbTransCFL		;ceiling to floor transition
+;			cmp.b	#SB_Climb,d2	
+;			beq	GolSetClimbTransCWL2		;ceiling to wall
+;			cmp.b	#SB_ClimbLeft,d2	
+;			beq	GolSetClimbTransCWL2		;ceiling to wall
+;			cmp.b	#SB_CeilingClimb,d2		;stop.fall if non climbable
+;			bne	GolSetFallA
+;			move.b	UnderLEFT,d2			;check for wall stop/transition 
+;			move.l	UnderLEFT_c,a1
+;			bsr	GolClimbCeilTestLR
+;			bmi	GolSetClimbCeilStand		
+;			moveq	#GolClimbCeilingSpeed,d1	
+;			bra	MoveGolLeft
+;
+;.right			btst.b	#right,joy1
+;			beq	GolSetClimbCeilStand
+;			move.b	UnderRIGHT,d2			;check for wall stop/transition 
+;			cmp.b	#SB_Climb,d2			;is this block a climbable
+;			beq	GolSetClimbTransCWR
+;			cmp.b	#SB_ClimbLeft,d2		;is this block a climbable
+;			beq	GolSetClimbTransCWR
+;			move.b	UnderTOP,d2
+;			cmp.b	#SB_Crawl2StandR,d2		;is this a transition block?
+;			beq	GolSetClimbTransCFR		;ceiling to floor transition
+;			cmp.b	#SB_Climb,d2			;is this block a climbable
+;			beq	GolSetClimbTransCWR2
+;			cmp.b	#SB_ClimbRight,d2		;is this block a climbable
+;			beq	GolSetClimbTransCWR2
+;			cmp.b	#SB_CeilingClimb,d2		;stop.fall if non climbable
+;			bne	GolSetFallA
+;			move.b	UnderRIGHT,d2			;check for wall stop/transition 
+;			move.l	UnderRIGHT_c,a1
+;			bsr	GolClimbCeilTestLR
+;			bmi	GolSetClimbCeilStand		
+;			moveq	#GolClimbCeilingSpeed,d1	
+;			bra	MoveGolRight
+;
+;
+;GolClimbCeilTestLR	tst.b	0(a1)				;is it a contour
+;			bne.s	.y
+;			btst	#7,d2				;is it any other solid
+;			beq.s	.n
+;.y			tas	yes
+;			rts
+;.n			tas	no
+;			rts
+			

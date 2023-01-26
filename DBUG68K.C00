@@ -1,0 +1,136 @@
+#readram0
+ 00000000  003FFFFF
+ 00FF0000  00FFFFFF
+#writeram0
+ 00000000  003FFFFF
+ 00FF0000  00FFFFFF
+#update
+ FF 0003
+#video
+ 03 84 24
+#label level
+ 01 7F 7F
+#colour attributes
+ 17 1F 3E B0 4F 5E 0C 70 C0 87 8E 8E F0 90 4F 87 7C 0E 0A 28 2F 70
+#mono attributes
+ 07 0F 70 70 07 70 0F 70 01 07 0F 0F 70 0F 07 07 70 07 07 07 0F 70
+#default tabs
+ 68K 0F 17 28 30 00 00 00 00
+ 658 0F 17 28 30 00 00 00 00
+ Z80 0F 17 28 30 00 00 00 00
+ C   04 00 00 00 00 00 00 00
+#window
+ 01 00 00 00
+ 00 01 4C 0A 17 04
+ 00000000
+#window
+ 03 00 00 00
+ 00 1B 28 22 08 1C
+ 002FF420
+#window
+ 03 01 00 00
+ 4B 1B 62 22 55 1C
+ FFFF2A10
+#window
+ 03 02 00 00
+ 62 1B 83 22 6A 1C
+ 000042E6
+#window
+ 03 01 00 00
+ 28 1B 4B 22 30 1D
+ FFFF0106
+#window
+ 05 00 40 00
+ 62 0A 83 12 6C 0E
+ 000002FF
+#file
+C:\GARGOYLE\GG_CODE.68K
+#tabs
+ 0F 17 28 30 00 00 00 00
+
+#window
+ 06 00 00 00
+ 4C 08 83 0A 4E 09
+ 00000000
+#window
+ 82 00 00 00
+ 00 0A 4C 1B 18 0B
+ 00000200
+#window
+ 04 00 00 00
+ 4C 01 83 08 4E 04
+ 00000000
+#window
+ 05 00 40 00
+ 62 12 83 1B 6C 13
+ 0000009C
+#file
+C:\GARGOYLE\STARTUP.68K
+#tabs
+ 0F 17 28 30 00 00 00 00
+
+#window
+ 02 00 00 00
+ 4C 0A 62 1B 56 0F
+ 00000460
+#history
+ 00 0
+ 00 0
+ 00 0
+ 00 0
+ 00 0
+ 00 0
+ 00 0
+ 00 0
+ 01 $2fffff
+ 01 $2fffff
+ 01 $300000
+ 01 $2fffff
+ 01 $2fffff
+ 01 $2fffff
+ 01 $2fffff
+ 01 $2fffff
+ 02 k:\gargoyle\genesis\publish\gg_test8.pal
+ 02 k:\gargoyle\genesis\publish\gg_test7.pal
+ 02 k:\gargoyle\genesis\publish\gg_test6.pal
+ 02 k:\gargoyle\genesis\publish\gg_test5.pal
+ 02 k:\gargoyle\genesis\publish\gg_test4.pal
+ 02 k:\gargoyle\genesis\publish\gg_test3.pal
+ 02 k:\gargoyle\genesis\publish\gg_test2.pal
+ 02 k:\gargoyle\genesis\publish\gg_test1.pal
+ 03 $300000
+ 03 $300000
+ 03 $300000
+ 03 $300000
+ 03 $300000
+ 03 $300000
+ 03 $300000
+ 03 $300000
+ 06 3
+ 06 9
+ 06 38
+ 06 0
+ 0A handlehardwaredma
+ 0A plr_xpos
+ 0A 2ff000
+ 0A handlecheats
+ 0A golfalllogic
+ 0A clrmailboxes
+ 0A 200
+ 0A 1000
+ 0B $20
+ 0B $20
+ 0B $20
+ 0B $20
+ 0B 0
+ 0B 0
+ 0B 0
+ 0B 0
+ 0F limit
+ 0F nop
+ 0F nop
+ 0F bsr $ae74
+ 0F nop
+ 0F nop
+ 0F bsr $a7f0
+ 0F nop

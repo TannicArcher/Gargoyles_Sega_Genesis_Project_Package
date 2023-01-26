@@ -1,0 +1,141 @@
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ DecompressSWD                                                          บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ Decompress data in Elmer's SWD format.                                 บ
+; วฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤถ
+; บ Inputs      A0.L    Pointer to compressed data (word aligned)          บ
+; บ             A1.L    Pointer to destination buffer                      บ
+; บ                                                                        บ
+; บ Outputs     None                                                       บ
+; บ                                                                        บ
+; บ Preserved   None                                                       บ
+; บ                                                                        บ
+; บ Note        Altered by Mike Lamb to use multi-bit shifts for speed.    บ
+; บ                                                                        บ
+; บ             D6.W = No of bits required from read routine.              บ
+; บ             D7.W = No of bits left in upper D1.                        บ
+; บ             D3.l = Length of data decompressed (.b)                    บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+			MODULE
+
+DecompressSWD		MOVEQ	#0,D7
+			moveq	#0,d3
+
+			BRA.S	.GetCommand
+
+.ByteCommand		MOVEQ	#8,D6
+			BSR	.ReadBits
+			MOVE.B	D1,(A1)+
+			addq.l	#1,d3	
+
+.GetCommand		DBRA	D7,.Skip0
+
+			MOVE	(A0)+,D1		
+			SWAP	D1
+			MOVEQ	#$0F,D7
+
+.Skip0			CLR.W	D1
+			ROL.L	#1,D1
+			TST.W	D1
+			BEQ.S	.ByteCommand	
+
+.GetLength		MOVEQ	#2,D2
+
+			DBRA	D7,.Skip1
+
+			MOVE	(A0)+,D1		
+			SWAP	D1
+			MOVEQ	#$0F,D7	
+
+.Skip1			CLR.W	D1
+			ROL.L	#1,D1
+			TST.W	D1
+			BEQ.S	.GotLength
+
+			MOVEQ	#2,D6
+			BSR.S	.ReadBits
+			TST.W	D1
+			BNE.S	.GotLength	
+
+			MOVEQ	#5,D2
+			MOVEQ	#4,D6
+			BSR.S	.ReadBits
+			TST.W	D1
+			BNE.S	.GotLength	
+
+			MOVEQ	#20,D2
+			MOVEQ	#8,D6
+			BSR.S	.ReadBits
+			TST.W	D1
+			BEQ.S	.EndOfFile	
+
+.GotLength		ADD.W	D1,D2
+
+.GetOffset		MOVEQ	#2,D6
+			BSR.S	.ReadBits
+			TST.W	D1
+			BEQ.S	.Offset5
+			SUBQ.W	#1,D1
+			BEQ.S	.Offset7
+			SUBQ.W	#1,D1
+			BEQ.S	.Offset9
+			SUBQ.W	#1,D1
+
+.Offset10		MOVEQ	#10,D6
+			BSR.S	.ReadBits
+			ADD.W	#$02A1,D1
+			BRA.S	.Copy	
+
+.Offset9		MOVEQ	#9,D6
+			BSR.S	.ReadBits
+			ADD.W	#$00A1,D1
+			BRA.S	.Copy
+
+.Offset7		MOVEQ	#7,D6
+			BSR.S	.ReadBits
+			ADD.W	#$0021,D1
+			BRA.S	.Copy
+
+.Offset5		MOVEQ	#5,D6
+			BSR.S	.ReadBits
+			ADDQ.W	#$1,D1
+
+.Copy			MOVE.L	A1,A2
+			SUB.W	D1,A2
+
+			SUBQ.W	#1,D2
+.CopyLoop		MOVE.B	(A2)+,(A1)+
+			addq.l	#1,d3
+			DBRA	D2,.CopyLoop	
+
+			BRA	.GetCommand
+
+;
+; D6.W = No of bits required
+; D7.W = No of bits left in upper word of D1.L
+;
+
+.ReadBits		CLR.W	D1
+			CMP.W	D6,D7
+			BCC.S	.Skip3
+
+			TST	D7
+			BEQ.S	.Skip2
+
+			ROL.L	D7,D1
+			SUB	D7,D6
+
+.Skip2			SWAP	D1
+			MOVE	(A0)+,D1
+			SWAP	D1
+			MOVEQ	#$10,D7
+
+.Skip3			ROL.L	D6,D1
+			SUB	D6,D7
+
+.EndOfFile		RTS
+
+			MODEND
+

@@ -1,0 +1,26 @@
+	include	testani.68k
+
+	ani_palette	GV0304
+	ani_sprites	GV0304
+
+GV0304_anim	animation
+@1	ani_sprite	GV0304_0001
+	ani_sprite	GV0304_0002
+	ani_sprite	GV0304_0003
+	ani_sprite	GV0304_0004
+	ani_sprite	GV0304_0005
+	ani_sprite	GV0304_0006
+	ani_sprite	GV0304_0007
+	ani_sprite	GV0304_0008
+	ani_sprite	GV0304_0009
+	ani_sprite	GV0304_0010
+	ani_sprite	GV0304_0011
+	ani_sprite	GV0304_0012
+	ani_sprite	GV0304_0013
+	ani_sprite	GV0304_0014
+	ani_sprite	GV0304_0015
+	ani_sprite	GV0304_0016
+	ani_goto	@1
+	ani_end
+
+	ani_footer

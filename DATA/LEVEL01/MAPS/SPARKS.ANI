@@ -1,0 +1,19 @@
+;*
+;* Animation from room 'sparks'
+;*
+AMAP_SPARKS0_START:
+	ani_dma L1M0FNL0_DATA+$1400,$0280,$0300	; Frame  1 ( 1) of 12
+	ani_dma L1M0FNL0_DATA+$1700,$0280,$0300	; Frame  2 ( 2) of 12
+	ani_dma L1M0FNL0_DATA+$1a00,$0280,$0300	; Frame  3 ( 3) of 12
+	ani_dma L1M0FNL0_DATA+$1d00,$0280,$0300	; Frame  4 ( 4) of 12
+	ani_dma L1M0FNL0_DATA+$2000,$0280,$0300	; Frame  5 ( 5) of 12
+	ani_dma L1M0FNL0_DATA+$2300,$0280,$0300	; Frame  6 ( 6) of 12
+	ani_dma L1M0FNL0_DATA+$2600,$0280,$0300	; Frame  7 ( 7) of 12
+	ani_dma L1M0FNL0_DATA+$2900,$0280,$0300	; Frame  8 ( 8) of 12
+	ani_dma L1M0FNL0_DATA+$2c00,$0280,$0300	; Frame  9 ( 9) of 12
+	ani_dma L1M0FNL0_DATA+$2f00,$0280,$0300	; Frame 10 (10) of 12
+	ani_dma L1M0FNL0_DATA+$3200,$0280,$0300	; Frame 11 (11) of 12
+	ani_dma L1M0FNL0_DATA+$3500,$0280,$0300	; Frame 12 (12) of 12
+AMAP_SPARKS0_LEN equ *-AMAP_SPARKS0_START
+
+

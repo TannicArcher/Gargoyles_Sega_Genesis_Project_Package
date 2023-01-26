@@ -1,0 +1,15 @@
+	include	testani.68k
+
+	ani_palette	GG90701
+	ani_sprites	GG90701
+
+GG90701_anim	animation
+@1	ani_sprite	GG90701_0001
+	ani_sprite	GG90701_0002
+	ani_sprite	GG90701_0003
+	ani_sprite	GG90701_0004
+	ani_sprite	GG90701_0005
+	ani_goto	@1
+	ani_end
+
+	ani_footer

@@ -1,0 +1,172 @@
+chop SniperBot animations : 1 secs/frame : palette 4
+SNIPERBOT ANIMATION CONVERTION ...
+rem ** CHOP the animations **
+call spr gr90201 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gr90201.anm
+Used 7 sprites, with a total of 30 characters, in 1.0 seconds
+Used 5 sprites, with a total of 22 characters, in 0.0 seconds
+Used 4 sprites, with a total of 22 characters, in 0.0 seconds
+Used 4 sprites, with a total of 25 characters, in 0.0 seconds
+Used 6 sprites, with a total of 27 characters, in 0.4 seconds
+Used 7 sprites, with a total of 31 characters, in 1.0 seconds
+Used 7 sprites, with a total of 28 characters, in 0.7 seconds
+Used 5 sprites, with a total of 22 characters, in 0.0 seconds
+Used 6 sprites, with a total of 22 characters, in 0.1 seconds
+Used 4 sprites, with a total of 26 characters, in 0.0 seconds
+Used 4 sprites, with a total of 28 characters, in 0.0 seconds
+Used 6 sprites, with a total of 27 characters, in 0.6 seconds
+call spr gr90202a %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gr90202a.anm
+Used 8 sprites, with a total of 32 characters, in 1.0 seconds
+Used 11 sprites, with a total of 31 characters, in 1.0 seconds
+Used 10 sprites, with a total of 33 characters, in 1.0 seconds
+Used 12 sprites, with a total of 33 characters, in 1.0 seconds
+call spr gr90202b %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gr90202b.anm
+Used 7 sprites, with a total of 30 characters, in 1.0 seconds
+Used 6 sprites, with a total of 33 characters, in 1.0 seconds
+Used 6 sprites, with a total of 32 characters, in 0.8 seconds
+Used 6 sprites, with a total of 29 characters, in 0.6 seconds
+call spr gr90203a %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gr90203a.anm
+Used 7 sprites, with a total of 30 characters, in 1.0 seconds
+Used 9 sprites, with a total of 39 characters, in 1.0 seconds
+Used 5 sprites, with a total of 24 characters, in 0.1 seconds
+Used 6 sprites, with a total of 27 characters, in 0.6 seconds
+Used 5 sprites, with a total of 28 characters, in 0.5 seconds
+Used 6 sprites, with a total of 27 characters, in 1.0 seconds
+Used 6 sprites, with a total of 30 characters, in 0.9 seconds
+Used 6 sprites, with a total of 30 characters, in 0.6 seconds
+call spr gr90203b %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gr90203b.anm
+Used 10 sprites, with a total of 34 characters, in 1.0 seconds
+Used 11 sprites, with a total of 44 characters, in 1.0 seconds
+Used 5 sprites, with a total of 28 characters, in 0.1 seconds
+Used 5 sprites, with a total of 27 characters, in 0.1 seconds
+Used 6 sprites, with a total of 27 characters, in 0.5 seconds
+Used 6 sprites, with a total of 28 characters, in 0.7 seconds
+Used 8 sprites, with a total of 31 characters, in 1.0 seconds
+Used 8 sprites, with a total of 31 characters, in 1.0 seconds
+call spr gr90203c %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gr90203c.anm
+Used 10 sprites, with a total of 34 characters, in 1.0 seconds
+Used 11 sprites, with a total of 43 characters, in 1.0 seconds
+Used 6 sprites, with a total of 30 characters, in 0.3 seconds
+Used 6 sprites, with a total of 28 characters, in 0.3 seconds
+Used 7 sprites, with a total of 28 characters, in 0.7 seconds
+Used 10 sprites, with a total of 31 characters, in 1.0 seconds
+Used 9 sprites, with a total of 31 characters, in 0.7 seconds
+Used 9 sprites, with a total of 32 characters, in 1.0 seconds
+call spr gr90203d %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gr90203d.anm
+Used 6 sprites, with a total of 33 characters, in 1.0 seconds
+Used 7 sprites, with a total of 31 characters, in 0.8 seconds
+Used 7 sprites, with a total of 33 characters, in 1.0 seconds
+Used 6 sprites, with a total of 32 characters, in 0.8 seconds
+Used 6 sprites, with a total of 30 characters, in 0.8 seconds
+Used 6 sprites, with a total of 30 characters, in 1.0 seconds
+Used 6 sprites, with a total of 33 characters, in 1.0 seconds
+call spr gr90203e %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gr90203e.anm
+Used 6 sprites, with a total of 29 characters, in 0.6 seconds
+Used 6 sprites, with a total of 28 characters, in 0.4 seconds
+Used 7 sprites, with a total of 30 characters, in 0.3 seconds
+Used 7 sprites, with a total of 30 characters, in 0.8 seconds
+Used 7 sprites, with a total of 32 characters, in 1.0 seconds
+Used 6 sprites, with a total of 32 characters, in 1.0 seconds
+Used 6 sprites, with a total of 32 characters, in 1.0 seconds
+Used 6 sprites, with a total of 32 characters, in 0.9 seconds
+call spr gr90204 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gr90204.anm
+Used 7 sprites, with a total of 30 characters, in 1.0 seconds
+call spr gr90205 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gr90205.anm
+Used 7 sprites, with a total of 28 characters, in 0.7 seconds
+Used 5 sprites, with a total of 19 characters, in 0.0 seconds
+Used 5 sprites, with a total of 23 characters, in 0.0 seconds
+Used 5 sprites, with a total of 23 characters, in 0.1 seconds
+Used 5 sprites, with a total of 23 characters, in 0.1 seconds
+Used 4 sprites, with a total of 22 characters, in 0.0 seconds
+Used 6 sprites, with a total of 27 characters, in 0.1 seconds
+call spr gr90206 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gr90206.anm
+Used 7 sprites, with a total of 31 characters, in 1.0 seconds
+Used 5 sprites, with a total of 29 characters, in 0.1 seconds
+Used 5 sprites, with a total of 28 characters, in 0.5 seconds
+Used 6 sprites, with a total of 27 characters, in 0.5 seconds
+Used 5 sprites, with a total of 26 characters, in 0.1 seconds
+call spr gr90207 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gr90207.anm
+Used 8 sprites, with a total of 29 characters, in 1.0 seconds
+Used 6 sprites, with a total of 26 characters, in 0.2 seconds
+Used 7 sprites, with a total of 22 characters, in 0.6 seconds
+Used 5 sprites, with a total of 25 characters, in 0.1 seconds
+Used 7 sprites, with a total of 27 characters, in 0.3 seconds
+Used 7 sprites, with a total of 33 characters, in 1.0 seconds
+Used 6 sprites, with a total of 34 characters, in 1.0 seconds
+Used 6 sprites, with a total of 29 characters, in 0.2 seconds
+Used 8 sprites, with a total of 28 characters, in 1.0 seconds
+call spr gr90208 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gr90208.anm
+Used 1 sprites, with a total of 6 characters, in 0.0 seconds
+Used 1 sprites, with a total of 6 characters, in 0.0 seconds
+Used 1 sprites, with a total of 6 characters, in 0.0 seconds
+Used 2 sprites, with a total of 5 characters, in 0.0 seconds
+Used 2 sprites, with a total of 5 characters, in 0.0 seconds
+Used 1 sprites, with a total of 6 characters, in 0.0 seconds
+Used 1 sprites, with a total of 6 characters, in 0.0 seconds
+Used 1 sprites, with a total of 6 characters, in 0.0 seconds
+Used 1 sprites, with a total of 6 characters, in 0.0 seconds
+Used 1 sprites, with a total of 6 characters, in 0.0 seconds
+call spr gr90209 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gr90209.anm
+Used 6 sprites, with a total of 27 characters, in 0.4 seconds
+Used 8 sprites, with a total of 28 characters, in 1.0 seconds
+Used 7 sprites, with a total of 28 characters, in 0.7 seconds
+Used 4 sprites, with a total of 27 characters, in 0.0 seconds
+Used 4 sprites, with a total of 20 characters, in 0.0 seconds
+Used 6 sprites, with a total of 22 characters, in 0.1 seconds
+Used 3 sprites, with a total of 17 characters, in 0.0 seconds
+rem ** COLLECT the animations **
+call col gr90201
+collect gr90201.col
+call col gr90202a
+collect gr90202a.col
+call col gr90202b
+collect gr90202b.col
+call col gr90203a
+collect gr90203a.col
+call col gr90203b
+collect gr90203b.col
+call col gr90203c
+collect gr90203c.col
+call col gr90203d
+collect gr90203d.col
+call col gr90203e
+collect gr90203e.col
+call col gr90204
+collect gr90204.col
+call col gr90205
+collect gr90205.col
+call col gr90206
+collect gr90206.col
+call col gr90207
+collect gr90207.col
+call col gr90208
+collect gr90208.col
+call col gr90209
+collect gr90209.col
+call modany2
+
+.ANY FILE FORMATTER V1.00CPS
+
+Sequence # (2 letter prefix+seq # (gg01))? gr902
+Working ... gr90201.any --> gr90201.ant
+Working ... gr90204.any --> gr90204.ant
+Working ... gr90205.any --> gr90205.ant
+Working ... gr90206.any --> gr90206.ant
+Working ... gr90207.any --> gr90207.ant
+Working ... gr90208.any --> gr90208.ant
+Working ... gr90209.any --> gr90209.ant
+
+OK! All done.

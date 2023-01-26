@@ -1,0 +1,15 @@
+;*
+;* Animation from room 'flame1'
+;*
+AMAP_FLAME10_START:
+	ani_dma TITLPAGE_DATA+$0000,$0000,$0480	; Frame  1 ( 1) of  8
+	ani_dma TITLPAGE_DATA+$0480,$0000,$0480	; Frame  2 ( 2) of  8
+	ani_dma TITLPAGE_DATA+$0900,$0000,$0480	; Frame  3 ( 3) of  8
+	ani_dma TITLPAGE_DATA+$0d80,$0000,$0480	; Frame  4 ( 4) of  8
+	ani_dma TITLPAGE_DATA+$1200,$0000,$0480	; Frame  5 ( 5) of  8
+	ani_dma TITLPAGE_DATA+$1680,$0000,$0480	; Frame  6 ( 6) of  8
+	ani_dma TITLPAGE_DATA+$1b00,$0000,$0480	; Frame  7 ( 7) of  8
+	ani_dma TITLPAGE_DATA+$1f80,$0000,$0480	; Frame  8 ( 8) of  8
+AMAP_FLAME10_LEN equ *-AMAP_FLAME10_START
+
+

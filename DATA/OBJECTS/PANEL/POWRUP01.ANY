@@ -1,0 +1,17 @@
+	include	testani.68k
+
+	ani_palette	POWRUP01
+	ani_sprites	POWRUP01
+
+POWRUP01_anim	animation
+@1	ani_sprite	POWRUP01_0001
+	ani_sprite	POWRUP01_0002
+	ani_sprite	POWRUP01_0003
+	ani_sprite	POWRUP01_0004
+	ani_sprite	POWRUP01_0005
+	ani_sprite	POWRUP01_0006
+	ani_sprite	POWRUP01_0007
+	ani_goto	@1
+	ani_end
+
+	ani_footer

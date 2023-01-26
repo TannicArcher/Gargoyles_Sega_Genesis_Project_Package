@@ -1,0 +1,20 @@
+	include	testani.68k
+
+	ani_palette	GE8701E
+	ani_sprites	GE8701E
+
+GE8701E_anim	animation
+@1	ani_sprite	GE8701E_0001
+	ani_sprite	GE8701E_0002
+	ani_sprite	GE8701E_0003
+	ani_sprite	GE8701E_0004
+	ani_sprite	GE8701E_0005
+	ani_sprite	GE8701E_0006
+	ani_sprite	GE8701E_0007
+	ani_sprite	GE8701E_0008
+	ani_sprite	GE8701E_0009
+	ani_sprite	GE8701E_0010
+	ani_goto	@1
+	ani_end
+
+	ani_footer

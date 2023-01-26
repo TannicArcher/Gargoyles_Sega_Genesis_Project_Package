@@ -1,0 +1,7 @@
+if	1=0
+		st.b	record_flag
+		clr.w	record_dex
+		move.w	#subway_lev,cheat_levnum
+		clr.b	player_num		;0=ackroyd : 1=shannon
+		endif
+

@@ -1,0 +1,24 @@
+	include	testani.68k
+
+	ani_palette	GE1903B
+	ani_sprites	GE1903B
+
+GE1903B_anim	animation
+@1	ani_sprite	GE1903B_0001
+	ani_sprite	GE1903B_0002
+	ani_sprite	GE1903B_0003
+	ani_sprite	GE1903B_0004
+	ani_sprite	GE1903B_0005
+	ani_sprite	GE1903B_0006
+	ani_sprite	GE1903B_0007
+	ani_sprite	GE1903B_0008
+	ani_sprite	GE1903B_0009
+	ani_sprite	GE1903B_0010
+	ani_sprite	GE1903B_0011
+	ani_sprite	GE1903B_0012
+	ani_sprite	GE1903B_0013
+	ani_sprite	GE1903B_0014
+	ani_goto	@1
+	ani_end
+
+	ani_footer

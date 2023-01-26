@@ -1,0 +1,18 @@
+	include	testani.68k
+
+	ani_palette	ICONS
+	ani_sprites	ICONS
+
+ICONS_anim	animation
+@1	ani_sprite	ICONS_0001
+	ani_sprite	ICONS_0002
+	ani_sprite	ICONS_0003
+	ani_sprite	ICONS_0004
+	ani_sprite	ICONS_0005
+	ani_sprite	ICONS_0006
+	ani_sprite	ICONS_0007
+	ani_sprite	ICONS_0008
+	ani_goto	@1
+	ani_end
+
+	ani_footer

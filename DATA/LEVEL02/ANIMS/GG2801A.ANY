@@ -1,0 +1,21 @@
+	include	testani.68k
+
+	ani_palette	GG2801A
+	ani_sprites	GG2801A
+
+GG2801A_anim	animation
+@1	ani_sprite	GG2801A_0001
+	ani_sprite	GG2801A_0002
+	ani_sprite	GG2801A_0003
+	ani_sprite	GG2801A_0004
+	ani_sprite	GG2801A_0005
+	ani_sprite	GG2801A_0006
+	ani_sprite	GG2801A_0007
+	ani_sprite	GG2801A_0008
+	ani_sprite	GG2801A_0009
+	ani_sprite	GG2801A_0010
+	ani_sprite	GG2801A_0011
+	ani_goto	@1
+	ani_end
+
+	ani_footer

@@ -1,0 +1,35 @@
+	include	testani.68k
+
+	ani_palette	GG9201
+	ani_sprites	GG9201
+
+GG9201_anim	animation
+@1	ani_sprite	GG9201_0001
+	ani_sprite	GG9201_0002
+	ani_sprite	GG9201_0003
+	ani_sprite	GG9201_0004
+	ani_sprite	GG9201_0005
+	ani_sprite	GG9201_0006
+	ani_sprite	GG9201_0007
+	ani_sprite	GG9201_0008
+	ani_sprite	GG9201_0009
+	ani_sprite	GG9201_0010
+	ani_sprite	GG9201_0011
+	ani_sprite	GG9201_0012
+	ani_sprite	GG9201_0013
+	ani_sprite	GG9201_0014
+	ani_sprite	GG9201_0015
+	ani_sprite	GG9201_0016
+	ani_sprite	GG9201_0017
+	ani_sprite	GG9201_0018
+	ani_sprite	GG9201_0019
+	ani_sprite	GG9201_0020
+	ani_sprite	GG9201_0021
+	ani_sprite	GG9201_0022
+	ani_sprite	GG9201_0023
+	ani_sprite	GG9201_0024
+	ani_sprite	GG9201_0025
+	ani_goto	@1
+	ani_end
+
+	ani_footer

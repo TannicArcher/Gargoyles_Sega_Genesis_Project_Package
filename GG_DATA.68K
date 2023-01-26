@@ -1,0 +1,314 @@
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ Gargoyles - SEGA Genesis. DATA					   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ Started 	: 6/29/94						   บ
+; บ Author 	: Chris Shrigley					   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ Life is but a glimpse of the bigger picture.			   บ
+; บ 									   บ
+; บ Portions of this Game Engine are (c) 1992,'93,'94 Chris Shrigley	   บ
+; บ Other portions are (c) 1994,'95 Disney Interactive Entertainment	   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+			include	globals.inc
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ Sound Data SECTION							   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+		SECTION	GGD_SOUND
+
+			include	music\gems\ntsc\gems.a
+;			include	music\gems\pal\gems.a
+
+
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ Shell Data SECTION							   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+		SECTION	GGD_SHELL
+
+SegaLogoCHR		incbin	data\shell\segalogo.chr
+DisneyLogoCHR		incbin	data\shell\dislogo.cpk
+DisneyLogoMAP		incbin	data\shell\dislogo.mpk
+DisneyLogoPAL		incbin	data\shell\dislogo.pal
+Font8x8CHR		incbin	data\shell\font8x8.cpk
+
+TitlePageChr		incbin	data\shell\titlpage.cpk
+TitlePageBlk		incbin	data\shell\titlpage.blk
+TitlePageMapA		incbin	data\shell\titpagea.mpk
+TitlePageMapB		incbin	data\shell\titpageb.map
+TITLPAGE_DATA		incbin	data\shell\titlpage.adt
+
+IntroChr		incbin	data\shell\Intro.cpk
+IntroBlk		incbin	data\shell\Intro.blk
+IntroMapA		incbin	data\shell\introa.mpk
+IntroMapB		incbin	data\shell\introb.map
+
+BeginL1Chr		incbin	data\shell\l1begin.cpk
+BeginL1Blk		incbin	data\shell\l1begin.blk
+BeginL1MapA		incbin	data\shell\l1begina.mpk
+BeginL1MapB		incbin	data\shell\l1beginb.map
+
+BeginL2Chr		incbin	data\shell\l2begin.cpk
+BeginL2Blk		incbin	data\shell\l2begin.blk
+BeginL2MapA		incbin	data\shell\l2begina.mpk
+BeginL2MapB		incbin	data\shell\l2beginb.map
+EndL2Chr		incbin	data\shell\l2end.cpk
+EndL2Blk		incbin	data\shell\l2end.blk
+EndL2MapA		incbin	data\shell\l2enda.mpk
+EndL2MapB		incbin	data\shell\l2endb.map
+
+BeginL3Chr		incbin	data\shell\l3begin.cpk
+BeginL3Blk		incbin	data\shell\l3begin.blk
+BeginL3MapA		incbin	data\shell\l3begina.mpk
+BeginL3MapB		incbin	data\shell\l3beginb.map
+
+BeginL5Chr		incbin	data\shell\l5begin.cpk
+BeginL5Blk		incbin	data\shell\l5begin.blk
+BeginL5MapA		incbin	data\shell\l5begina.mpk
+BeginL5MapB		incbin	data\shell\l5beginb.map
+
+BeginL7Chr		incbin	data\shell\l7begin.cpk
+BeginL7Blk		incbin	data\shell\l7begin.blk
+BeginL7MapA		incbin	data\shell\l7begina.mpk
+BeginL7MapB		incbin	data\shell\l7beginb.map
+MiddleL7Chr		incbin	data\shell\l7Middle.cpk
+MiddleL7Blk		incbin	data\shell\l7Middle.blk
+MiddleL7MapA		incbin	data\shell\l7Mida.mpk
+MiddleL7MapB		incbin	data\shell\l7Midb.map
+EndL7Chr		incbin	data\shell\l7end.cpk
+EndL7Blk		incbin	data\shell\l7end.blk
+EndL7MapA		incbin	data\shell\l7enda.mpk
+EndL7MapB		incbin	data\shell\l7endb.map
+
+YouLoseChr		incbin	data\shell\youlose.cpk
+YouLoseBlk		incbin	data\shell\youlose.blk
+YouLoseMapA		incbin	data\shell\youlosea.mpk
+YouLoseMapB		incbin	data\shell\youloseb.map
+
+ContinueChr		incbin	data\shell\continue.cpk
+ContinueBlk		incbin	data\shell\continue.blk
+ContinueMapA		incbin	data\shell\continua.mpk
+ContinueMapB		incbin	data\shell\continub.map
+
+OptionsChr		incbin	data\shell\options.cpk
+OptionsBlk		incbin	data\shell\options.blk
+OptionsMapA		incbin	data\shell\optionsa.mpk
+OptionsMapB		incbin	data\shell\optionsb.map
+
+
+			even
+ctt1a			dc.b	-1,"PROGRAMMER",0
+ctt1b			dc.b	-2,"CHRIS SHRIGLEY",0
+
+ctt2a			dc.b	-1,"SENIOR PRODUCER",0
+ctt2b			dc.b	-2,"PATRICK GILMORE",0
+
+ctt3a			dc.b	-1,"ASSISTANT PRODUCER",0
+ctt3b			dc.b	-2,"DAVID BERGANTINO",0
+
+ctt4a			dc.b	-1,"LEAD ARTIST",0
+ctt4b			dc.b	-2,"THOM ANG",0
+
+ctt5a			dc.b	-1,"LEAD LEVEL DESIGN",0
+ctt5b			dc.b	-2,"JOEL GOODSELL",0
+
+ctt6a			dc.b	-1,"BACKGROUNDS",0
+ctt6b			dc.b	-2,"KATHARINE MURTA ADAMS",0
+ctt6c			dc.b	-2,"TOM BARLOW",0
+ctt6d			dc.b	-2,"TOM BREEDEN",0
+ctt6e			dc.b	-2,"JODY C. MCMURRIAN",0
+ctt6f			dc.b	-2,"RODDY NAVARRO",0
+ctt6g			dc.b	-2,"MARK LORENZEN",0
+
+ctt7a			dc.b	-1,"ADDITIONAL ART",0
+ctt7b			dc.b	-1,"AND ANIMATION",0
+ctt7c			dc.b	-2,"SHELLI L. DROE",0
+ctt7d			dc.b	-2,"KURT DUMAS",0
+ctt7e			dc.b	-2,"RAYMOND FUNG",0
+ctt7f			dc.b	-2,"TAMARA HOLCOMB",0
+ctt7g			dc.b	-2,"BRIAN HORTON",0
+ctt7h			dc.b	-2,"HUGH JAMIESON",0
+ctt7i			dc.b	-2,"RUBY LEE",0
+ctt7j			dc.b	-2,"PAIGE POOLER",0
+ctt7k			dc.b	-2,"NANCY O. RAMIREZ",0
+ctt7l			dc.b	-2,"MATTHEW SMITH",0
+ctt7m			dc.b	-2,"OLIVER WADE",0
+ctt7n			dc.b	-2,"BRENT WHITTINGTON",0
+
+ctt8a			dc.b	-1,"ART SUPPORT",0
+ctt8b			dc.b	-2,"ARDEN ISHIMARU",0
+ctt8c			dc.b	-2,"DAO LE",0
+ctt8d			dc.b	-2,"TOBY ESPIRITU",0
+
+ctt9a			dc.b	-1,"3-D ART AND",0
+ctt9b			dc.b	-1,"ANIMATION",0
+ctt9c			dc.b	-2,"SPENCER HALE",0
+ctt9d			dc.b	-2,"ED TRILLO",0
+ctt9e			dc.b	-2,"J.P. ASPERIN",0	
+
+ctt10a			dc.b	-1,"MUSIC COMPOSITION",0
+ctt10b			dc.b	-2,"MICHAEL GIACCHINO",0
+
+ctt11b			dc.b	-1,"AND SOUND DESIGN",0	
+ctt11c			dc.b	-2,"PATRICK COLLINS",0
+
+ctt12a			dc.b	-1,"PROJECT MANAGER",0
+ctt12b			dc.b	-2,"BOB RADEMACHER",0
+
+ctt13a			dc.b	-1,"PRODUCTION",0
+ctt13b			dc.b	-1,"ADMINISTRATOR",0
+ctt13c			dc.b	-2,"JAMES MELLOTT",0
+
+ctt14a			dc.b	-1,"ASSET MANAGEMENT",0
+ctt14b			dc.b	-2,"JAYNE SHRIGLEY",0
+
+ctt15a			dc.b	-1,"CREATIVE CAPERS",0
+ctt15b			dc.b	-1,"ENTERTAINMENT",0
+
+ctt16a			dc.b	-1,"ANIMATION PRODUCER",0
+ctt16b			dc.b	-2,"G. SUE SHAKESPEARE",0
+
+ctt17c			dc.b	-1,"ANIMATION DIRECTORS",0
+ctt17d			dc.b	-2,"TERRY SHAKESPEARE",0
+ctt17e			dc.b	-2,"DAVID MOLINA",0
+
+ctt18a			dc.b	-1,"DIRECTING ANIMATOR",0
+ctt18b			dc.b	-2,"GREG TIERNAN",0
+
+ctt19a			dc.b	-1,"CHARACTER POSES",0
+ctt19b			dc.b	-2,"ADAM VAN WYK",0
+
+ctt20a			dc.b	-1,"PRODUCTION MANAGER",0
+ctt20b			dc.b	-2,"DARCI ERNST",0
+
+ctt21a			dc.b	-1,"PRODUCTION ACCOUNTANT",0
+ctt21b			dc.b	-2,"PATRICE MONIS",0
+
+ctt22a			dc.b	-1,"ANIMATION",0	
+ctt22b			dc.b	-2,"CONNOR FLYNN",0
+ctt22c			dc.b	-2,"RON M.  FRIEDMAN",0
+ctt22d			dc.b	-2,"MICHAEL KIELY",0
+ctt22e			dc.b	-2,"DERMOT O'CONNOR",0
+ctt22f			dc.b	-2,"ADAM VAN WYK",0
+ctt22g			dc.b	-2,"RON ZORMAN",0
+
+ctt23a			dc.b	-1,"CLEAN-UP ARTISTS",0
+ctt23b			dc.b	-2,"ADAM BURKE",0
+ctt23c			dc.b	-2,"RICHARD DRAPER",0
+ctt23d			dc.b	-2,"AIDAN FLYNN",0
+ctt23e			dc.b	-2,"RON M. FRIEDMAN",0
+ctt23f			dc.b	-2,"TOM HIGGINS",0
+ctt23g			dc.b	-2,"SHANNON MURPHY",0
+ctt23h			dc.b	-2,"SANDRA RYAN",0
+ctt23i			dc.b	-2,"RICHARD SMITHEMAN",0
+ctt23j			dc.b	-2,"JANICE TOLENTINO",0
+ctt23k			dc.b	-2,"MONICA ZORMAN",0
+   
+ctt24a			dc.b	-1,"ANIMATION CHECKERS",0
+ctt24b			dc.b	-2,"PENELOPE SEVIER",0
+ctt24c			dc.b	-2,"CARLA WASHBURN",0
+
+ctt25a			dc.b	-1,"CAMERA MANAGER",0
+ctt25b			dc.b	-2,"ROBERT ROSE",0
+
+ctt26a			dc.b	-1,"TEST CAMERA",0
+ctt26b			dc.b	-2,"BRENDAN HARRIS",0
+ctt26c			dc.b	-2,"TONY QUINN",0
+ctt26d			dc.b	-2,"ARANTXA RODRIGUEZ",0
+
+ctt27a			dc.b	-1,"ASST. PROD. COORDINATOR",0
+ctt27b			dc.b	-2,"KATHY BURTON",0
+
+ctt28a			dc.b	-1,"PRODUCTION ASSISTANTS",0
+ctt28b			dc.b	-2,"JAMES ARNOLD",0
+ctt28c			dc.b	-2,"LEANNE HOWARD",0
+ctt28d			dc.b	-2,"BOBBI SWARTZENDRUBER",0
+
+ctt29a			dc.b	-1,"RENEGADE ANIMATION",0 
+	
+ctt30a			dc.b	-1,"DIRECTOR",0
+ctt30b			dc.b	-2,"DARRELL VAN CITTERS",0
+
+ctt31a			dc.b	-1,"PRODUCER",0
+ctt31b			dc.b	-2,"ASHLEY QUINN",0
+
+ctt32a			dc.b	-1,"LEAD ANIMATOR",0
+ctt32b			dc.b	-2,"DEAN WELLINS",0
+
+ctt33a			dc.b	-1,"ADDITIONAL ANIMATION",0
+ctt33b			dc.b	-2,"LEE MCCAULLA",0
+
+ctt34a			dc.b	-1,"ASSISTANT ANIMATION",0
+ctt34b			dc.b	-2,"HEIDI DAVEN",0
+ctt34c			dc.b	-2,"DIANA DIXON",0
+ctt34d			dc.b	-2,"SANDY HENKIN",0
+ctt34e			dc.b	-2,"KARENIA KAMINSKI",0
+ctt34f			dc.b	-2,"MARK COTE",0
+ctt34g			dc.b	-2,"CRISTI LYON",0
+ctt34h			dc.b	-2,"BILL MIMS",0
+ctt34i			dc.b	-2,"RANDY MYERS",0
+ctt34j			dc.b	-2,"JENNIFER STILLWELL",0
+ctt34k			dc.b	-2,"CALVIN SUGGS",0
+ctt34l			dc.b	-2,"VICKI WOODSIDE",0
+
+ctt35a			dc.b	-1,"PRODUCT EVALUATION",0
+ctt35b			dc.b	-1,"SUPERVISOR",0	
+ctt35c			dc.b	-2,"JEFF BLATTNER",0
+
+ctt36a			dc.b	-1,"LEAD TESTERS",0	
+ctt36b			dc.b	-2,"KEVIN OCAMPO",0
+ctt36c			dc.b	-2,"SHANE CLEAVELIN",0
+ctt36d			dc.b	-2,"AKI KIM",0
+
+ctt37a			dc.b	-1,"GAME TESTERS",0	
+ctt37b			dc.b	-2,"BRIAN ADRIANO",0
+ctt37c			dc.b	-2,"ROGER BRAY",0
+ctt37d			dc.b	-2,"JOHN CASTRO",0
+ctt37e			dc.b	-2,"DARYL DAVID",0
+ctt37f			dc.b	-2,"JERRY GILLETT",0
+ctt37g			dc.b	-2,"MATTHEW MONTGOMERY",0
+ctt37h			dc.b	-2,"WILFREDO PANGANIBAN",0
+ctt37i			dc.b	-2,"MARCUS PREGENT",0
+ctt37j			dc.b	-2,"LUIGI PRIORE",0
+
+     			even    
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ Misc. Data SECTION							   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+		SECTION	GGD_MISC
+
+CAnimDL1		incbin	data\shell\font8x8.chr
+			even			
+Demo1			incbin	demo1.bin
+Demo2			incbin	demo2.bin
+Demo3			incbin	demo3.bin
+Demo4			incbin	demo4.bin
+
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ Level Data SECTION							   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+LevelData		include	levdata.68k
+			
+			
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ Sprite/Animation Data SECTION					   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+AnimData		include	sprtdata.68k	
+
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ The End SECTION							   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+		SECTION	GGD_THEEND
+
+The_End			dc.b	"the end",-1
+BinLength		equ	The_End+8

@@ -1,0 +1,349 @@
+			
+PLASMA_AI		AI_LIST &
+			AI_PBGroundZero
+			AI_END_LIST
+
+PLASMA_AI2		AI_LIST &
+			AI_PBQuikStrike,&
+			AI_PBBigStrike,&
+			AI_PBBackoff,&
+			AI_PBWalkTo,&
+			AI_PBThrowBall,&
+			AI_PBPatrol
+			AI_END_LIST
+
+AI_PBPatrol	AI_CB &				;Condition bits macro.
+ 	  	NO,&				;Player must NOT be within X Proximity distance.
+ 	  	NO,&				;Proximity test check LEFT/RIGHT.
+ 	  	YES,&				;Player must NOT be within Y Proximity distance.
+		NO,&				;Proximity test check ABOVE/BELOW.
+		NO,&				;Player must be to the LEFT of the enemy.
+		NO,&				;Player must be to the RIGHT of the enemy.
+		NO,&				;Player must be FACING the enemy.
+		NO,&				;Player must have BACK towards enemy.
+		NO,&				;Player must be on the GROUND.
+		NO,&				;Player must be in the AIR.
+		NO,&				;Player must be on the CEILING.
+		NO,&				;Player must be on the WALL.
+		NO,&				;Player must be IDLING.
+		NO,&				;Player must be BEING HIT.
+		NO,&				;Player must be DIEING.
+		NO,&				;Player must be JUMPING.
+		NO,&				;Player must be FALLING.
+		NO,&				;Player must be ATTACKING.
+		NO,&				;Player must be GRABBING.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO				;Unused.	
+		AI_DATA	&			;AI Data macro.
+		0,&				;Proximity to Player in X.
+		$120,&				;Proximity to Player in Y.
+		CHANCE_ALWAYS,&			;Chance that called routine will NOT be called.
+		0,&				;Enemy data #1.
+		0,&				;Enemy data #1.
+		0,&				;Enemy data #1.
+		0,&				;Future expansion.
+		PlasmaSetPatrol			;This routine is called if all conditions are met.	
+
+AI_PBGroundZero	AI_CB &				;Condition bits macro.
+ 	  	NO,&				;Player must NOT be within X Proximity distance.
+ 	  	YES,&				;Proximity test check LEFT/RIGHT.
+ 	  	NO,&				;Player must NOT be within Y Proximity distance.
+		YES,&				;Proximity test check ABOVE/BELOW.
+		NO,&				;Player must be to the LEFT of the enemy.
+		NO,&				;Player must be to the RIGHT of the enemy.
+		NO,&				;Player must be FACING the enemy.
+		NO,&				;Player must have BACK towards enemy.
+		NO,&				;Player must be on the GROUND.
+		NO,&				;Player must be in the AIR.
+		NO,&				;Player must be on the CEILING.
+		NO,&				;Player must be on the WALL.
+		NO,&				;Player must be IDLING.
+		NO,&				;Player must be BEING HIT.
+		NO,&				;Player must be DIEING.
+		NO,&				;Player must be JUMPING.
+		NO,&				;Player must be FALLING.
+		NO,&				;Player must be ATTACKING.
+		NO,&				;Player must be GRABBING.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO				;Unused.	
+		AI_DATA	&			;AI Data macro.
+		$100,&				;Proximity to Player in X.
+		$40,&				;Proximity to Player in Y.
+		CHANCE_ALWAYS,&			;Chance that called routine will NOT be called.
+		0,&				;Enemy data #1.
+		0,&				;Enemy data #1.
+		0,&				;Enemy data #1.
+		0,&				;Future expansion.
+		PlasmaSetGroundZero		;This routine is called if all conditions are met.	
+
+AI_PBWalkTo	AI_CB &				;Condition bits macro.
+ 	  	NO,&				;Player must NOT be within X Proximity distance.
+ 	  	NO,&				;Proximity test check LEFT/RIGHT.
+ 	  	NO,&				;Player must NOT be within Y Proximity distance.
+		YES,&				;Proximity test check ABOVE/BELOW.
+		NO,&				;Player must be to the LEFT of the enemy.
+		NO,&				;Player must be to the RIGHT of the enemy.
+		NO,&				;Player must be FACING the enemy.
+		NO,&				;Player must have BACK towards enemy.
+		NO,&				;Player must be on the GROUND.
+		NO,&				;Player must be in the AIR.
+		NO,&				;Player must be on the CEILING.
+		NO,&				;Player must be on the WALL.
+		NO,&				;Player must be IDLING.
+		NO,&				;Player must be BEING HIT.
+		NO,&				;Player must be DIEING.
+		NO,&				;Player must be JUMPING.
+		NO,&				;Player must be FALLING.
+		NO,&				;Player must be ATTACKING.
+		NO,&				;Player must be GRABBING.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO				;Unused.	
+		AI_DATA	&			;AI Data macro.
+		0,&				;Proximity to Player in X.
+		$50,&				;Proximity to Player in Y.
+		CHANCE_ALWAYS,&			;Chance that called routine will NOT be called.
+		0,&				;Enemy data #1.
+		0,&				;Enemy data #1.
+		0,&				;Enemy data #1.
+		0,&				;Future expansion.
+		PlasmaSetWalkTo			;This routine is called if all conditions are met.	
+		
+AI_PBInterrupt	AI_CB &				;Condition bits macro.
+ 	  	NO,&				;Player must NOT be within X Proximity distance.
+ 	  	YES,&				;Proximity test check RIGHT/LEFT.
+ 	  	NO,&				;Player must NOT be within Y Proximity distance.
+		YES,&				;Proximity test check ABOVE/BELOW.
+		NO,&				;Player must be to the LEFT of the enemy.
+		NO,&				;Player must be to the RIGHT of the enemy.
+		NO,&				;Player must be FACING the enemy.
+		NO,&				;Player must have BACK towards enemy.
+		NO,&				;Player must be on the GROUND.
+		NO,&				;Player must be in the AIR.
+		NO,&				;Player must be on the CEILING.
+		NO,&				;Player must be on the WALL.
+		NO,&				;Player must be IDLING.
+		NO,&				;Player must be BEING HIT.
+		NO,&				;Player must be DIEING.
+		NO,&				;Player must be JUMPING.
+		NO,&				;Player must be FALLING.
+		NO,&				;Player must be ATTACKING.
+		NO,&				;Player must be GRABBING.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO				;Unused.	
+		AI_DATA	&			;AI Data macro.
+		$40,&				;Proximity to Player in X.
+		$10,&				;Proximity to Player in Y.
+		CHANCE_ALWAYS,&			;Chance that called routine will NOT be called.
+		0,&				;Enemy data #1.
+		0,&				;Enemy data #1.
+		0,&				;Enemy data #1.
+		0,&				;Future expansion.
+		PlasmaSetQuickStrike		;This routine is called if all conditions are met.	
+
+AI_PBQuikStrike	AI_CB &				;Condition bits macro.
+ 	  	NO,&				;Player must NOT be within X Proximity distance.
+ 	  	YES,&				;Proximity test check LEFT/RIGHT.
+ 	  	NO,&				;Player must NOT be within Y Proximity distance.
+		NO,&				;Proximity test check ABOVE/BELOW.
+		NO,&				;Player must be to the LEFT of the enemy.
+		NO,&				;Player must be to the RIGHT of the enemy.
+		NO,&				;Player must be FACING the enemy.
+		NO,&				;Player must have BACK towards enemy.
+		NO,&				;Player must be on the GROUND.
+		NO,&				;Player must be in the AIR.
+		NO,&				;Player must be on the CEILING.
+		NO,&				;Player must be on the WALL.
+		NO,&				;Player must be IDLING.
+		NO,&				;Player must be BEING HIT.
+		NO,&				;Player must be DIEING.
+		NO,&				;Player must be JUMPING.
+		NO,&				;Player must be FALLING.
+		NO,&				;Player must be ATTACKING.
+		NO,&				;Player must be GRABBING.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO				;Unused.	
+		AI_DATA	&			;AI Data macro.
+		$48,&				;Proximity to Player in X.
+		0,&				;Proximity to Player in Y.
+		CHANCE_1in8,&			;Chance that called routine will NOT be called.
+		0,&				;Enemy data #1.
+		0,&				;Enemy data #1.
+		0,&				;Enemy data #1.
+		0,&				;Future expansion.
+		PlasmaSetQuickStrike		;This routine is called if all conditions are met.	
+
+AI_PBBigStrike	AI_CB &				;Condition bits macro.
+ 	  	NO,&				;Player must NOT be within X Proximity distance.
+ 	  	YES,&				;Proximity test check LEFT/RIGHT.
+ 	  	NO,&				;Player must NOT be within Y Proximity distance.
+		NO,&				;Proximity test check ABOVE/BELOW.
+		NO,&				;Player must be to the LEFT of the enemy.
+		NO,&				;Player must be to the RIGHT of the enemy.
+		NO,&				;Player must be FACING the enemy.
+		NO,&				;Player must have BACK towards enemy.
+		NO,&				;Player must be on the GROUND.
+		NO,&				;Player must be in the AIR.
+		NO,&				;Player must be on the CEILING.
+		NO,&				;Player must be on the WALL.
+		NO,&				;Player must be IDLING.
+		NO,&				;Player must be BEING HIT.
+		NO,&				;Player must be DIEING.
+		NO,&				;Player must be JUMPING.
+		NO,&				;Player must be FALLING.
+		NO,&				;Player must be ATTACKING.
+		NO,&				;Player must be GRABBING.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO				;Unused.	
+		AI_DATA	&			;AI Data macro.
+		$80,&				;Proximity to Player in X.
+		0,&				;Proximity to Player in Y.
+		CHANCE_1in16,&			;Chance that called routine will NOT be called.
+		0,&				;Enemy data #1.
+		0,&				;Enemy data #1.
+		0,&				;Enemy data #1.
+		0,&				;Future expansion.
+		PlasmaSetBigStrike		;This routine is called if all conditions are met.	
+
+AI_PBBackoff	AI_CB &				;Condition bits macro.
+ 	  	NO,&				;Player must NOT be within X Proximity distance.
+ 	  	YES,&				;Proximity test check LEFT/RIGHT.
+ 	  	NO,&				;Player must NOT be within Y Proximity distance.
+		YES,&				;Proximity test check ABOVE/BELOW.
+		NO,&				;Player must be to the LEFT of the enemy.
+		NO,&				;Player must be to the RIGHT of the enemy.
+		NO,&				;Player must be FACING the enemy.
+		NO,&				;Player must have BACK towards enemy.
+		NO,&				;Player must be on the GROUND.
+		NO,&				;Player must be in the AIR.
+		NO,&				;Player must be on the CEILING.
+		NO,&				;Player must be on the WALL.
+		NO,&				;Player must be IDLING.
+		NO,&				;Player must be BEING HIT.
+		NO,&				;Player must be DIEING.
+		NO,&				;Player must be JUMPING.
+		NO,&				;Player must be FALLING.
+		NO,&				;Player must be ATTACKING.
+		NO,&				;Player must be GRABBING.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO				;Unused.	
+		AI_DATA	&			;AI Data macro.
+		$30,&				;Proximity to Player in X.
+		$50,&				;Proximity to Player in Y.
+		CHANCE_1in2,&			;Chance that called routine will NOT be called.
+		0,&				;Enemy data #1.
+		0,&				;Enemy data #1.
+		0,&				;Enemy data #1.
+		0,&				;Future expansion.
+		PlasmaSetBackoff		;This routine is called if all conditions are met.	
+
+AI_PBThrowBall	AI_CB &				;Condition bits macro.
+ 	  	YES,&				;Player must NOT be within X Proximity distance.
+ 	  	NO,&				;Proximity test check LEFT/RIGHT.
+ 	  	NO,&				;Player must NOT be within Y Proximity distance.
+		NO,&				;Proximity test check ABOVE/BELOW.
+		NO,&				;Player must be to the LEFT of the enemy.
+		NO,&				;Player must be to the RIGHT of the enemy.
+		NO,&				;Player must be FACING the enemy.
+		NO,&				;Player must have BACK towards enemy.
+		NO,&				;Player must be on the GROUND.
+		NO,&				;Player must be in the AIR.
+		NO,&				;Player must be on the CEILING.
+		NO,&				;Player must be on the WALL.
+		NO,&				;Player must be IDLING.
+		NO,&				;Player must be BEING HIT.
+		NO,&				;Player must be DIEING.
+		NO,&				;Player must be JUMPING.
+		NO,&				;Player must be FALLING.
+		NO,&				;Player must be ATTACKING.
+		NO,&				;Player must be GRABBING.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO				;Unused.	
+		AI_DATA	&			;AI Data macro.
+		$70,&				;Proximity to Player in X.
+		0,&				;Proximity to Player in Y.
+		CHANCE_1in16,&			;Chance that called routine will NOT be called.
+		0,&				;Enemy data #1.
+		0,&				;Enemy data #1.
+		0,&				;Enemy data #1.
+		0,&				;Future expansion.
+		PlasmaSetThrowBall		;This routine is called if all conditions are met.	

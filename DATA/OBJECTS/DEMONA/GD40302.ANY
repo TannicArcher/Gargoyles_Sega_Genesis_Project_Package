@@ -1,0 +1,12 @@
+	include	testani.68k
+
+	ani_palette	GD40302
+	ani_sprites	GD40302
+
+GD40302_anim	animation
+@1	ani_sprite	GD40302_0001
+	ani_sprite	GD40302_0002
+	ani_goto	@1
+	ani_end
+
+	ani_footer

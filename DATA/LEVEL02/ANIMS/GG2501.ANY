@@ -1,0 +1,17 @@
+	include	testani.68k
+
+	ani_palette	GG2501
+	ani_sprites	GG2501
+
+GG2501_anim	animation
+@1	ani_sprite	GG2501_0001
+	ani_sprite	GG2501_0002
+	ani_sprite	GG2501_0003
+	ani_sprite	GG2501_0004
+	ani_sprite	GG2501_0005
+	ani_sprite	GG2501_0006
+	ani_sprite	GG2501_0007
+	ani_goto	@1
+	ani_end
+
+	ani_footer

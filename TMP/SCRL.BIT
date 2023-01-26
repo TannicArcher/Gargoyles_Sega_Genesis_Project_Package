@@ -1,0 +1,148 @@
+HandleScroll		tst.b	NoFollowFLG
+			bne	.ccc
+
+			move.w	Plr_ObjectNumber,d0
+			move.l	Plr_Database,a0
+			
+			clr.w	xspeed
+			clr.w	yspeed
+
+			move.w	LAST_XPOS,d2
+			move.w	OB_Xpos(a0),LAST_XPOS
+			cmp.w	OB_Xpos(a0),d2
+			beq.s	.ifsame_x
+			blt.s	.right
+			
+.left			st.b	LAST_XDIR
+			move.w	Plr_X_Spd_L,d1			;get an add for correcting scroll creep
+			lsr.w	#1,d1
+			move.w	map_x_p,d3			;get maps x pos
+			move.w	d3,d4				;save it
+			add.w	#PosRight,d3			;add right push bound
+			cmp.w	rte_lim,d4			;is map at far right? 
+  			blt.s	.b				;no:
+			cmp.w	OB_Xpos(a0),d3			;yes: plr x <
+			blt	.yyy	      			;skip
+.b			sub.w	OB_Xpos(a0),d3			;- plr x
+			bpl.s	.1				;= dist between plr and right bound
+			neg.w	d3
+.1			beq.s	.yyy				;dist=0 then skip (no scroll)
+			lsr.w	#4,d3				;/ 16
+			add.w	d1,d3				;+ modified plr x move speed
+			move.w	d3,xspeed			;= speed of scroll
+			clr.b	rte_flg				;set scroll flag
+			st.b	lft_flg
+			bra	.yyy
+
+.ifsame_x		tst.b	LAST_XDIR
+			bne.s	.left
+
+.right			clr.b	LAST_XDIR
+			move.w	Plr_X_Spd_R,d1			;get an add for correcting scroll creep
+			lsr.w	#1,d1
+			move.w	map_x_p,d3			;get maps x pos
+			bne.s	.a				;@ left limit?
+			cmp.w	#PosLeft,OB_Xpos(a0)		;yes: plr x < left push bound?
+			blt.s	.yyy				;yes: skip (no scroll)
+.a			add.w	#PosLeft,d3			;add left push bound
+			sub.w	OB_Xpos(a0),d3			;- plr x
+			bpl.s	.3				;= dist between plr and left bound
+			neg.w	d3
+.3			beq.s	.yyy				;dist=o then skip (no scroll)
+			lsr.w	#4,d3				;/ 16
+			add.w	d1,d3				;+ modified plr x speed
+			move.w	d3,xspeed			;= speed of scroll
+			st.b	rte_flg				;set scroll flags
+			clr.b	lft_flg
+
+.yyy			tst.b	GolLookDownFLG
+			bne	.lookdown
+			tst.b	GolLookUpFLG
+			bne	.lookup
+
+			move.w	LAST_YPOS,d2
+			move.w	OB_Ypos(a0),LAST_YPOS
+			cmp.w	OB_Ypos(a0),d2
+			beq.s	.ifsame_y
+			bgt.s	.up
+			
+.down			st.b	LAST_YDIR
+			move.w	Plr_Y_Spd_D,d2			;get an add for correcting scroll creep
+			lsr.w	#1,d2
+			move.w	map_y_p,d3			;get maps y pos
+			bne.s	.ay				;@ top?
+			cmp.w	#PosUp,OB_Ypos(a0)		;yes: plr y < upper push bound
+			blt	.ccc				;yes: skip (no scroll)
+.ay			add.w	#PosUp,d3			;add upper push bound
+			sub.w	OB_Ypos(a0),d3			;- plr y
+			bpl.s	.3y				;= dist between plr and upper bound
+			neg.w	d3				
+.3y			beq	.ccc				;if dist=0 then skip (no scroll)
+			lsr.w	#4,d3				;/ 16
+			add.w	d2,d3				;+ modified plr y move speed
+			move.w	d3,yspeed			;= speed of scroll
+			clr.b	up_flg				;set scroll direction flag
+			st.b	dn_flg
+			bra	.ccc  				;xit
+
+.ifsame_y		tst.b	LAST_YDIR
+			bne.s	.down
+
+.up			clr.b	LAST_YDIR
+			move.w	Plr_Y_Spd_U,d2			;get an add for correcting scroll creep
+			lsr.w	#1,d2
+			move.w	map_y_p,d3			;get maps y pos			
+			move.w	d3,d4				;save 
+			add.w	#PosDown,d3			;add lower push bound
+			cmp.w	bot_lim,d4			;map y pos @ bottom?
+  			blt.s	.by				;no:
+			cmp.w	OB_Ypos(a0),d3			;yes: plr y < 
+			blt	.ccc				;skip
+.by			sub.w	OB_Ypos(a0),d3			;- plr y
+			bpl.s	.1y				;= dist between plr and lower bound
+			neg.w	d3		
+.1y			beq	.ccc				;if dist=0 then skip (no scroll)
+			lsr.w	#4,d3				;/ 16
+			add.w	d2,d3				;+ modified ply y move speed
+			move.w	d3,yspeed			;= speed of scroll
+			st.b	up_flg				;set scroll flag
+			clr.b	dn_flg
+			bra	.ccc
+
+.lookdown		clr.b	LAST_YDIR
+			move.w	map_y_p,d3			;get maps y pos
+			bne.s	.ayld				;@ top?
+			cmp.w	#PosUp,LookYPOS			;yes: plr y < upper push bound
+			blt.s	.ccc				;yes: skip (no scroll)
+.ayld			add.w	#PosUp,d3			;add upper push bound
+			sub.w	LookYPOS,d3			;- plr y
+			bpl.s	.3yld				;= dist between plr and upper bound
+			neg.w	d3				
+.3yld			beq.s	.ccc				;if dist=0 then skip (no scroll)
+			lsr.w	#4,d3				;/ 16
+			move.w	d3,yspeed			;= speed of scroll
+			clr.b	up_flg				;set scroll direction flag
+			st.b	dn_flg
+			bra	.ccc  				;xit
+
+.lookup			st.b	LAST_YDIR
+			move.w	map_y_p,d3			;get maps y pos			
+			move.w	d3,d4				;save 
+			add.w	#PosDown,d3			;add lower push bound
+			cmp.w	bot_lim,d4			;map y pos @ bottom?
+  			blt.s	.bylu				;no:
+			cmp.w	LookYPOS,d3			;yes: plr y < 
+			blt	.ccc				;skip
+.bylu			sub.w	LookYPOS,d3			;- plr y
+			bpl.s	.1ylu				;= dist between plr and lower bound
+			neg.w	d3		
+.1ylu			beq.s	.ccc				;if dist=0 then skip (no scroll)
+			lsr.w	#4,d3				;/ 16
+			move.w	d3,yspeed			;= speed of scroll
+			st.b	up_flg				;set scroll flag
+     			clr.b	dn_flg
+
+.ccc			clr.l	Plr_X_Spd_L
+			clr.l	Plr_Y_Spd_U
+			bsr	service_scroll
+			

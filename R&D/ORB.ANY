@@ -1,0 +1,12 @@
+	include	testani.68k
+
+	ani_palette	ORB
+	ani_sprites	ORB
+
+ORB_anim	animation
+@1	ani_sprite	ORB_0001
+	ani_sprite	ORB_0002
+	ani_goto	@1
+	ani_end
+
+	ani_footer

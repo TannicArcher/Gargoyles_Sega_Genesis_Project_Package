@@ -1,0 +1,20 @@
+	include	testani.68k
+
+	ani_palette	STRWPRTS
+	ani_sprites	STRWPRTS
+
+STRWPRTS_anim	animation
+@1	ani_sprite	STRWPRTS_0001
+	ani_sprite	STRWPRTS_0002
+	ani_sprite	STRWPRTS_0003
+	ani_sprite	STRWPRTS_0004
+	ani_sprite	STRWPRTS_0005
+	ani_sprite	STRWPRTS_0006
+	ani_sprite	STRWPRTS_0007
+	ani_sprite	STRWPRTS_0008
+	ani_sprite	STRWPRTS_0009
+	ani_sprite	STRWPRTS_0010
+	ani_goto	@1
+	ani_end
+
+	ani_footer

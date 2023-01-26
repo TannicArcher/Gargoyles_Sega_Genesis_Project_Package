@@ -1,0 +1,12 @@
+;*
+;* Animation from room 'banner'
+;*
+AMAP_BANNER0_START:
+	ani_dma L3M0FNL0_DATA+$0200,$0080,$0300	; Frame  1 ( 1) of  5
+	ani_dma L3M0FNL0_DATA+$0500,$0080,$0300	; Frame  2 ( 2) of  5
+	ani_dma L3M0FNL0_DATA+$0800,$0080,$0300	; Frame  3 ( 3) of  5
+	ani_dma L3M0FNL0_DATA+$0b00,$0080,$0300	; Frame  4 ( 4) of  5
+	ani_dma L3M0FNL0_DATA+$0e00,$0080,$0300	; Frame  5 ( 5) of  5
+AMAP_BANNER0_LEN equ *-AMAP_BANNER0_START
+
+

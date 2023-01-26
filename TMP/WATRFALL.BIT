@@ -1,0 +1,248 @@
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ WATERFALL								   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+Pattern1		hex	00 00 00 00 00 00 ff ff ff ff 00 00 00 00 00 00 
+			hex	00 00 00 00 ff ff ff ff ff ff ff ff 00 00 00 00 
+			hex	00 00 ff ff ff ff ff ff ff ff ff ff ff ff 00 00 
+			hex	00 00 ff ff ff ff ff ff ff ff ff ff ff ff 00 00 
+			hex	00 ff ff 88 88 88 ff ff ff ff 88 88 88 ff ff 00 
+			hex	00 ff ff 88 44 88 ff ff ff ff 88 44 88 ff ff 00 
+			hex	ff ff ff 88 88 88 ff ff ff ff 88 88 88 ff ff ff 
+			hex	ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 
+			hex	ff ff ff ff ff ff ff 77 77 ff ff ff ff ff ff ff 
+			hex	ff ff 66 ff ff ff ff ff ff ff ff ff ff 33 ff ff 
+			hex	00 ff 66 66 ff ff ff ff ff ff ff ff 33 33 ff 00 
+			hex	00 ff ff 66 66 ff ff ff ff ff ff 33 33 ff ff 00 
+			hex	00 00 ff 66 66 66 66 66 33 33 33 33 33 ff 00 00 
+			hex	00 00 ff ff ff 66 66 66 33 33 33 ff ff ff 00 00 
+			hex	00 00 00 00 ff ff ff 66 33 ff ff ff 00 00 00 00 
+			hex	00 00 00 00 00 00 ff ff ff ff 00 00 00 00 00 00 
+
+WaterFallSet		dc.b	$88,$99,$aa,$bb,$cc,$dd,$ee,$ff
+
+DecayLIMIT		equ	$11
+DecaySPEED1		equ	3		;must be 0,1,3,7,15,31 etc ..
+DecayRATE1		equ	$11
+DecaySPEED2		equ	3		;must be 0,1,3,7,15,31 etc ..
+DecayRATE2		equ	$11
+
+slINIT			macro	
+			dc.w	\1
+slrunning		= \1
+			endm
+
+slDUP			macro
+			rept	\1
+slrunning		= slrunning-1
+			dc.w	slrunning
+			endr
+			endm
+
+slBACK			macro
+slrunning		= slrunning-2-\1
+			dc.w	slrunning
+			endm
+
+slSKIP			macro
+slrunning		= slrunning+\1
+			rept	\1
+			dc.w	slrunning
+			endr
+			endm
+
+slNORM			macro
+;slrunning		= slrunning+\1
+			rept \1
+			dc.w	0
+			endr
+			endm
+
+slBUMP			macro
+slrunning		= slrunning+\1
+			rept \1
+			dc.w	\1
+			endr
+			endm
+
+
+TEST_SL_TAB		slINIT	0
+;			slNORM	$20
+;			slBACK	$20
+;			slNORM	$10
+;			slDUP	$10
+			slNORM	$100
+			
+DoWaterFallSETUP	st.b	WaterFallProcess
+
+			move.w	#HorLineScroll!VerWholScroll,d0			;rolling tube
+			bsr	SetScroll  				
+			clr.b	FullScroll_Hor
+			st.b	FullScroll_Ver
+			
+			lea	TEST_SL_TAB,a0
+			lea	SCANLINE_BUFFER,a1
+			move.w	#512/2,d1
+.ll1			move.w	(a0)+,(a1)+	
+			dbra	d1,.ll1
+
+			move.l	#SCANLINE_BUFFER,a6
+			move.l	#$40000010,a5
+			move.w	#0,d7
+			moveq	#0,d6
+			bsr	SetupHBLANK
+			
+
+DoWaterFallLOGIC	;bsr	DoWaterFall
+			;bsr	ConvertWaterFall
+			;bsr	DMAWaterFall
+			
+			addq.w	#1,SCANLINE_BUFFER
+
+			move.w	rndnum,d6
+			move.w	rndseed,d7
+			lea	WaterFallBuff1,a1
+			lea	WaterFallSet,a2
+			and.w	#$f,d6
+			and.w	#$7,d7
+			move.b	0(a2,d7.w),d1
+			move.b	d1,0(a1,d6.w)			
+.1			rts
+
+
+DoWaterFall		lea	WaterFallBuff1+(WaterFallBuffWide*(WaterFallBuffDeep)),a1
+			lea	WaterFallBuff1+(WaterFallBuffWide*(WaterFallBuffDeep-1)),a2
+			lea	WaterFallBuff1+(WaterFallBuffWide*(WaterFallBuffDeep-2)),a3
+			lea	WaterFallBuff1+(WaterFallBuffWide*(WaterFallBuffDeep-3)),a4
+			lea	WaterFallBuff1+(WaterFallBuffWide*(WaterFallBuffDeep-4)),a5
+			
+			moveq	#(WaterFallBuffDeep/4)-1,d1		;y
+.l2			moveq	#WaterFallBuffWide-1,d2			;x
+			bsr	Randy
+
+.l1			move.b	0(a5,d2.w),d3
+			move.b	d3,0(a4,d2.w)
+			move.b	d3,0(a3,d2.w)
+			move.b	d3,0(a2,d2.w)
+			move.b	d3,d4
+			
+			cmp.b	#DecayLIMIT,d4
+			beq.s	.2
+			move.w	d6,d5
+			and.b	#DecaySPEED1,d5
+			bne.s	.2
+			sub.b	#DecayRATE1,d4
+.2			move.b	d4,0(a1,d2.w)
+
+			cmp.b	#DecayLIMIT,d3
+			beq.s	.1
+			move.w	d7,d5
+			and.b	#DecaySPEED2,d5
+			bne.s	.1
+			sub.b	#DecayRATE2,d3
+
+.1			move.b 	d3,0(a5,d2.w)
+			eor.w	d7,d6
+			rol.w	d6
+	
+.4			dbra	d2,.l1
+			
+			sub.l	#WaterFallBuffWide*4,a1
+			sub.l	#WaterFallBuffWide*4,a2
+			sub.l	#WaterFallBuffWide*4,a3
+			sub.l	#WaterFallBuffWide*4,a4
+			sub.l	#WaterFallBuffWide*4,a5
+			rol.w	d6
+			
+			dbra	d1,.l2
+			rts
+			
+
+WFConvTAB		dc.l	WaterFallBuff2+00*32,WaterFallBuff2+01*32
+			dc.l	WaterFallBuff2+02*32,WaterFallBuff2+03*32
+			dc.l	WaterFallBuff2+04*32,WaterFallBuff2+05*32
+			dc.l	WaterFallBuff2+06*32,WaterFallBuff2+07*32
+			dc.l	WaterFallBuff2+08*32,WaterFallBuff2+09*32
+			dc.l	WaterFallBuff2+10*32,WaterFallBuff2+11*32
+			dc.l	WaterFallBuff2+12*32,WaterFallBuff2+13*32
+			dc.l	WaterFallBuff2+14*32,WaterFallBuff2+15*32
+			dc.l	WaterFallBuff2+16*32,WaterFallBuff2+17*32
+			dc.l	WaterFallBuff2+18*32,WaterFallBuff2+19*32
+			dc.l	WaterFallBuff2+20*32,WaterFallBuff2+21*32
+			dc.l	WaterFallBuff2+22*32,WaterFallBuff2+23*32
+			dc.l	WaterFallBuff2+24*32,WaterFallBuff2+25*32
+			dc.l	WaterFallBuff2+26*32,WaterFallBuff2+27*32
+			dc.l	WaterFallBuff2+28*32,WaterFallBuff2+29*32
+			dc.l	WaterFallBuff2+30*32,WaterFallBuff2+31*32
+
+
+WFLineTAB		dc.b	0,0
+			dc.b	1,1
+			dc.b	2,2
+			dc.b	3,3
+			dc.b	4,4
+			dc.b	5,5
+			dc.b	6,6
+			dc.b	7,7
+			dc.b	8,8
+			dc.b	9,9
+			dc.b	10,10
+			dc.b	11,11
+			dc.b	12,12
+			dc.b	13,13
+			dc.b	14,14
+			dc.b	15,15
+
+ConvertWaterFall	lea	WaterFallBuff1,a3
+			move.l	a3,a4
+
+			lea	BPPTabA,a6
+			lea	WFConvTAB,a5
+			moveq	#0,d4
+
+			moveq	#WFDepth-1,d5			;depth (in chars)
+.l3			moveq	#WFWidth-1,d1			;width (in chars)
+.l2			move.l	a3,a1
+		
+			move.l	0(a5,d4.w),a2
+
+			moveq	#7,d2				;Transfer Char (8 rows)
+.l1			move.w	0(a1),d3			;pixels 1&2
+			and.w	#$0ff0,d3
+			lsr.w	#4,d3  
+			move.b	0(a6,d3.w),(a2)+	
+			move.w	2(a1),d3	   		;pixels 3&4
+			and.w	#$0ff0,d3
+			lsr.w	#4,d3  
+			move.b	0(a6,d3.w),(a2)+	
+			move.w	4(a1),d3   			;pixels 5&6
+			and.w	#$0ff0,d3
+			lsr.w	#4,d3  
+			move.b	0(a6,d3.w),(a2)+
+			move.w	6(a1),d3   			;pixels 7&8
+			and.w	#$0ff0,d3
+			lsr.w	#4,d3  
+			move.b	0(a6,d3.w),(a2)+
+			lea	WaterFallBuffWide(a1),a1
+			dbra	d2,.l1
+			
+			addq.l	#8,a3
+			addq.w	#4,d4
+			dbra	d1,.l2
+
+			lea	WaterFallBuffWide*8(a4),a4
+			move.l	a4,a3
+			dbra	d5,.l3
+			rts
+			
+
+DMAWaterFall		move.l	DMA_Stack,a6			;place entry in DMA Stack
+			move.w	#64,-(a6)			;destination of DMA data	
+			move.l	#WaterFallBuff2/2,-(a6)		;source of data to DMA / 2
+			move.w	#((WFWidth*WFDepth))*16,-(a6)	;length of data to DMA (.w)
+			move.w	#_DMATransfer,-(a6)		;flag this data package is a dma transfer
+			move.l	a6,DMA_Stack
+			rts
+
+

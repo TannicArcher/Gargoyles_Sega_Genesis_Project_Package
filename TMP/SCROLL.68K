@@ -1,0 +1,1531 @@
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ Universal SCROLL handler						   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ Entry: n/a								   บ
+; บ  Exit: n/a								   บ
+; บ  Used: n/a								   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ All scroll related routines are here ...				   บ
+; บ They include ;							   บ
+; บ 									   บ
+; บ Background player tracker						   บ
+; บ Map edge decomps							   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+
+
+;		The scroll will track the player
+;		always trying to center the player as best it can
+;		the edge decompressing and DMA setups
+;		will also be handled by this routine
+;
+
+PosLeft		equ	(18*8)-8
+PosRight	equ	(25*8)+8
+PosUp		equ	(22*8)-8	;(18*8)-8
+PosDown		equ	(24*8)+8	;(26*8)+8
+
+
+HandleScroll		tst.b	NoFollowFLG
+			bne	.ccc
+
+			move.w	Plr_ObjectNumber,d0
+			move.l	Plr_Database,a0
+			
+			clr.w	xspeed
+			clr.w	yspeed
+
+			move.w	LAST_XPOS,d2
+			move.w	OB_Xpos(a0),LAST_XPOS
+			cmp.w	OB_Xpos(a0),d2
+			beq.s	.ifsame_x
+			blt.s	.right
+			
+.left			st.b	LAST_XDIR
+			move.w	Plr_X_Spd_L,d1			;get an add for correcting scroll creep
+			lsr.w	#1,d1
+			move.w	map_x_p,d3			;get maps x pos
+			move.w	d3,d4				;save it
+			add.w	#PosRight,d3			;add right push bound
+			cmp.w	rte_lim,d4			;is map at far right? 
+  			blt.s	.b				;no:
+			cmp.w	OB_Xpos(a0),d3			;yes: plr x <
+			blt	.yyy	      			;skip
+.b			sub.w	OB_Xpos(a0),d3			;- plr x
+			bpl.s	.1				;= dist between plr and right bound
+			neg.w	d3
+.1			beq.s	.yyy				;dist=0 then skip (no scroll)
+			lsr.w	#4,d3				;/ 16
+			add.w	d1,d3				;+ modified plr x move speed
+			move.w	d3,xspeed			;= speed of scroll
+			clr.b	rte_flg				;set scroll flag
+			st.b	lft_flg
+			bra	.yyy
+
+.ifsame_x		tst.b	LAST_XDIR
+			bne.s	.left
+
+.right			clr.b	LAST_XDIR
+			move.w	Plr_X_Spd_R,d1			;get an add for correcting scroll creep
+			lsr.w	#1,d1
+			move.w	map_x_p,d3			;get maps x pos
+			bne.s	.a				;@ left limit?
+			cmp.w	#PosLeft,OB_Xpos(a0)		;yes: plr x < left push bound?
+			blt.s	.yyy				;yes: skip (no scroll)
+.a			add.w	#PosLeft,d3			;add left push bound
+			sub.w	OB_Xpos(a0),d3			;- plr x
+			bpl.s	.3				;= dist between plr and left bound
+			neg.w	d3
+.3			beq.s	.yyy				;dist=o then skip (no scroll)
+			lsr.w	#4,d3				;/ 16
+			add.w	d1,d3				;+ modified plr x speed
+			move.w	d3,xspeed			;= speed of scroll
+			st.b	rte_flg				;set scroll flags
+			clr.b	lft_flg
+
+.yyy			tst.b	GolLookDownFLG
+			bne	.lookdown
+			tst.b	GolLookUpFLG
+			bne	.lookup
+
+			move.w	LAST_YPOS,d2
+			move.w	OB_Ypos(a0),LAST_YPOS
+			cmp.w	OB_Ypos(a0),d2
+			beq.s	.ifsame_y
+			bgt.s	.up
+			
+.down			st.b	LAST_YDIR
+			move.w	Plr_Y_Spd_D,d2			;get an add for correcting scroll creep
+			lsr.w	#1,d2
+			move.w	map_y_p,d3			;get maps y pos
+			bne.s	.ay				;@ top?
+			cmp.w	#PosUp,OB_Ypos(a0)		;yes: plr y < upper push bound
+			blt	.ccc				;yes: skip (no scroll)
+.ay			add.w	#PosUp,d3			;add upper push bound
+			sub.w	OB_Ypos(a0),d3			;- plr y
+			bpl.s	.3y				;= dist between plr and upper bound
+			neg.w	d3				
+.3y			beq	.ccc				;if dist=0 then skip (no scroll)
+			lsr.w	#4,d3				;/ 16
+			add.w	d2,d3				;+ modified plr y move speed
+			move.w	d3,yspeed			;= speed of scroll
+			clr.b	up_flg				;set scroll direction flag
+			st.b	dn_flg
+			bra	.ccc  				;xit
+
+.ifsame_y		tst.b	LAST_YDIR
+			bne.s	.down
+
+.up			clr.b	LAST_YDIR
+			move.w	Plr_Y_Spd_U,d2			;get an add for correcting scroll creep
+			lsr.w	#1,d2
+			move.w	map_y_p,d3			;get maps y pos			
+			move.w	d3,d4				;save 
+			add.w	#PosDown,d3			;add lower push bound
+			cmp.w	bot_lim,d4			;map y pos @ bottom?
+  			blt.s	.by				;no:
+			cmp.w	OB_Ypos(a0),d3			;yes: plr y < 
+			blt	.ccc				;skip
+.by			sub.w	OB_Ypos(a0),d3			;- plr y
+			bpl.s	.1y				;= dist between plr and lower bound
+			neg.w	d3		
+.1y			beq	.ccc				;if dist=0 then skip (no scroll)
+			lsr.w	#4,d3				;/ 16
+			add.w	d2,d3				;+ modified ply y move speed
+			move.w	d3,yspeed			;= speed of scroll
+			st.b	up_flg				;set scroll flag
+			clr.b	dn_flg
+			bra	.ccc
+
+.lookdown		clr.b	LAST_YDIR
+			move.w	map_y_p,d3			;get maps y pos
+			bne.s	.ayld				;@ top?
+			cmp.w	#PosUp,LookYPOS			;yes: plr y < upper push bound
+			blt.s	.ccc				;yes: skip (no scroll)
+.ayld			add.w	#PosUp,d3			;add upper push bound
+			sub.w	LookYPOS,d3			;- plr y
+			bpl.s	.3yld				;= dist between plr and upper bound
+			neg.w	d3				
+.3yld			beq.s	.ccc				;if dist=0 then skip (no scroll)
+			lsr.w	#4,d3				;/ 16
+			move.w	d3,yspeed			;= speed of scroll
+			clr.b	up_flg				;set scroll direction flag
+			st.b	dn_flg
+			bra	.ccc  				;xit
+
+.lookup			st.b	LAST_YDIR
+			move.w	map_y_p,d3			;get maps y pos			
+			move.w	d3,d4				;save 
+			add.w	#PosDown,d3			;add lower push bound
+			cmp.w	bot_lim,d4			;map y pos @ bottom?
+  			blt.s	.bylu				;no:
+			cmp.w	LookYPOS,d3			;yes: plr y < 
+			blt	.ccc				;skip
+.bylu			sub.w	LookYPOS,d3			;- plr y
+			bpl.s	.1ylu				;= dist between plr and lower bound
+			neg.w	d3		
+.1ylu			beq.s	.ccc				;if dist=0 then skip (no scroll)
+			lsr.w	#4,d3				;/ 16
+			move.w	d3,yspeed			;= speed of scroll
+			st.b	up_flg				;set scroll flag
+     			clr.b	dn_flg
+
+.ccc			clr.l	Plr_X_Spd_L
+			clr.l	Plr_Y_Spd_U
+			bsr	service_scroll
+
+			movem.l	d0-d7/a0-a6,-(sp)
+			bsr	HandleFX
+			movem.l	(sp)+,d0-d7/a0-a6
+			rts
+			
+
+
+HandleFX		and.w	#$3fff,pix_x
+			and.w	#$7ff,pix_y
+			moveq	#0,d1
+			move.b	b_fx_num,d1
+			asl.w	#2,d1
+			jmp	fx_v(pc,d1.w)
+
+fx_v			bra	fx1		;no parallax
+			bra	fx2		;1/2 parallax
+			bra	fx3		;1/4 parallax
+			bra	fx4		;1/8 parallax
+			bra	fx5		;Battlefield
+			bra	fx6		;Rooftop #1 (level3.1)
+
+			;no parallax
+fx1			move.w	pix_x,d1
+			swap	d1
+			move.w	pix_x,d1
+			bsr	serv_scrl_ab_x
+			move.w	pix_y,d1
+			swap	d1
+			move.w	pix_y,d1
+			bra	serv_scrl_ab_y
+			
+			;straight 1/2 parallax
+fx2			move.w	pix_x,d1
+			swap	d1
+			move.w	pix_x,d1
+			lsr.w	#1,d1
+			bsr	serv_scrl_ab_x
+			move.w	pix_y,d1
+			swap	d1
+			move.w	pix_y,d1
+			lsr.w	#1,d1
+			bra	serv_scrl_ab_y
+			
+			;straight 1/4 parallax
+fx3			move.w	pix_y,d1
+			swap	d1
+			move.w	pix_y,d1
+			lsr.w	#2,d1
+			bsr	serv_scrl_ab_y
+			move.w	pix_x,d1
+			swap	d1
+			move.w	pix_x,d1
+			lsr.w	#2,d1
+			bra	serv_scrl_ab_x
+			
+			;straight 1/8 parallax
+fx4			move.w	pix_y,d1
+			swap	d1
+			move.w	pix_y,d1
+			lsr.w	#3,d1
+			bsr	serv_scrl_ab_y
+			move.w	pix_x,d1
+			swap	d1
+			move.w	pix_x,d1
+			lsr.w	#3,d1
+			bra	serv_scrl_ab_x
+			
+
+par11a			equ	7-0			;clouds
+par11b			equ	15-8			;  .
+par11c			equ	23-16			;  .
+par11d			equ	55-24			;  .
+par11e			equ	69-56			;  .
+par11f			equ	91-70			;  .
+par11g			equ	101-92			;  .
+par11h			equ	127-102			;  .
+par11i			equ	135-128			;  .
+par11j			equ	143-136			;clouds
+
+par11k			equ	168-144			;mountains
+par11l			equ	179-169			;shimmer
+par11m			equ	232-180			;hills
+
+ParDiff			equ	10
+
+;ShimmerTab1		dc.b	-2,-2,-1,-2,-1,-1,0,-1,0,0,1,0,1,1,2,1,2,2,1,2,1,1,0,1,0,0,-1,0,-1,-1,-2,-1
+;ShimmerTab1		dc.b	-2,-2,-2,-1,-1,0,1,1,2,2,2,2,2,2,1,1,0,-1,-1,-2,-2,-2
+ShimmerTab1		dc.b	-2,-2,-1,0,1,2,2,2,2,1,0,-1,-2,-2
+Shm1Lst			dc.b	$80
+Shm1Len			equ	Shm1Lst-ShimmerTab1
+
+			;Level1 Map1 - The Battlefield
+fx5			move.w	pix_y,d1
+			swap	d1
+			move.w	pix_y,d1
+			lsr.w	#3,d1
+			move.w	d1,PixY_B
+			bsr	serv_scrl_ab_y
+			
+			lea	ScrlB_FX,a1	
+			lea	LineByLine,a2
+			move.w	#(par11b+par11c+par11d+par11e+par11f+par11g+par11h+par11i)-$10,d3
+			move.w	pix_x,d4
+			lsr.w	#2,d4
+			
+			moveq	#7,d7
+			move.w	#par11a,d5
+			bsr	ScrollSolid
+			sub.w	#ParDiff,d3
+
+			moveq	#7,d7
+			move.w	#par11b,d5
+			bsr	ScrollSolid
+			sub.w	#ParDiff,d3
+			
+			moveq	#7,d7
+			move.w	#par11c,d5
+			bsr	ScrollSolid
+			sub.w	#ParDiff,d3
+			
+			moveq	#7,d7
+			move.w	#par11d,d5
+			bsr	ScrollSolid
+			sub.w	#ParDiff,d3
+;			moveq	#7,d7
+;			move.w	#par11d2,d5
+;			bsr	ScrollSolid
+;			sub.w	#ParDiff,d3
+			
+			moveq	#7,d7
+			move.w	#par11e,d5
+			bsr	ScrollSolid
+			sub.w	#ParDiff,d3
+			
+			moveq	#7,d7
+			move.w	#par11f,d5
+			bsr	ScrollSolid
+			sub.w	#ParDiff,d3
+			
+			moveq	#7,d7
+			move.w	#par11g,d5
+			bsr	ScrollSolid
+			sub.w	#ParDiff,d3
+			
+			moveq	#7,d7
+			move.w	#par11h,d5
+			bsr	ScrollSolid
+			sub.w	#ParDiff,d3
+
+			moveq	#7,d7
+			move.w	#par11i,d5
+			bsr	ScrollSolid
+			sub.w	#ParDiff,d3
+
+			moveq	#7,d7
+			move.w	#par11j,d5
+			bsr	ScrollSolid
+			
+			move.w	pix_x,d1			;mountain
+			lsr.w	#2,d1
+			move.w	#par11k,d5
+.l8			move.w	d1,(a1)+
+			dbra	d5,.l8
+			
+			lea	ShimmerTab1,a2
+			move.w	ShimmerDex,d2
+			moveq	#0,d3
+			
+			move.w	#par11l,d5			;shimmer
+.l9			move.w	d1,d4
+.ll			move.b	0(a2,d2.w),d3
+			bpl.s	.1
+			cmp.b	#$80,d3
+			bne.s	.2
+			moveq	#0,d2
+			bra	.ll		
+.2			neg.b	d3
+			sub.w	d3,d4
+			bra	.3
+.1			add.w	d3,d4			
+.3			move.w	d4,(a1)+
+			addq.w	#1,d2
+			dbra	d5,.l9
+
+			addq.b	#1,ShimmerCnt
+			cmp.b	#10,ShimmerCnt
+			bne.s	.aa
+			clr.b	ShimmerCnt
+			addq.w	#2,ShimmerDex
+			cmp.w	#Shm1Len,ShimmerDex
+			bne.s	.aa
+			clr.w	ShimmerDex
+
+.aa			move.w	pix_x,d1
+			lsr.w	#1,d1
+			move.w	#par11m,d5
+.l10			move.w	d1,(a1)+
+			dbra	d5,.l10
+
+			bra	copy_b_fxs
+   		
+
+ScrollLine		add.w	d3,(a2)
+			subq.w	#1,d3
+			move.w	(a2)+,d2
+			lsr.w	d7,d2
+			and.w	#$1ff,d2
+			move.w	d2,(a1)+
+			dbra	d5,ScrollLine
+			rts
+
+ScrollSolid		add.w	d3,(a2)
+			move.w	(a2)+,d2
+			lsr.w	d7,d2
+			and.w	#$1ff,d2
+			add.w	d4,d2
+			move.w	d2,(a1)+
+			dbra	d5,ScrollSolid
+			rts
+
+
+par31			equ	(3*8)-1
+par31a			equ	(17*8)-1
+par31b			equ	(6*8)-1
+par31c			equ	(6*8)-1
+
+			;Level3 Map1,2,3 - The Rooftops
+fx6			move.w	pix_y,d1
+			swap	d1
+			move.w	pix_y,d1
+			lsr.w	#3,d1
+			move.w	d1,PixY_B
+			bsr	serv_scrl_ab_y
+			
+			lea	ScrlB_FX,a1	
+			
+			move.w	#par31,d5
+.l			move.w	#0,(a1)+
+			dbra	d5,.l
+
+			move.w	pix_x,d1
+			lsr.w	#2,d1
+			move.w	#par31a,d5
+.l1			move.w	d1,(a1)+
+			dbra	d5,.l1
+
+			moveq	#0,d1
+			move.w	pix_x,d1
+			divu.w	#3,d1
+			move.w	#par31b,d5
+.l2			move.w	d1,(a1)+
+			dbra	d5,.l2
+
+			move.w	pix_x,d1
+			lsr.w	#1,d1
+			move.w	#par31c,d5
+.l3			move.w	d1,(a1)+
+			dbra	d5,.l3
+
+			bra	copy_b_fxs
+   			
+	
+
+
+;GetBres			move.w	Y2,d1			;target
+;			move.w	Y1,d2			;orig
+;			sub.w	d2,d1			;dy=d2-d1
+;			bmi.s	.2
+;			move.w	d1,DY			;slope
+;			move.w	#1,DirY			;direction
+;			rts
+;.2			neg.w	d1
+;			move.w	d1,DY			;slope			
+;			move.w	#-1,DirY		;direction
+;			
+;			move.w	X2,d1			;target
+;			move.w	X1,d2			;orig
+;			sub.w	d2,d1			;dx=d2-d1
+;			bmi.s	.1
+;			move.w	d1,DX			;slope
+;			move.w	#1,DirX			;direction
+;			rts
+;.1			neg.w	d1
+;			move.w	d1,DX			;slope
+;			move.w	#-1,DirX		;direction
+;			rts
+
+
+
+
+; --------------------------------------------------------------------------
+; --------------------------------------------------------------------------
+;
+;dtraj		bsr	wp_bit1
+;		
+;		;lea	bltmp789,a1
+;		;bsr	spin_bul2
+;
+;		bsr	get_bul_spd
+;		move.w	d1,d6
+;		
+;		lea	bltmp456,a4
+;		add.w	d0,a4
+;
+;		move.w	bl_tmp2(a2),d1		;tdy
+;		cmp.w	bl_tmp1(a2),d1		;tdx
+;		bcc.s	.100
+;
+;.200		tst.w	bl_tmp3(a2)		;td
+;		bpl.s	.3
+;		bsr	tadd_xxx
+;		bsr	tadd_dy
+;		bra	.10
+;.3		bsr	tadd_yyy
+;		bsr	tsub_dx
+;.10		subq.w	#1,d6
+;		bne.s	.200
+;		bra	wp_nxt
+;
+;.100		tst.w	bl_tmp3(a2)		;td
+;		bmi.s	.4
+;		bsr	tadd_yyy
+;		bsr	tsub_dx
+;		bra	.11
+;.4		bsr	tadd_xxx
+;		bsr	tadd_dy
+;.11		subq.w	#1,d6
+;		bne.s	.100
+;		bra	wp_nxt
+;
+;
+;tadd_xxx	tst.w	bl_tmp4(a4)		;txdir
+;		bmi.s	.2
+;		addq.w	#1,bl_xpos(a3)		;txd
+;		rts
+;.2		subq.w	#1,bl_xpos(a3)
+;		rts
+;
+;tadd_yyy	tst.w	bl_tmp5(a4)		;tydir
+;		bmi.s	.2
+;		addq.w	#1,bl_ypos(a3)		;tyd
+;		rts
+;.2		subq.w	#1,bl_ypos(a3)
+;		rts
+;
+;tadd_dy		move.w	bl_tmp2(a2),d1		;tdy
+;		add.w	d1,bl_tmp3(a2)		;td
+;		rts
+;tsub_dx		move.w	bl_tmp1(a2),d1		;tdx
+;		sub.w	d1,bl_tmp3(a2)		;td
+;		rts
+;		
+;
+; --------------------------------------------------------------------------
+; --------------------------------------------------------------------------
+
+
+
+serv_scrl_ab_x		tst.b	FullScroll_Hor
+			beq.s	.1
+			move.l	d1,PixX_Copy
+			rts
+.1			lea	PixX_Copy+hs_off,a1	;scroll a x pixel scroll
+			move.w	#$df,d2
+.l3			move.l	d1,(a1)+	
+			dbra	d2,.l3
+			rts	
+
+serv_scrl_ab_y		tst.b	FullScroll_Ver
+			beq.s	.1
+			move.l	d1,PixY_Copy
+			rts
+.1			lea	PixY_Copy,a1	;scroll a x pixel scroll
+			move.w	#79,d2
+.l3			move.w	d1,(a1)+	
+			dbra	d2,.l3
+			rts	
+
+copy_b_fxs		bsr	cbfxb
+			move.w	#$df,d1
+.l1			move.w	pix_x,(a1)+
+			move.w	(a2)+,(a1)+
+			dbra	d1,.l1
+.x			rts
+cbfxb			lea	PixX_Copy+hs_off,a1
+			lea	ScrlB_FX,a2
+			move.w	PixY_B,d1
+			asl.w	#1,d1
+			add.w	d1,a2
+			rts
+
+copy_a_fxs		bsr	cbfxa
+			move.w	#$df,d1
+.l1			move.w	(a2)+,(a1)+
+			move.w	pix_x,(a1)+
+			dbra	d1,.l1
+.x			rts
+cbfxa			lea	PixX_Copy+hs_off,a1
+			lea	ScrlA_FX,a2
+			move.w	PixY_A,d1
+			asl.w	#1,d1
+			add.w	d1,a2
+			rts
+
+;copy_a_fxs		bsr	cafx
+;			move.w	#$df,d1
+;.l1			move.w	(a2)+,(a1)+
+;			move.w	pix_x,(a1)+
+;			dbra	d1,.l1
+;.x			rts
+;cafx			lea	PixX_Copy+hs_off,a1
+;			lea	ScrlA_FX,a2
+;			move.w	PixY_A,d1
+;			asl.w	#1,d1
+;			add.w	d1,a2
+;			rts
+
+copy_ab_fxs		bsr	cabfx
+			move.w	#$df,d1
+.l1			move.w	(a2)+,(a1)+
+			move.w	(a3)+,(a1)+
+			dbra	d1,.l1
+.x			rts
+cabfx			lea	PixX_Copy+hs_off,a1
+			lea	ScrlA_FX,a2
+			lea	ScrlB_FX,a3
+			move.w	PixY_A,d1
+			asl.w	#1,d1
+			add.w	d1,a2
+			move.w	PixY_B,d1
+			asl.w	#1,d1
+			add.w	d1,a3
+			rts
+
+
+;		;heat haze (scroll b only)
+;		;
+;fx1		moveq	#0,d7
+;		moveq	#0,d2
+;		move.b	fx_dat+1,d2
+;		moveq	#0,d3
+;		lea	pix_x_copy,a0
+;		lea	wave1,a1
+;		
+;		move.w	#$cf,d1
+;
+;.l1		move.w	pix_x_b,d7
+;		move.b	0(a1,d2.w),d3
+;		bpl.s	.1
+;		cmp.b	#$80,d3
+;		bne.s	.2
+;		moveq	#0,d2
+;		beq.s	.l1
+;.2		neg.b	d3
+;		sub.w	d3,d7
+;		bra.s	.3
+;.1		add.w	d3,d7
+;.3		move.w	d7,(a0)+
+;.o2		addq.b	#1,d2
+;		
+;		dbra	d1,.l1
+;		
+;		addq.b	#1,fx_dat+1
+;		cmp.b	#wlen1,fx_dat+1
+;		bne.s	.oo
+;		clr.b	fx_dat+1
+;
+;.oo		rts
+;
+;wave2		dc.b	0,5,9,12,12,14,14,14,15,15,15,15
+;		dc.b	14,14,14,12,12,9,5,0
+;		dc.b	-5,-9,-12,-12,-14,-14,-14,-15,-15,-15,-15
+;		dc.b	-14,-14,-14,-12,-12,-9,-5,0
+;wlst2		dc.b	$80
+;wlen2		equ	wlst2-wave2		
+;wave4		dc.b	0,2,2,4,4,4,4,2,2,0
+;		dc.b	0,-2,-2,-4,-4,-4,-4,-2,-2,0
+;		dc.b	0,2,4,4,2,0,0,-2,-4,-4,-2,0
+;wlst4		dc.b	$80
+;wlen4		equ	wlst4-wave4		
+;
+;
+;		even
+;
+;
+;
+;		;mist (scroll b only)
+;		;
+;fx2		addq.b	#1,fx_dat+2
+;		and.b	#1,fx_dat+2
+;		bne.s	.1w
+;		subq.w	#1,pix_x_b	;mist drifts
+;		
+;.1w		bsr	serv_scrl_a_x
+;		bsr	serv_scrl_a_y
+;		
+;		addq.b	#1,fx_dat
+;		and.b	#3,fx_dat
+;		beq.s	.2a
+;		rts
+;
+;.2a		moveq	#0,d2		;do the wave
+;		moveq	#0,d3
+;		move.b	fx_dat+1,d2
+;		lea	pix_x_copy+2,a0
+;		lea	wave2,a1
+;
+;		move.w	#$cf,d1
+;
+;.l1		move.w	pix_x_b,d7
+;		move.b	0(a1,d2.w),d3
+;		bpl.s	.1
+;		cmp.b	#$80,d3
+;		bne.s	.2
+;		moveq	#0,d2
+;		beq.s	.l1
+;.2		neg.b	d3
+;		sub.w	d3,d7
+;		bra.s	.3
+;.1		add.w	d3,d7
+;.3		move.w	d7,(a0)
+;		addq.l	#4,a0
+;		addq.b	#1,d2
+;		
+;		dbra	d1,.l1
+;			
+;		addq.b	#1,fx_dat+1
+;		cmp.b	#wlen2,fx_dat+1
+;		bne.s	.oo
+;		clr.b	fx_dat+1
+;
+;.oo		rts
+;
+;
+;par3_1		equ	208
+;
+;		;forest #1
+;		;
+;fx3		bsr	fx6xx
+;		moveq	#0,d0
+;		move.w	pix_y,d0
+;		divu.w	#12,d0
+;		move.w	d0,pix_y_b
+;		swap	d0
+;		move.w	pix_y,d0
+;		swap	d0
+;		bra	serv_scrl_ab_y
+;	
+;	
+;		;forest #2
+;		;
+;fx3a		rts
+;
+;
+;par4_1		equ	$37+24
+;par4_2		equ	24-3
+;par4_3		equ	$6e
+;par4_4		equ	$1a
+;
+;		;rapids
+;		;
+;fx4		bsr	serv_scrl_a_x
+;		bsr	serv_scrl_a_y
+;		move.w	pix_y,d2
+;		add.w	#$14,d2
+;		lsr.w	#1,d2
+;		move.w	d2,pix_y_b	;scroll a/b y pixel scroll
+;		move.w	d2,for_pix_y
+;		bsr	serv_scrl_b_y
+;
+;		lea	scrl_b_fxs,a0
+;
+;		moveq	#0,d1
+;		move.w	pix_x,d1
+;		divu.w	#3,d1
+;		move.w	#par4_1,d0
+;.l1		move.w	d1,(a0)+
+;		dbra	d0,.l1
+;		move.w	pix_x,d1
+;		lsr.w	#1,d1
+;		move.w	#par4_2,d0
+;.l2		move.w	d1,(a0)+
+;		dbra	d0,.l2
+;		
+;		move.w	pix_x,d1
+;		
+;		tst.b	fx_dat		;every ? frames
+;		beq.s	.ok
+;		subq.b	#1,fx_dat
+;		bra	.o1
+;
+;.ok		move.b	#3,fx_dat
+;		addq.b	#1,fx_dat+1
+;		cmp.b	#wlen2,fx_dat+1
+;		bne.s	.oo
+;		clr.b	fx_dat+1
+;.oo		addq.w	#1,fx_dat+2
+;	
+;.o1		moveq	#0,d2		;do the wave
+;		moveq	#0,d3
+;		move.b	fx_dat+1,d2
+;		lea	wave2,a2
+;
+;		move.w	#par4_3,d0
+;
+;.l3		move.w	d1,d7
+;		sub.w	fx_dat+2,d7
+;		move.b	0(a2,d2.w),d3
+;		bpl.s	.1
+;		cmp.b	#$80,d3
+;		bne.s	.2
+;		moveq	#0,d2
+;		beq.s	.l3
+;.2		neg.b	d3
+;		sub.w	d3,d7
+;		bra.s	.3
+;.1		add.w	d3,d7
+;.3		move.w	d7,(a0)+
+;		addq.b	#1,d2
+;		dbra	d0,.l3
+;		
+;		move.w	pix_x,d1
+;		asl.w	#1,d1
+;		move.w	#par4_4,d0
+;.l2a		move.w	d1,(a0)+
+;		dbra	d0,.l2a
+;		
+;		move.w	pix_x,d2
+;		lsr.w	#1,d2
+;		sub.w	d2,d1
+;		move.w	d1,for_pix_x
+;		
+;		bra	copy_b_fxs
+;
+;
+;		;straight parallax
+;fx5		move.w	pix_x,d0
+;		swap	d0
+;		move.w	pix_x,d0
+;		lsr.w	#1,d0
+;		move.w	d0,pix_x_b
+;		bsr	serv_scrl_ab_x
+;		move.w	pix_y,d0
+;		swap	d0
+;		move.w	pix_y,d0
+;		lsr.w	#1,d0
+;		move.w	d0,pix_y_b
+;		bra	serv_scrl_ab_y
+;		
+;
+;		;straight parallax
+;fx6		move.w	pix_y,d0
+;		swap	d0
+;		move.w	pix_y,d0
+;		lsr.w	#1,d0
+;		move.w	d0,pix_y_b
+;		bsr	serv_scrl_ab_y
+;fx6xx		move.w	pix_x,d0
+;		swap	d0
+;		move.w	pix_x,d0
+;		lsr.w	#2,d0
+;		move.w	d0,pix_x_b
+;		bra	serv_scrl_ab_x
+;		
+;
+;		;no parallax
+;fx7		move.w	pix_x,d0
+;		swap	d0
+;		move.w	pix_x,d0
+;		move.w	d0,pix_x_b
+;		bsr	serv_scrl_ab_x
+;		move.w	pix_y,d0
+;		swap	d0
+;		move.w	pix_y,d0
+;		move.w	d0,pix_y_b
+;		bra	serv_scrl_ab_y
+;		
+;
+;		;skyscraper
+;		;
+;fx8		moveq	#0,d0
+;		move.w	pix_y,d0
+;		divu.w	#21,d0
+;		move.w	d0,pix_y_b
+;		swap	d0
+;		move.w	pix_y,d0
+;		swap	d0
+;		bsr	serv_scrl_ab_y
+;		bra	fx6xx
+;
+;
+;
+;par9_1		equ	$37
+;par9_2		equ	24-3+$58+8
+;par9_3		equ	$40
+;max_sub_spd	equ	10
+;
+;
+;		;subway train
+;		;
+;fx9		bsr	serv_scrl_a_x
+;		bsr	serv_scrl_a_y
+;		move.w	pix_y,pix_y_b	;scroll a/b y pixel scroll
+;		bsr	serv_scrl_b_y
+;
+;		lea	scrl_b_fxs,a0
+;
+;		moveq	#0,d1
+;		move.b	subway_spd,d1
+;		
+;		cmp.b	#max_sub_spd,d1
+;		beq.s	.1
+;		addq.b	#1,subway_dex
+;		and.b	#$1f,subway_dex
+;		bne.s	.1
+;		addq.b	#1,subway_spd
+;
+;.1		sub.w	d1,pix_x1
+;
+;		move.w	pix_x1,d1
+;		move.w	pix_x1,d2
+;		lsr.w	#2,d2
+;		add.w	d2,d1
+;		move.w	#par9_1,d0
+;.l1		move.w	d1,(a0)+
+;		dbra	d0,.l1
+;
+;		move.w	pix_x1,d1
+;		move.w	#par9_2,d0
+;.l2		move.w	d1,(a0)+
+;		dbra	d0,.l2
+;
+;		move.w	pix_x1,d1
+;		move.w	pix_x1,d2
+;		lsr.w	#1,d2
+;		add.w	d2,d1
+;		move.w	#par9_3,d0
+;.l2a		move.w	d1,(a0)+
+;		dbra	d0,.l2a
+;		
+;		move.w	pix_x1,d2
+;		asl.w	#1,d2
+;		move.w	d2,for_pix_x
+;		clr.w	for_pix_y
+;
+;		bra	copy_b_fxs
+;
+;
+;
+;fx10		bsr	fx5
+;		move.w	pix_x,d1
+;		move.w	pix_x,d2
+;		lsr.w	#1,d2
+;		add.w	d2,d1
+;		move.w	d1,for_pix_x
+;		move.w	pix_y,d1
+;		sub.w	#$58,d1
+;		move.w	pix_y,d2
+;		lsr.w	#1,d2
+;		add.w	d2,d1
+;		move.w	d1,for_pix_y
+;		rts
+;		
+;
+;fx11		move.w	pix_x,d0
+;		swap	d0
+;		move.w	pix_x,d0
+;		lsr.w	#1,d0
+;		move.w	d0,pix_x_b
+;		bsr	serv_scrl_ab_x
+;		move.w	pix_y,d0
+;		swap	d0
+;		move.w	pix_y,d0
+;		moveq	#0,d1
+;		move.w	pix_y,d1
+;		lsr.w	#1,d1
+;		add.w	d1,d0
+;		move.w	d0,pix_y_b
+;		move.w	d0,map_y_p
+;		bra	serv_scrl_ab_y
+;		
+;
+;fx12		bsr	serv_scrl_a_x
+;		bsr	serv_scrl_b_x
+;		move.w	pix_y,d0
+;		swap	d0
+;		move.w	pix_y,d0
+;		move.w	d0,map_y_p
+;		bra	serv_scrl_ab_y
+;		
+;fx13		bsr	serv_scrl_a_x
+;		bsr	serv_scrl_b_x
+;		bsr	serv_scrl_a_y
+;		bra	serv_scrl_b_y
+;		
+;
+;fx14		bsr	serv_scrl_a_x
+;		bsr	serv_scrl_a_y
+;		move.w	pix_y,pix_y_b	;scroll a/b y pixel scroll
+;		bsr	serv_scrl_b_y
+;
+;		lea	scrl_b_fxs,a0
+;
+;		move.w	#(13*8)-1,d0
+;.l2		move.w	#0,(a0)+
+;		dbra	d0,.l2
+;
+;		move.w	pix_x1,d2
+;		move.w	#(14*8)-1,d0
+;.l2a		move.w	d2,(a0)+
+;		dbra	d0,.l2a
+;		
+;		bra	copy_b_fxs1
+;
+;
+;
+;; ************************************************************************** ;
+;
+;
+;serv_scrl_ab_x	tst.b	fluff_flag
+;		bne.s	.1
+;		tst.b	full_scroll
+;		beq.s	.1
+;		move.l	d0,pix_x_copy
+;		rts
+;.1		lea	pix_x_copy,a0	;scroll a x pixel scroll
+;		move.w	#$cf,d1
+;.l3		move.l	d0,(a0)+	
+;		dbra	d1,.l3
+;		rts
+;
+;serv_scrl_ab_y	move.l	d0,pix_y_copy
+;		rts
+;
+;
+;serv_scrl_a_x	tst.b	fluff_flag
+;		bne.s	.1
+;		tst.b	full_scroll
+;		beq.s	.1
+;		move.w	pix_x,pix_x_copy
+;		rts
+;.1		lea	pix_x_copy,a0	;scroll a x pixel scroll
+;		move.w	#$cf,d1
+;.l3		move.w	pix_x,(a0)
+;		addq.l	#4,a0
+;		dbra	d1,.l3
+;		rts
+;
+;serv_scrl_a_y	move.w	pix_y,pix_y_copy
+;		rts
+;
+;
+;serv_scrl_b_x	tst.b	fluff_flag
+;		bne.s	.1
+;		tst.b	full_scroll
+;		beq.s	.1
+;		move.w	pix_x_b,pix_x_copy+2
+;		rts
+;.1		lea	pix_x_copy+2,a0	;scroll a x pixel scroll
+;		move.w	#$cf,d1
+;.l3		move.w	pix_x_b,(a0)	
+;		addq.l	#4,a0
+;		dbra	d1,.l3
+;		rts
+;
+;serv_scrl_b_y	move.w	pix_y_b,pix_y_copy+2
+;		rts
+;
+
+
+; - SERVICE the Scroll. Test for edge building etc. ------------------------
+
+service_scroll		move.w	xspeed,d1
+			bpl.s	.p1
+			neg.w	d1
+.p1			move.w	d1,x_speed
+			move.w	yspeed,d1
+			bpl.s	.p2
+			neg.w	d1
+.p2			move.w	d1,y_speed
+
+			tst.b	lft_flg
+			beq.s	.a
+			tst.w	map_x_p			;left limit
+			beq.s	.1
+			bsr	move_left
+			bra	.1
+.a			tst.b	rte_flg
+			beq.s	.1
+			move.w	rte_lim,d1		;right limit
+			cmp.w	map_x_p,d1
+			blt.s	.1
+			bsr	move_right
+		
+.1			tst.b	up_flg
+			beq.s	.b
+			tst.w	map_y_p			;top limit
+			beq.s	.2
+			bsr	move_up
+			bra	.2
+.b			tst.b	dn_flg
+			beq.s	.2
+			move.w	bot_lim,d1		;bottom limit
+			cmp.w	map_y_p,d1
+			blt.s	.2
+			bsr	move_down	
+
+.2			clr.l	up_flg
+.x			rts
+
+
+move_left		move.w	x_speed,d7
+			beq.s	mvlx
+
+mvl			addq.w	#1,pix_x
+			subq.w	#1,map_x_p
+			beq.s	mvlxx
+			bsr	tst_unzip_lft
+			subq.w	#1,d7
+			bne.s	mvl
+mvlx			rts
+mvlxx			bra	unzip_left
+		
+tst_unzip_lft		move.w	map_x_p,d1
+			and.w	#$f,d1
+			bne.s	uz1
+unzip_left		bsr	work_map_pos
+			lea	l_edge,a1
+;			lea	BlockA_Buff,a3
+			move.l	__BlkA,a3
+			moveq	#0,d1
+			bsr	unzip_lr_edge
+			bsr	mod_lr_addrs
+			st.b	Trigger_LEFT
+			st.b	blit_lft
+			clr.b	blit_rte
+			st.b	moved_lft
+			clr.b	moved_rte
+uz1			rts
+			
+
+move_right		move.w	x_speed,d7
+			beq.s	mvrx	
+
+mvr			subq.w	#1,pix_x
+			addq.w	#1,map_x_p
+			bsr	tst_unzip_rte
+			subq.w	#1,d7
+			bne.s	mvr
+mvrx			rts
+
+tst_unzip_rte		move.w	map_x_p,d1
+			and.w	#$f,d1
+			bne.s	uz2
+unzip_right		bsr	work_map_pos
+			add.l	#(edge_width-1)*2,a6
+			lea	r_edge,a1
+;			lea	BlockA_Buff,a3
+			move.l	__BlkA,a3
+			moveq	#0,d1
+			bsr	unzip_lr_edge
+			bsr	mod_lr_addrs
+			st.b	Trigger_RIGHT
+			st.b	blit_rte
+			clr.b	blit_lft
+			st.b	moved_rte
+			clr.b	moved_lft
+uz2			rts
+			
+
+move_up			move.w	y_speed,d7
+			beq.s	mvux	
+
+mvu			subq.w	#1,pix_y
+			subq.w	#1,map_y_p
+			beq.s	mvux
+			bsr	tst_unzip_top
+			subq.w	#1,d7
+			bne.s	mvu
+mvux			rts
+
+tst_unzip_top		move.w	map_y_p,d1
+			and.w	#$f,d1
+			bne.s	uz3
+unzip_top		bsr	work_map_pos
+			lea	t_edge,a1
+;			lea	BlockA_Buff,a3
+			move.l	__BlkA,a3
+			moveq	#0,d1
+			bsr	unzip_tb_edge
+			bsr	mod_tb_addrs
+			st.b	Trigger_TOP
+			st.b	blit_top
+			clr.b	blit_bot
+			st.b	moved_up
+			clr.b	moved_dn
+uz3			rts	
+
+		
+move_down		move.w	y_speed,d7
+			beq.s	mvdx
+
+mvd			addq.w	#1,pix_y
+			addq.w	#1,map_y_p
+.1			bsr	tst_unzip_bot
+			subq.w	#1,d7
+			bne.s	mvd
+mvdx			rts
+
+tst_unzip_bot		move.w	map_y_p,d1
+			and.w	#$f,d1
+			bne.s	uz4
+unzip_bottom		bsr	work_map_pos
+			moveq	#0,d1
+			move.w	map_wide,d1
+			mulu	#15,d1
+			add.w	d1,a6
+			lea	b_edge,a1
+;			lea	BlockA_Buff,a3
+			move.l	__BlkA,a3
+			moveq	#0,d1
+			bsr	unzip_tb_edge
+			bsr	mod_tb_addrs
+			st.b	Trigger_BOTTOM
+			st.b	blit_bot
+			clr.b	blit_top
+			st.b	moved_dn
+			clr.b	moved_up
+uz4			rts
+
+
+work_map_pos		moveq	#0,d1
+			moveq	#0,d2
+			move.w	map_x_p,d1
+			move.w	map_y_p,d2
+			lsr.w	#4,d1
+			lsr.w	#4,d2
+			move.w	d1,map_x_b
+			move.w	d2,map_y_b
+			lea	mapline_tab,a6
+			asl.w	#1,d1
+			asl.w	#1,d2
+			move.w	0(a6,d2.w),d2
+			lea	MapA_Buff,a6
+			add.w	d2,a6
+			add.w	d1,a6
+			rts
+
+
+; - BUILD Edge buffers from map/block data ---------------------------------
+
+unzip_lr_edge		rept	16
+			move.l	a3,a2
+			move.w	(a6),d1
+			add.l	d1,a2
+			move.w	(a2)+,0(a1)	;d2
+;			move.w	(a2)+,d2
+;			or.w	#pri,d2
+;			move.w	d2,0(a1)
+			move.w	(a2)+,64(a1)	;d2
+;			move.w	(a2)+,d2
+;			or.w	#pri,d2
+;			move.w	d2,64(a1)
+			move.w	(a2)+,2(a1)	;d2
+;			move.w	(a2)+,d2
+;			or.w	#pri,d2
+;			move.w	d2,2(a1)
+			move.w	(a2),66(a1)	;d2
+;			move.w	(a2),d2
+;			or.w	#pri,d2
+;			move.w	d2,66(a1)
+			add.w	map_wide,a6
+			addq.w	#4,a1
+			endr
+			rts
+
+unzip_tb_edge		rept	edge_width
+			move.l	a3,a2
+			move.w	(a6)+,d1
+			add.l	d1,a2
+			move.l	(a2)+,0(a1)	;d2
+;			or.l	#$80008000,d2
+;			move.l	d2,0(a1)
+			move.l	(a2)+,edge_width*4(a1)	;d2
+;			or.l	#$80008000,d2
+;			move.l	d2,edge_width*4(a1)
+			addq.w	#4,a1
+			endr
+			rts
+
+		
+; - ADDRESS Setup for DMA edge routines ------------------------------------
+
+ybase			dc.w	$cf00,$c000,$c100,$c200,$c300,$c400,$c500,$c600,$c700
+			dc.w	$c800,$c900,$ca00,$cb00,$cc00,$cd00,$ce00
+
+mod_lr_addrs		lea	ybase,a6
+	
+			move.w	map_y_p,d2
+			and.w	#$0ff,d2
+			lsr.w	#4,d2
+			asl.w	#1,d2
+			move.w	0(a6,d2.w),d6
+			
+			move.w	d6,d5	
+
+			move.w	map_x_p,d2
+			and.w	#$1ff,d2
+			lsr.w	#4,d2
+			asl.w	#2,d2
+			add.w	d2,d6
+			
+			and.l	#$fff,d6		;set initial addrs
+			swap	d6			;pre calculated for VRAM
+			or.l	#$40000003,d6
+			move.l	d6,l_edge_addr1
+			add.l	#$00020000,d6
+			and.l	#$4fff000f,d6
+			move.l	d6,l_edge_addr2		
+
+			move.w	map_x_p,d2
+			add.w	#(edge_width-1)*16,d2
+			and.w	#$1ff,d2
+			lsr.w	#4,d2
+			asl.w	#2,d2
+			add.w	d2,d5	
+
+			and.l	#$fff,d5		;set initial addrs
+			swap	d5			;pre calculated for VRAM
+			or.l	#$40000003,d5
+			move.l	d5,r_edge_addr1
+			add.l	#$00020000,d5
+			and.l	#$4fff000f,d5
+			move.l	d5,r_edge_addr2
+			rts
+
+
+mod_tb_addrs		lea	ybase,a6
+
+			move.w	map_x_p,d2
+			and.w	#$1ff,d2
+			lsr.w	#4,d2
+			asl.w	#2,d2
+			move.w	d2,d6
+			move.w	d2,d5
+		
+			move.w	map_y_p,d2
+			and.w	#$0ff,d2
+			lsr.w	#4,d2
+			asl.w	#1,d2
+			add.w	0(a6,d2.w),d6	
+
+			move.w	d6,d2
+			and.l	#$fff,d2
+			swap	d2
+			or.l	#$40000003,d2
+			move.l	d2,t_edge_addr1
+			add.w	#128,d6
+			and.l	#$fff,d6
+			swap	d6
+			or.l	#$40000003,d6
+			move.l	d6,t_edge_addr2
+				
+			move.w	map_y_p,d2
+			add.w	#240,d2
+			and.w	#$0ff,d2
+			lsr.w	#4,d2
+			asl.w	#1,d2
+			add.w	0(a6,d2.w),d5	
+
+			move.w	d5,d2
+			and.l	#$fff,d2
+			swap	d2
+			or.l	#$40000003,d2
+			move.l	d2,b_edge_addr1
+			add.w	#128,d5
+			and.l	#$fff,d5
+			swap	d5
+			or.l	#$40000003,d5
+			move.l	d5,b_edge_addr2
+			rts
+
+
+; - DMA edge routines ------------------------------------------------------
+
+dma_lft			tst.b	blit_lft
+			beq.s	dm1
+dml			move.l	l_edge_addr1,d7
+			lea	l_edge,a0
+ 			bsr	blit_lr_edge
+			move.l	l_edge_addr2,d7
+			lea	l_edge+64,a0
+			bsr	blit_lr_edge
+  			clr.b	blit_lft
+dm1			rts
+
+dma_rte			tst.b	blit_rte
+			beq.s	.2
+			move.l	r_edge_addr1,d7
+			lea	r_edge,a0
+ 			bsr	blit_lr_edge
+			move.l	r_edge_addr2,d7
+			lea	r_edge+64,a0
+			bsr	blit_lr_edge
+  			clr.b	blit_rte
+.2			rts
+
+blit_lr_edge		rept	32
+			move.l	d7,vctrl
+			move.w	(a0)+,vdata
+			add.l	#$00800000,d7
+			and.l	#$4fff0003,d7
+			endr
+			rts
+
+dma_top			tst.b	blit_top
+			beq.s	.3
+			move.l	t_edge_addr1,d7
+			move.l	d7,d5
+			and.l	#$800000,d5
+			lea	t_edge,a0
+			bsr	blit_tb_edge
+			move.l	t_edge_addr2,d7
+			move.l	d7,d5
+			and.l	#$800000,d5
+			lea	t_edge+(edge_width*4),a0
+			bsr	blit_tb_edge
+			clr.b	blit_top
+.3			rts
+
+dma_bot			tst.b	blit_bot	
+			beq.s	.4
+			move.l	b_edge_addr1,d7
+			move.l	d7,d5
+			and.l	#$800000,d5
+			lea	b_edge,a0
+			bsr	blit_tb_edge
+			move.l	b_edge_addr2,d7
+			move.l	d7,d5
+			and.l	#$800000,d5
+			lea	b_edge+(edge_width*4),a0
+			bsr	blit_tb_edge
+			clr.b	blit_bot
+.4			rts
+		
+blit_tb_edge		rept	edge_width*2
+			and.l	#$4f7f0003,d7
+			or.l	d5,d7
+			move.l	d7,vctrl
+			move.w	(a0)+,vdata
+			swap	d7
+			addq.b	#2,d7			;gotta be .b so no carry
+			swap	d7
+			endr
+			rts
+	
+		   
+			;Uncrunch a screen from map x,y (42x32chrs/21x16blks)
+			;also build initial edge buffers and dma them
+			;A5 = Blk set
+			;		
+Unzip_ScrlA		move.w	map_x_p,tmapxp	
+
+			move.w	#edge_width+6,d4
+.l1			bsr	work_map_pos
+			lea	l_edge,a1
+			move.l	__BlkA,a3
+;			lea	BlockA_Buff,a3
+			moveq	#0,d1
+			bsr	unzip_lr_edge
+			bsr	mod_lr_addrs
+			bsr	dml
+			add.w	#$10,map_x_p
+			dbra	d4,.l1
+			
+			move.w	tmapxp,map_x_p
+
+			bsr	unzip_left
+			bsr	unzip_right
+			bsr	unzip_top
+			bra	unzip_bottom	
+
+
+			;uncrunch block mapped scroll b (64x64chrs/32x32Blks)
+			;A0 = map addrs
+			;A5 = Blk set
+			;
+UBX			rts
+SetupScrlB		move.l	__MapB,a0		;compressed map data
+			cmp.l	#-1,a0
+			beq.s	UBX
+
+			lea	MapA_Buff,a3		;work ram
+			move.l	__BlkA,a5		;block data
+
+Prnt_ScrlB		moveq	#15,d0
+.l1			move.l	a0,a1
+			move.l	a3,a4
+			moveq	#31,d1
+.l2			moveq	#0,d2
+			move.w	(a1)+,d2
+			move.l	a5,a2
+			add.l	d2,a2
+			move.w	(a2)+,0(a4)
+			move.w	(a2)+,2(a4)
+			move.w	(a2)+,128(a4)
+			move.w	(a2),130(a4)
+			addq.l	#4,a4
+			dbra	d1,.l2
+			add.w	#64,a0
+			add.l	#256,a3
+			dbra	d0,.l1
+
+			lea	MapA_Buff,a0			;work ram
+			move.l	#ScrlB_Base,d6
+			moveq	#31,d0
+.l3			jsr	get_address
+			move.l	d7,vctrl
+			moveq	#63,d1
+
+.l4			move.w	(a0)+,vdata
+			
+;			move.w	(a0)+,d2
+;			or.w	#pri,d2
+;			move.w	d2,vdata
+			
+			dbra	d1,.l4
+			add.l	#128,d6
+			dbra	d0,.l3
+.x			rts
+
+wipe_vram		move.w	#reg15+2,vctrl
+			moveq	#0,d6
+			bsr	get_address
+			move.l	d7,vctrl
+			move.w	#($c000/2)-1,d0
+.l1			move.w	#0,vdata
+			dbra	d0,.l1
+   			rts	
+
+dma_data		move.w	d6,dma_address
+			move.w	#reg15+2,vctrl
+			bsr	get_address
+			move.l	d7,vctrl
+.l1			move.w	(a0)+,vdata
+			addq.w	#2,dma_address
+			dbra	d0,.l1
+			rts	
+
+FlagYES2		tas	yes
+			rts
+FlagNO2			tas	no
+			rts
+
+

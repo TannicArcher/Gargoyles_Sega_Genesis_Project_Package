@@ -1,0 +1,580 @@
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ CHR BINARIES & INC FILES FOR ALL SPRITE OBJECTS			   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ CHR DATA for GOLIATH						   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+	
+;KEY : 		*=FlatFill : **=Rendered
+;
+
+			SECTION	GGD_GOLIATH
+GolChr1			incbin	data\objects\goliath\gg0101.chr		;*
+GolChr2			incbin	data\objects\goliath\gg0102.chr		;*
+GolChr3a		incbin	data\objects\goliath\gg0103a.chr	;*
+GolChr3b		incbin	data\objects\goliath\gg0103b.chr	;*
+GolChr3c		incbin	data\objects\goliath\gg0103c.chr	;*
+GolChr4			incbin	data\objects\goliath\gg0104.chr		;*
+GolChr5			incbin	data\objects\goliath\gg0105.chr		;*
+GolChr6			incbin	data\objects\goliath\gg0106.chr		;*
+GolChr7			incbin	data\objects\goliath\gg0107.chr		;*
+GolChr8			incbin	data\objects\goliath\gg0108.chr		;*
+GolChr9			incbin	data\objects\goliath\gg0109.chr		;*
+GolChr10		incbin	data\objects\goliath\gg0110.chr		;*
+GolChr11		incbin	data\objects\goliath\gg0111.chr		;*
+GolChr15		incbin	data\objects\goliath\gg0115.chr		;*
+GolChr16		incbin	data\objects\goliath\gg0116.chr		;*
+GolChr17		incbin	data\objects\goliath\gg0117.chr		;*
+GolChr18		incbin	data\objects\goliath\gg0118.chr		;*
+GolChr19		incbin	data\objects\goliath\gg0119.chr		;*
+GolChr20		incbin	data\objects\goliath\gg0120.chr		
+GolChr21		incbin	data\objects\goliath\gg0121.chr		;*
+GolChr22		incbin	data\objects\goliath\gg0122.chr		;*
+GolChr23		incbin	data\objects\goliath\gg0123.chr		
+GolChr24		incbin	data\objects\goliath\gg0124.chr		;*
+GolChr25		incbin	data\objects\goliath\gg0125.chr		
+GolChr26		incbin	data\objects\goliath\gg0126.chr		;*
+GolChr27		incbin	data\objects\goliath\gg0127.chr		;*
+GolChr28		incbin	data\objects\goliath\gg0128.chr		;*
+GolChr30		incbin	data\objects\goliath\gg0130.chr		;*
+GolChr31		incbin	data\objects\goliath\gg0131.chr		;*
+GolChr32		incbin	data\objects\goliath\gg0132.chr		;*
+GolChr33		incbin	data\objects\goliath\gg0133.chr		;*
+GolChr34		incbin	data\objects\goliath\gg0134.chr		;*
+GolChr50		incbin	data\objects\goliath\gg0150.chr		;*
+GolChr51		incbin	data\objects\goliath\gg0151.chr		;*
+GolChr52		incbin	data\objects\goliath\gg0152.chr		;*
+GolChr54		incbin	data\objects\goliath\gg0154.chr		;*	
+GolChr55		incbin	data\objects\goliath\gg0155.chr		;*
+GolChr77		incbin	data\objects\goliath\gg0177.chr		;*
+GolChr82		incbin	data\objects\goliath\gg0182.chr		;*
+GolChr83		incbin	data\objects\goliath\gg0183.chr		;*
+GolChr84		incbin	data\objects\goliath\gg0184.chr		;*
+GolChr87		incbin	data\objects\goliath\gg0187.chr		;*
+GolChr88		incbin	data\objects\goliath\gg0188.chr		;*
+GolChr89		incbin	data\objects\goliath\gg0189.chr		;*
+GolChr90		incbin	data\objects\goliath\gg0190.chr		;*
+GolChr91		incbin	data\objects\goliath\gg0191.chr		;*
+GolChrDeath		incbin	data\objects\goliath\gg_death.chr		;*
+
+			if	1=0
+GolChr98		incbin	data\objects\goliath\gg0198.chr		
+GolChr99		incbin	data\objects\goliath\gg0199.chr		
+			endif
+
+CornerChr		incbin	data\objects\corners\corners.chr
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ CHR DATA for PANEL							   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+		SECTION	GGD_HEALTH
+
+Health1Chr		incbin	data\objects\panel\health1.fnt
+Health2Chr		incbin	data\objects\panel\health2.fnt
+NumeralChr		incbin	data\objects\panel\numbersg.chr
+BHealthChr		incbin	data\objects\panel\bhealth0.chr
+
+IconChr1		incbin	data\objects\panel\powrup01.chr
+IconChr2		incbin	data\objects\panel\powrup02.chr
+IconChr3		incbin	data\objects\panel\powrup03.chr
+IconChr4		incbin	data\objects\panel\powrup04.chr
+IconChr5		incbin	data\objects\panel\powrup05.chr
+
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ CHR DATA for RAPTORBOT						   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+		SECTION	GGD_RAPTORBOT
+
+RapChr2		incbin	data\objects\rapbot\gr90502.chr
+RapChr1		incbin	data\objects\rapbot\gr90501.chr
+RapChr3		incbin	data\objects\rapbot\gr90503.chr
+RapChr4		incbin	data\objects\rapbot\gr90504.chr
+RapChr5		incbin	data\objects\rapbot\gr90505.chr
+RapChr6		incbin	data\objects\rapbot\gr90506.chr
+RapChr7		incbin	data\objects\rapbot\gr90507.chr
+RapChr8		incbin	data\objects\rapbot\gr90508.chr
+RapChr9		incbin	data\objects\rapbot\gr90509.chr
+RapChr10	incbin	data\objects\rapbot\gr90510.chr
+RapChr11	incbin	data\objects\rapbot\gr90511.chr
+RapChr12	incbin	data\objects\rapbot\gr90512.chr
+RapChr13	incbin	data\objects\rapbot\gr90513.chr
+
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ CHR DATA for SNIPERBOT						   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+		SECTION	GGD_SNIPERBOT
+
+SniChr1		incbin	data\objects\sniprbot\gr90201.chr
+SniChr2a	incbin	data\objects\sniprbot\gr90202a.chr
+SniChr3a	incbin	data\objects\sniprbot\gr90203a.chr
+SniChr3b	incbin	data\objects\sniprbot\gr90203b.chr
+SniChr3c	incbin	data\objects\sniprbot\gr90203c.chr
+SniChr4		incbin	data\objects\sniprbot\gr90204.chr
+SniChr5		incbin	data\objects\sniprbot\gr90205.chr
+SniChr6		incbin	data\objects\sniprbot\gr90206.chr
+SniChr7		incbin	data\objects\sniprbot\gr90207.chr
+SniChr8		incbin	data\objects\sniprbot\gr90208.chr
+SniChr9		incbin	data\objects\sniprbot\gr90209.chr
+
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ CHR DATA for WASPBOT						   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+		SECTION	GGD_WASPBOT
+
+WaspChr1	incbin	data\objects\waspbot\gr90301.chr
+WaspChr3	incbin	data\objects\waspbot\gr90303.chr
+WaspChr4	incbin	data\objects\waspbot\gr90304.chr
+WaspChr5	incbin	data\objects\waspbot\gr90305.chr
+WaspChr6	incbin	data\objects\waspbot\gr90306.chr
+WaspChr7	incbin	data\objects\waspbot\gr90307.chr
+WaspChr8	incbin	data\objects\waspbot\gr90308.chr
+WaspChr10	incbin	data\objects\waspbot\gr90310.chr
+WaspChr11	incbin	data\objects\waspbot\gr90311.chr
+
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ CHR DATA for SPIDERBOT						   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+		SECTION	GGD_SPIDERBOT
+
+SpiChr1		incbin	data\objects\spidrbot\gr90101.chr
+SpiChr2		incbin	data\objects\spidrbot\gr90102.chr
+SpiChr3		incbin	data\objects\spidrbot\gr90103.chr
+SpiChr4		incbin	data\objects\spidrbot\gr90104.chr
+SpiChr6		incbin	data\objects\spidrbot\gr90106.chr
+SpiChr7		incbin	data\objects\spidrbot\gr90107.chr
+SpiChr8		incbin	data\objects\spidrbot\gr90108.chr
+SpiChr10	incbin	data\objects\spidrbot\gr90110.chr
+SpiChr11	incbin	data\objects\spidrbot\gr90111.chr
+SpiChr12	incbin	data\objects\spidrbot\gr90112.chr
+SpiChr13	incbin	data\objects\spidrbot\gr90113.chr
+SpiChr14	incbin	data\objects\spidrbot\gr90114.chr
+SpiChr15	incbin	data\objects\spidrbot\gr90115.chr
+SpiChr16	incbin	data\objects\spidrbot\gr90116.chr
+SpiChr17	incbin	data\objects\spidrbot\gr90117.chr
+SpiChr18	incbin	data\objects\spidrbot\gr90118.chr
+
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ CHR DATA for PLASMA HAMMER ROBOT					   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+		SECTION	GGD_PLASMABOT
+
+PlasChr1		incbin	data\objects\plasma\gr90601.chr
+PlasChr2		incbin	data\objects\plasma\gr90602.chr
+PlasChr3		incbin	data\objects\plasma\gr90603.chr
+PlasChr4		incbin	data\objects\plasma\gr90604.chr
+PlasChr5		incbin	data\objects\plasma\gr90605.chr
+PlasChr6		incbin	data\objects\plasma\gr90606.chr
+PlasChr7		incbin	data\objects\plasma\gr90607.chr
+PlasChr8		incbin	data\objects\plasma\gr90608.chr
+PlasChr9		incbin	data\objects\plasma\gr90609.chr
+PlasChr10		incbin	data\objects\plasma\gr90610.chr
+PlasChr11		incbin	data\objects\plasma\gr90611.chr
+
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ CHR DATA for MORNING STAR VIKING					   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+		SECTION	GGD_MORNSTAR
+
+MornChr2		incbin	data\objects\mornstar\gv0302.chr
+MornChr3		incbin	data\objects\mornstar\gv0303.chr
+MornChr4		incbin	data\objects\mornstar\gv0304.chr
+MornChr5		incbin	data\objects\mornstar\gv0305.chr
+MornChr6		incbin	data\objects\mornstar\gv0306.chr
+MornChr7		incbin	data\objects\mornstar\gv0307.chr
+MornChr8		incbin	data\objects\mornstar\gv0308.chr
+
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ CHR DATA for VIKING ARCHER						   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+		SECTION	GGD_ARCHER
+
+ArcherChr2		incbin	data\objects\archer\gv0202.chr
+ArcherChr3		incbin	data\objects\archer\gv0203.chr
+ArcherChr4		incbin	data\objects\archer\gv0204.chr
+ArcherChr5		incbin	data\objects\archer\gv0205.chr
+ArcherChr6		incbin	data\objects\archer\gv0206.chr
+ArcherChr12		incbin	data\objects\archer\gv0212.chr
+ArcherChr13		incbin	data\objects\archer\gv0213.chr
+ArcherChr14		incbin	data\objects\archer\gv0214.chr
+ArcherChr15		incbin	data\objects\archer\gv0215.chr
+ArcherChr16		incbin	data\objects\archer\gv0216.chr
+
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ CHR DATA for VALKYRIE VIKING					   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+		SECTION	GGD_VALKYRIE
+
+ValkyrieChr3		incbin	data\objects\valkyrie\gv0403.chr
+ValkyrieChr4		incbin	data\objects\valkyrie\gv0404.chr
+ValkyrieChr6		incbin	data\objects\valkyrie\gv0406.chr
+ValkyrieChr7		incbin	data\objects\valkyrie\gv0407.chr
+ValkyrieChr8		incbin	data\objects\valkyrie\gv0408.chr
+ValkyrieChr9		incbin	data\objects\valkyrie\gv0409.chr
+ValkyrieChr10		incbin	data\objects\valkyrie\gv0410.chr
+ValkyrieChr11		incbin	data\objects\valkyrie\gv0411.chr
+ValkyrieChr12		incbin	data\objects\valkyrie\gv0412.chr
+
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ CHR DATA for WEAPONS EXPERT VIKING					   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+		SECTION	GGD_WEAPONEXP
+
+WeapExpChr1		incbin	data\objects\weapexp\gv0501.chr
+WeapExpChr2		incbin	data\objects\weapexp\gv0502.chr
+WeapExpChr3		incbin	data\objects\weapexp\gv0503.chr
+WeapExpChr4		incbin	data\objects\weapexp\gv0504.chr
+WeapExpChr7		incbin	data\objects\weapexp\gv0507.chr
+WeapExpChr8		incbin	data\objects\weapexp\gv0508.chr
+
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ CHR DATA for MUTANT VIKING BOSS					   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+		SECTION	GGD_MUTANTVIKING
+
+MutVikChr1a		incbin	data\objects\mutvking\gv1101a.chr
+MutVikChr1b		incbin	data\objects\mutvking\gv1101b.chr
+MutVikChr2		incbin	data\objects\mutvking\gv1102.chr
+MutVikChr4		incbin	data\objects\mutvking\gv1104.chr
+MutVikChr5		incbin	data\objects\mutvking\gv1105.chr
+MutVikChr7		incbin	data\objects\mutvking\gv1107.chr
+MutVikChr8		incbin	data\objects\mutvking\gv1108.chr
+
+MutVikChr6		incbin	data\objects\mutvking\gv1106.chr
+FloorChr1		incbin	data\objects\mutvking\gg3302.chr
+
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ CHR DATA for The EYE OF ODIN					   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+		SECTION	GGD_EYEOFODIN
+
+EyeChr1			incbin	data\objects\eye_odin\gg9301.chr
+EyeChr2			incbin	data\objects\eye_odin\gg9302.chr
+EyeChr3			incbin	data\objects\eye_odin\gg9303.chr
+EyeChr4			incbin	data\objects\eye_odin\gg9304.chr
+EyeChr5			incbin	data\objects\eye_odin\gg9305.chr
+EyeChr6			incbin	data\objects\eye_odin\gg9306.chr
+EyeChr7			incbin	data\objects\eye_odin\gg9307.chr
+
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ CHR DATA for VIKING SORCERER BOSS					   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+		SECTION	GGD_SORCERER
+
+SorcerChr1		incbin	data\objects\sorcerer\gv0601.chr
+SorcerChr2		incbin	data\objects\sorcerer\gv0602.chr
+SorcerChr3		incbin	data\objects\sorcerer\gv0603.chr
+SorcerChr5		incbin	data\objects\sorcerer\gv0605.chr
+SorcerChr6		incbin	data\objects\sorcerer\gv0606.chr
+SorcerChr7		incbin	data\objects\sorcerer\gv0607.chr
+SorcerChr8		incbin	data\objects\sorcerer\gg8402.chr
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ CHR DATA for DEMONA BOSS						   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+		SECTION	GGD_DEMONA
+
+DemonaChr1		incbin	data\objects\demona\gd40101.chr
+DemonaChr2		incbin	data\objects\demona\gd40102.chr
+DemonaChr3		incbin	data\objects\demona\gd40103.chr
+DemonaChr4		incbin	data\objects\demona\gd40104.chr
+DemonaChr9		incbin	data\objects\demona\gd40109.chr
+DemonaChr10		incbin	data\objects\demona\gd40110.chr
+DemonaChr11		incbin	data\objects\demona\gd40111.chr
+DemonaChr12		incbin	data\objects\demona\gd40112.chr
+DemonaChr13		incbin	data\objects\demona\gd40113.chr
+DemonaChr14		incbin	data\objects\demona\gd40114.chr
+
+MDemonaChr1		incbin	data\objects\demona\gd40301.chr
+MDemonaChr2		incbin	data\objects\demona\gd40302.chr
+MDemonaChr3		incbin	data\objects\demona\gd40303.chr
+MDemonaChr4		incbin	data\objects\demona\gd40304.chr
+MDemonaChr5		incbin	data\objects\demona\gd40305.chr
+MDemonaChr6		incbin	data\objects\demona\gd40306.chr
+MDemonaChr7		incbin	data\objects\demona\gd40307.chr
+MDemonaChr8		incbin	data\objects\demona\gd40308.chr
+
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ CHR DATA for RABID HELL HOUND					   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+		SECTION	GGD_RABIDHH
+
+RabidChr1		incbin	data\objects\hellhnd\gg90701.chr
+RabidChr2		incbin	data\objects\hellhnd\gg90702.chr
+RabidChr3		incbin	data\objects\hellhnd\gg90703.chr
+RabidChr4		incbin	data\objects\hellhnd\gg90704.chr
+RabidChr5		incbin	data\objects\hellhnd\gg90705.chr
+RabidChr6		incbin	data\objects\hellhnd\gg90706.chr
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ CHR DATA for MUTANT SPIDERBOT BOSS					   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+		SECTION	GGD_MUTANTSPIDER
+
+MutSpiChr1		incbin	data\level03\anims\gg97801.chr
+MutSpiChr2		incbin	data\level03\anims\gg97802.chr
+MutSpiChr3		incbin	data\level03\anims\gg97803.chr
+MutSpiChr4		incbin	data\level03\anims\gg97804.chr
+MutSpiChr5		incbin	data\level03\anims\gg97805.chr
+MutSpiChr6		incbin	data\level03\anims\gg97806.chr
+MutSpiChr8		incbin	data\level03\anims\gg97808.chr
+
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ CHR DATA for XANATOS						   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+		SECTION	GGD_XANATOS
+
+XanatosChr3		incbin	data\objects\xanatos\gr97903.chr
+XanatosChr4		incbin	data\objects\xanatos\gr97904.chr
+XanatosChr8		incbin	data\objects\xanatos\gr97908.chr
+XanatosChr10		incbin	data\objects\xanatos\gr97910.chr
+XanatosChr16		incbin	data\objects\xanatos\gr97916.chr
+XanatosChr17		incbin	data\objects\xanatos\gr97917.chr
+XanatosChr18		incbin	data\objects\xanatos\gr97918.chr
+
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ CHR DATA for EXPLOSIONS/DEBRIS					   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+		SECTION	GGD_EXPLOSIONS
+
+BigExpChr1	incbin	data\objects\effects\ge1903a.chr
+BigExpChr2	incbin	data\objects\effects\ge1903b.chr
+SmallExpChr1	incbin	data\objects\effects\gg1904.chr
+FireBallChr1	incbin	data\objects\effects\ge1905a.chr
+GlassChr1	incbin	data\objects\effects\gg5802a.chr
+GlassChr2	incbin	data\objects\effects\gg5802b.chr
+GlassChr3	incbin	data\objects\effects\gg5802c.chr
+;HorElecChr1	incbin	data\objects\effects\gg8401.chr
+;VerElecChr1	incbin	data\objects\effects\gg8402.chr
+SparkChr1	incbin	data\objects\effects\gg8405.chr
+SparksChr1	incbin	data\objects\effects\gg8406.chr
+Sparks2Chr1	incbin	data\objects\effects\gg8406b.chr
+MetalChr1	incbin	data\objects\effects\ge8701a.chr
+MetalChr2	incbin	data\objects\effects\ge8701b.chr
+MetalChr3	incbin	data\objects\effects\ge8701c.chr
+MetalChr4	incbin	data\objects\effects\ge8701d.chr
+MetalChr5	incbin	data\objects\effects\ge8701e.chr
+MetalChr6	incbin	data\objects\effects\ge8701f.chr
+
+		
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ CHR DATA for MISC LEVEL1 MECHANICS/EFFECTS				   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+		SECTION	GGD_LEV1MISC
+
+L1CastleBitsChr1	incbin	data\level01\anims\gg0801.chr
+L1BoulderChr1		incbin	data\level01\anims\gg0904.chr
+L1BalistaLogChr1	incbin	data\level01\anims\gg1401.chr
+L1BalistaCockChr1	incbin	data\level01\anims\gg1402.chr
+L1CatapultCockChr1	incbin	data\level01\anims\gg1501.chr
+L1CouldronTipChr1	incbin	data\level01\anims\gg1601.chr
+L1CouldronIdleChr1	incbin	data\level01\anims\gg1602.chr
+L1OilDripChr1		incbin	data\level01\anims\gg1603.chr
+L1OilSplashChr1		incbin	data\level01\anims\gg1604.chr
+L1WallOverChr1		incbin	data\level01\anims\gg1703.chr
+L1WallDebrisChr1	incbin	data\level01\anims\gg1704.chr
+L1CollapseFloorChr1	incbin	data\level01\anims\gg1801.chr
+L1FireBallChr1		incbin	data\level01\anims\gg1905.chr
+L1GateChr1		incbin	data\level01\anims\gg4801.chr
+L1WeightChr1		incbin	data\level01\anims\gg4901.chr
+;L1HorzFlameChr1		incbin	data\level01\anims\gg8501.chr
+;L1FireFloorChr1		incbin	data\level01\anims\gg8901.chr
+L1FireWallChr1		incbin	data\level01\anims\gg8902.chr
+L1FireWispChr1		incbin	data\level01\anims\gg8903.chr
+L1BigFireBallChr1	incbin	data\level01\anims\gg1905b.chr
+
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ CHR DATA for MISC LEVEL2 MECHANICS/EFFECTS				   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+		SECTION	GGD_LEV2MISC
+
+VentExhaustChr1		incbin	data\level02\anims\gg2401.chr
+VentSparksChr1		incbin	data\level02\anims\gg2402.chr
+VentChainChr1		incbin	data\level02\anims\gg3303.chr
+ColumnClawChr1		incbin	data\level02\anims\gg2501.chr
+ColumnFireChr1a		incbin	data\level02\anims\gg2801a.chr
+ColumnFireChr1b		incbin	data\level02\anims\gg2801b.chr
+ColumnFireChr2		incbin	data\level02\anims\gg2802.chr
+ColumnFireChr3		incbin	data\level02\anims\gg2803.chr
+		
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ CHR DATA for MISC LEVEL3 MECHANICS/EFFECTS				   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+		SECTION	GGD_LEV3MISC
+
+SkyLightChr1		incbin	data\level03\anims\gg5801.chr
+BreakLightChr1		incbin	data\level03\anims\gg3601.chr
+ThrowCrateChr1		incbin	data\level03\anims\gg3605.chr
+WoodDebrisChr1		incbin	data\level03\anims\gg3605a.chr
+WoodDebrisChr2		incbin	data\level03\anims\gg3605b.chr
+WoodDebrisChr3		incbin	data\level03\anims\gg3605c.chr
+BreakEdgeLChr1		incbin	data\level03\anims\gg3603a.chr
+BreakEdgeRChr1		incbin	data\level03\anims\gg3603b.chr
+BreakEdgeLChr2		incbin	data\level03\anims\gg3603c.chr
+BreakEdgeRChr2		incbin	data\level03\anims\gg3603d.chr
+WallOverChr1		incbin	data\level03\anims\gg6201.chr
+WallDebrisChr1		incbin	data\level03\anims\gg1705.chr
+SignPieceChr1		incbin	data\level03\anims\gg3609.chr
+SteamVentChr1		incbin	data\level03\anims\gg3602.chr
+
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ CHR DATA for MISC LEVEL4 MECHANICS/EFFECTS				   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+;		SECTION	GGD_LEV4MISC
+
+
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ CHR DATA for MISC LEVEL5 MECHANICS/EFFECTS			 	   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+		SECTION	GGD_LEV5MISC
+
+L5SignChr1		incbin	data\level05\anims\gg7101.chr
+L5LightsChr1		incbin	data\level05\anims\gg7102.chr
+L5SignPiecesChr1	incbin	data\level05\anims\gg7104.chr
+L5SkylightChr1		incbin	data\level05\anims\gg7201.chr
+L5DoorChr1		incbin	data\level05\anims\gg7202.chr
+L5DebrisChr1		incbin	data\level05\anims\gg7301.chr
+L5ElecBallChr1		incbin	data\level05\anims\gg7401.chr
+L5ElecBarChr1		incbin	data\level05\anims\gg7402.chr
+L5TunnelEdgeChr1	incbin	data\level05\anims\gg7403.chr
+L5ForegroundPostChr1	incbin	data\level05\anims\gg7404.chr
+
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ CHR DATA for MISC LEVEL7 MECHANICS/EFFECTS				   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+		SECTION	GGD_LEV7MISC
+
+L7RocksChr1		incbin	data\level07\anims\gg8701.chr
+L7CouldronChr1		incbin	data\level07\anims\gg8601.chr
+L7FurnaceChr1		incbin	data\level07\anims\gg8801.chr
+L7VertFlameChr1		incbin	data\level07\anims\gg8803.chr
+L7TroughChr1		incbin	data\level07\anims\gg8804.chr
+L7RobotGenChr1		incbin	data\level07\anims\gg9103.chr
+L7PlatOrbChr1		incbin	data\level07\anims\gg9104.chr
+L7WallFlameChr1		incbin	data\level07\anims\gg9106.chr
+L7FloorFlameChr1	incbin	data\level07\anims\gg9107.chr
+L7EnergizerChr1		incbin	data\level07\anims\gg8005.chr
+L7TentacleChr1		incbin	data\level07\anims\gg9201.chr
+L7WallPasteChr1		incbin	data\level07\anims\gg9202.chr
+L7InfuserChr1		incbin	data\level07\anims\gg9203.chr
+L7BigGunsChr1		incbin	data\level07\anims\gg9204.chr
+L7BigGunsProjChr1	incbin	data\level07\anims\gg9205.chr
+L7EdgePasteChr1		incbin	data\level07\anims\gg9206.chr
+L7FlameLickChr1		incbin	data\level07\anims\gg8806.chr
+
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ 			CHARACTER ANIMATION DATA			   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+; - Level 1 ----------------------------------------------------------------
+
+
+		SECTION	GGD_LEV1CANIM
+
+		
+L1M0FNL0_DATA	incbin	data\level01\maps\l1m0fnl0.adt
+
+
+; - Level 2 ----------------------------------------------------------------
+
+;		SECTION	GGD_LEV2CANIM
+
+
+; - Level 3 ----------------------------------------------------------------
+
+		SECTION	GGD_LEV3CANIM
+
+L3M0FNL0_DATA	incbin	data\level03\maps\l3m0fnl0.adt
+L3M4FNL0_DATA	incbin	data\level03\boss\l3m4fnl0.adt
+
+
+; - Level 4 ----------------------------------------------------------------
+
+;		SECTION	GGD_LEV4CANIM
+
+
+; - Level 5 ----------------------------------------------------------------
+
+		SECTION	GGD_LEV5CANIM
+
+L5M0FNL0_DATA	incbin	data\level05\maps\l5m0fnl0.adt
+
+
+; - Level 7 ----------------------------------------------------------------
+
+		SECTION	GGD_LEV7CANIM
+
+L7M0FNL0_DATA	incbin	data\level07\maps\l7m0fnl0.adt
+L7M7FNL0_DATA	incbin	data\level07\boss\l7m7fnl0.adt
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,90 @@
+chop RaptorBot animations : 2 secs/frame : palette 4
+GOLIATH ANIMATION CONVERTION ...
+rem ** CHOP the animations **
+call spr gv0601 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gv0601.anm
+Used 6 sprites, with a total of 32 characters, in 0.1 seconds
+Used 8 sprites, with a total of 39 characters, in 1.0 seconds
+Used 8 sprites, with a total of 41 characters, in 1.0 seconds
+Used 14 sprites, with a total of 50 characters, in 1.0 seconds
+Used 9 sprites, with a total of 39 characters, in 1.0 seconds
+Used 9 sprites, with a total of 40 characters, in 1.0 seconds
+Used 11 sprites, with a total of 41 characters, in 1.0 seconds
+Used 10 sprites, with a total of 41 characters, in 1.0 seconds
+Used 10 sprites, with a total of 40 characters, in 1.0 seconds
+call spr gv0602 %1 1
+chop /t1 /b254 /r253 /c240 /p1 gv0602.anm
+Used 1 sprites, with a total of 9 characters, in 0.0 seconds
+Used 2 sprites, with a total of 9 characters, in 0.0 seconds
+Used 5 sprites, with a total of 38 characters, in 0.5 seconds
+Used 5 sprites, with a total of 27 characters, in 0.0 seconds
+Used 3 sprites, with a total of 18 characters, in 0.0 seconds
+Used 1 sprites, with a total of 1 characters, in 0.0 seconds
+call spr gv0603 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gv0603.anm
+Used 7 sprites, with a total of 35 characters, in 1.0 seconds
+Used 6 sprites, with a total of 32 characters, in 0.3 seconds
+Used 5 sprites, with a total of 32 characters, in 0.1 seconds
+Used 5 sprites, with a total of 32 characters, in 0.0 seconds
+Used 5 sprites, with a total of 34 characters, in 0.2 seconds
+call spr gv0605 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gv0605.anm
+Used 7 sprites, with a total of 33 characters, in 1.0 seconds
+Used 7 sprites, with a total of 31 characters, in 0.4 seconds
+Used 7 sprites, with a total of 34 characters, in 1.0 seconds
+Used 8 sprites, with a total of 30 characters, in 1.0 seconds
+Used 7 sprites, with a total of 32 characters, in 0.5 seconds
+Used 4 sprites, with a total of 16 characters, in 0.0 seconds
+call spr gv0606 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gv0606.anm
+Used 9 sprites, with a total of 58 characters, in 1.0 seconds
+Used 9 sprites, with a total of 35 characters, in 1.0 seconds
+Used 10 sprites, with a total of 55 characters, in 1.0 seconds
+Used 16 sprites, with a total of 57 characters, in 1.0 seconds
+Used 7 sprites, with a total of 37 characters, in 1.0 seconds
+call spr gv0607 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gv0607.anm
+Used 1 sprites, with a total of 16 characters, in 0.0 seconds
+Used 4 sprites, with a total of 17 characters, in 0.0 seconds
+Used 2 sprites, with a total of 16 characters, in 0.0 seconds
+Used 4 sprites, with a total of 17 characters, in 0.0 seconds
+Used 3 sprites, with a total of 18 characters, in 0.0 seconds
+Used 2 sprites, with a total of 18 characters, in 0.0 seconds
+Used 3 sprites, with a total of 22 characters, in 0.0 seconds
+Used 6 sprites, with a total of 20 characters, in 0.1 seconds
+Used 2 sprites, with a total of 14 characters, in 0.0 seconds
+Used 2 sprites, with a total of 14 characters, in 0.0 seconds
+Used 2 sprites, with a total of 16 characters, in 0.0 seconds
+call spr gg8402 %1 1
+chop /t1 /b254 /r253 /c240 /p1 gg8402.anm
+Used 11 sprites, with a total of 42 characters, in 1.0 seconds
+Used 19 sprites, with a total of 73 characters, in 1.0 seconds
+rem ** COLLECT the animations **
+call col gv0601
+collect gv0601.col
+call col gv0602
+collect gv0602.col
+call col gv0603
+collect gv0603.col
+call col gv0605
+collect gv0605.col
+call col gv0606
+collect gv0606.col
+call col gv0607
+collect gv0607.col
+call col gg8402
+collect gg8402.col
+call modany2
+
+.ANY FILE FORMATTER V1.00CPS
+
+Sequence # (2 letter prefix+seq # (gg01))? gv06
+Working ... gv0601.any --> gv0601.ant
+Working ... gv0602.any --> gv0602.ant
+Working ... gv0603.any --> gv0603.ant
+Working ... gv0604.any --> gv0604.ant
+Working ... gv0605.any --> gv0605.ant
+Working ... gv0606.any --> gv0606.ant
+Working ... gv0607.any --> gv0607.ant
+
+OK! All done.

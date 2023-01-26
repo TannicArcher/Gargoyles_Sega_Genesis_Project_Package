@@ -1,0 +1,222 @@
+
+WASP_AI			AI_LIST &
+			AI_WBAirZero,&
+			AI_WBTrack,&
+			AI_WBFlyTo
+			AI_END_LIST
+
+WASP_AI2		AI_LIST &
+			AI_WBBackoffA,&
+			AI_WBBackoffG
+			AI_END_LIST
+
+AI_WBAirZero	AI_CB &				;Condition bits macro.
+ 	  	YES,&				;Player must NOT be within X Proximity distance.
+ 	  	NO,&				;Proximity test check LEFT/RIGHT.
+ 	  	YES,&				;Player must NOT be within Y Proximity distance.
+		NO,&				;Proximity test check ABOVE/BELOW.
+		NO,&				;Player must be to the LEFT of the enemy.
+		NO,&				;Player must be to the RIGHT of the enemy.
+		NO,&				;Player must be FACING the enemy.
+		NO,&				;Player must have BACK towards enemy.
+		NO,&				;Player must be on the GROUND.
+		NO,&				;Player must be in the AIR.
+		NO,&				;Player must be on the CEILING.
+		NO,&				;Player must be on the WALL.
+		NO,&				;Player must be IDLING.
+		NO,&				;Player must be BEING HIT.
+		NO,&				;Player must be DIEING.
+		NO,&				;Player must be JUMPING.
+		NO,&				;Player must be FALLING.
+		NO,&				;Player must be ATTACKING.
+		NO,&				;Player must be GRABBING.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO				;Unused.	
+		AI_DATA	&			;AI Data macro.
+		$100,&				;Proximity to Player in X.
+		$100,&				;Proximity to Player in Y.
+		CHANCE_ALWAYS,&			;Chance that called routine will NOT be called.
+		0,&				;Enemy data #1.
+		0,&				;Enemy data #1.
+		0,&				;Enemy data #1.
+		0,&				;Future expansion.
+		WaspBotSetAirZero		;This routine is called if all conditions are met.	
+
+AI_WBFlyTo	AI_CB &				;Condition bits macro.
+ 	  	NO,&				;Player must NOT be within X Proximity distance.
+ 	  	YES,&				;Proximity test check LEFT/RIGHT.
+ 	  	NO,&				;Player must NOT be within Y Proximity distance.
+		YES,&				;Proximity test check ABOVE/BELOW.
+		NO,&				;Player must be to the LEFT of the enemy.
+		NO,&				;Player must be to the RIGHT of the enemy.
+		NO,&				;Player must be FACING the enemy.
+		NO,&				;Player must have BACK towards enemy.
+		NO,&				;Player must be on the GROUND.
+		NO,&				;Player must be in the AIR.
+		NO,&				;Player must be on the CEILING.
+		NO,&				;Player must be on the WALL.
+		NO,&				;Player must be IDLING.
+		NO,&				;Player must be BEING HIT.
+		NO,&				;Player must be DIEING.
+		NO,&				;Player must be JUMPING.
+		NO,&				;Player must be FALLING.
+		NO,&				;Player must be ATTACKING.
+		NO,&				;Player must be GRABBING.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO				;Unused.	
+		AI_DATA	&			;AI Data macro.
+		$200,&				;Proximity to Player in X.
+		$200,&				;Proximity to Player in Y.
+		CHANCE_ALWAYS,&			;Chance that called routine will NOT be called.
+		0,&				;Enemy data #1.
+		0,&				;Enemy data #1.
+		0,&				;Enemy data #1.
+		0,&				;Future expansion.
+		WaspBotSetFlyTo			;This routine is called if all conditions are met.	
+
+AI_WBTrack	AI_CB &				;Condition bits macro.
+ 	  	NO,&				;Player must NOT be within X Proximity distance.
+ 	  	YES,&				;Proximity test check LEFT/RIGHT.
+ 	  	NO,&				;Player must NOT be within Y Proximity distance.
+		YES,&				;Proximity test check ABOVE/BELOW.
+		NO,&				;Player must be to the LEFT of the enemy.
+		NO,&				;Player must be to the RIGHT of the enemy.
+		NO,&				;Player must be FACING the enemy.
+		NO,&				;Player must have BACK towards enemy.
+		NO,&				;Player must be on the GROUND.
+		NO,&				;Player must be in the AIR.
+		NO,&				;Player must be on the CEILING.
+		NO,&				;Player must be on the WALL.
+		NO,&				;Player must be IDLING.
+		NO,&				;Player must be BEING HIT.
+		NO,&				;Player must be DIEING.
+		NO,&				;Player must be JUMPING.
+		NO,&				;Player must be FALLING.
+		NO,&				;Player must be ATTACKING.
+		NO,&				;Player must be GRABBING.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO				;Unused.	
+		AI_DATA	&			;AI Data macro.
+		$80,&				;Proximity to Player in X.
+		$80,&				;Proximity to Player in Y.
+		CHANCE_1in2,&			;Chance that called routine will NOT be called.
+		0,&				;Enemy data #1.
+		0,&				;Enemy data #1.
+		0,&				;Enemy data #1.
+		0,&				;Future expansion.
+		WaspBotSetTrack			;This routine is called if all conditions are met.	
+
+AI_WBBackoffA	AI_CB &				;Condition bits macro.
+ 	  	NO,&				;Player must NOT be within X Proximity distance.
+ 	  	YES,&				;Proximity test check LEFT/RIGHT.
+ 	  	NO,&				;Player must NOT be within Y Proximity distance.
+		YES,&				;Proximity test check ABOVE/BELOW.
+		NO,&				;Player must be to the LEFT of the enemy.
+		NO,&				;Player must be to the RIGHT of the enemy.
+		NO,&				;Player must be FACING the enemy.
+		NO,&				;Player must have BACK towards enemy.
+		NO,&				;Player must be on the GROUND.
+		NO,&				;Player must be in the AIR.
+		NO,&				;Player must be on the CEILING.
+		NO,&				;Player must be on the WALL.
+		NO,&				;Player must be IDLING.
+		NO,&				;Player must be BEING HIT.
+		NO,&				;Player must be DIEING.
+		NO,&				;Player must be JUMPING.
+		NO,&				;Player must be FALLING.
+		NO,&				;Player must be ATTACKING.
+		NO,&				;Player must be GRABBING.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO				;Unused.	
+		AI_DATA	&			;AI Data macro.
+		$50,&				;Proximity to Player in X.
+		$20,&				;Proximity to Player in Y.
+		CHANCE_1in2,&			;Chance that called routine will NOT be called.
+		0,&				;Enemy data #1.
+		0,&				;Enemy data #1.
+		0,&				;Enemy data #1.
+		0,&				;Future expansion.
+		WaspBotSetBackoff		;This routine is called if all conditions are met.	
+
+AI_WBBackoffG	AI_CB &				;Condition bits macro.
+ 	  	NO,&				;Player must NOT be within X Proximity distance.
+ 	  	YES,&				;Proximity test check LEFT/RIGHT.
+ 	  	NO,&				;Player must NOT be within Y Proximity distance.
+		YES,&				;Proximity test check ABOVE/BELOW.
+		NO,&				;Player must be to the LEFT of the enemy.
+		NO,&				;Player must be to the RIGHT of the enemy.
+		YES,&				;Player must be FACING the enemy.
+		NO,&				;Player must have BACK towards enemy.
+		NO,&				;Player must be on the GROUND.
+		NO,&				;Player must be in the AIR.
+		NO,&				;Player must be on the CEILING.
+		NO,&				;Player must be on the WALL.
+		NO,&				;Player must be IDLING.
+		NO,&				;Player must be BEING HIT.
+		NO,&				;Player must be DIEING.
+		NO,&				;Player must be JUMPING.
+		NO,&				;Player must be FALLING.
+		NO,&				;Player must be ATTACKING.
+		YES,&				;Player must be GRABBING.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO,&				;Unused.
+		NO				;Unused.	
+		AI_DATA	&			;AI Data macro.
+		$40,&				;Proximity to Player in X.
+		$40,&				;Proximity to Player in Y.
+		CHANCE_1in2,&			;Chance that called routine will NOT be called.
+		0,&				;Enemy data #1.
+		0,&				;Enemy data #1.
+		0,&				;Enemy data #1.
+		0,&				;Future expansion.
+		WaspBotSetBackoff		;This routine is called if all conditions are met.	
+

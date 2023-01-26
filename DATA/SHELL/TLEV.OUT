@@ -1,0 +1,478 @@
+TPMCKID2 02.035  Copyright (c) 1992, 1993 Echidna
+Finding used tiles
+Writing animation data 'TITLPAGE.ADT'
+Converting Tileset 'TITLPAGE.LBM'
+Writing High Quality Screen Room 'titlpage.map'
+Writing Palette 'titlpage.pal'
+Num 16x16 (2x2-8x8) tiles = 0
+Total   4 Color 8x8 Characters = 0
+Total  16 Color 8x8 Characters = 887
+Total 256 Color 8x8 Characters = 0
+Total     Mode7 8x8 Characters = 0
+Writing Character Font 'TITLPAGE.chr'
+
+Conventional Mem Free:   384208 bytes
+         EMS Mem free:  6663168 bytes
+         XMS Mem free: not used
+TPMCKID2 02.035  Copyright (c) 1992, 1993 Echidna
+Finding used tiles
+Writing animation data 'DISLOGO.ADT'
+Converting Tileset 'BVIGEN.LBM'
+Writing High Quality Screen Room 'dislogo.map'
+Writing Palette 'dislogo.pal'
+Num 16x16 (2x2-8x8) tiles = 0
+Total   4 Color 8x8 Characters = 0
+Total  16 Color 8x8 Characters = 799
+Total 256 Color 8x8 Characters = 0
+Total     Mode7 8x8 Characters = 0
+Writing Character Font 'DISLOGO.chr'
+
+Conventional Mem Free:   381920 bytes
+         EMS Mem free:  6648832 bytes
+         XMS Mem free: not used
+TPMCKID2 02.035  Copyright (c) 1992, 1993 Echidna
+Finding used tiles
+Writing animation data 'FONT8X8.ADT'
+Converting Tileset '8X8.LBM'
+Writing High Quality Screen Room 'font8x8.map'
+Writing Palette 'font8x8.pal'
+Num 16x16 (2x2-8x8) tiles = 0
+Total   4 Color 8x8 Characters = 0
+Total  16 Color 8x8 Characters = 97
+Total 256 Color 8x8 Characters = 0
+Total     Mode7 8x8 Characters = 0
+Writing Character Font 'FONT8X8.chr'
+
+Conventional Mem Free:   384512 bytes
+         EMS Mem free:  6673408 bytes
+         XMS Mem free: not used
+tP16 Version 02.061  Copyright (c) Echidna (this work is unpublished)
+Finding used tiles
+Writing animation data 'CONTINUE.ADT'
+Converting Tileset 'STORYART.LBM'
+WARNING: Bad colors in tileset 'STORYART.LBM' tile #0
+Converting Tileset 'STRYFONT.LBM'
+Converting Tileset 'comp1'
+Converting Tileset 'comp2'
+Writing Room 'continub.map'
+Writing Palette 'continub.pal'
+Writing Room 'continua.map'
+Writing Palette 'continua.pal'
+Writing Block Table 'CONTINUE.blk'
+Num 16x16 (2x2-8x8) tiles = 111
+Writing Floor Table 'CONTINUE.flr'
+Total   4 Color 8x8 Characters = 0
+Total  16 Color 8x8 Characters = 177
+Total 256 Color 8x8 Characters = 0
+Total     Mode7 8x8 Characters = 0
+Writing Character Font 'CONTINUE.chr'
+
+Conventional Mem Free:   340032 bytes
+         EMS Mem free:  6265856 bytes
+         XMS Mem free: not used
+Warnings: 1
+tP16 Version 02.061  Copyright (c) Echidna (this work is unpublished)
+Finding used tiles
+Writing animation data 'L1BEGIN.ADT'
+Converting Tileset 'SC02A.LBM'
+Converting Tileset 'SC02B.LBM'
+Writing Room 'l1beginb.map'
+Writing Palette 'l1beginb.pal'
+Writing Room 'l1begina.map'
+WARNING: Non object tile at (0,0) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (1,0) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (2,0) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (3,0) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (4,0) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (5,0) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (6,0) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (7,0) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (8,0) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (9,0) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (10,0) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (0,1) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (1,1) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (2,1) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (3,1) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (4,1) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (5,1) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (6,1) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (7,1) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (8,1) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (9,1) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (10,1) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (0,2) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (1,2) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (2,2) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (3,2) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (4,2) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (5,2) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (6,2) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (7,2) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (8,2) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (9,2) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (10,2) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (0,3) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (1,3) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (2,3) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (3,3) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (4,3) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (5,3) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (6,3) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (7,3) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (8,3) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (9,3) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (10,3) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (0,4) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (1,4) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (2,4) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (3,4) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (4,4) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (5,4) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (6,4) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (7,4) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (8,4) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (9,4) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (10,4) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (0,5) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (1,5) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (2,5) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (3,5) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (4,5) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (5,5) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (6,5) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (7,5) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (8,5) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (9,5) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (10,5) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (0,6) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (1,6) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (2,6) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (3,6) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (4,6) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (5,6) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (6,6) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (7,6) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (8,6) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (9,6) in object layer 3 in room 'l1begina'
+WARNING: Non object tile at (10,6) in object layer 3 in room 'l1begina'
+Writing Palette 'l1begina.pal'
+Writing Block Table 'L1BEGIN.blk'
+Num 16x16 (2x2-8x8) tiles = 133
+Writing Floor Table 'L1BEGIN.flr'
+Total   4 Color 8x8 Characters = 0
+Total  16 Color 8x8 Characters = 295
+Total 256 Color 8x8 Characters = 0
+Total     Mode7 8x8 Characters = 0
+Writing Character Font 'L1BEGIN.chr'
+
+Conventional Mem Free:   368192 bytes
+         EMS Mem free:  6542336 bytes
+         XMS Mem free: not used
+Warnings: 77
+tP16 Version 02.061  Copyright (c) Echidna (this work is unpublished)
+Finding used tiles
+Writing animation data 'L2BEGIN.ADT'
+Converting Tileset 'SC03A.LBM'
+Converting Tileset 'SC03B.LBM'
+Writing Room 'l2beginb.map'
+Writing Palette 'l2beginb.pal'
+Writing Room 'l2begina.map'
+Writing Palette 'l2begina.pal'
+Writing Block Table 'L2BEGIN.blk'
+Num 16x16 (2x2-8x8) tiles = 105
+Writing Floor Table 'L2BEGIN.flr'
+Total   4 Color 8x8 Characters = 0
+Total  16 Color 8x8 Characters = 275
+Total 256 Color 8x8 Characters = 0
+Total     Mode7 8x8 Characters = 0
+Writing Character Font 'L2BEGIN.chr'
+
+Conventional Mem Free:   361040 bytes
+         EMS Mem free:  6344704 bytes
+         XMS Mem free: not used
+tP16 Version 02.061  Copyright (c) Echidna (this work is unpublished)
+Finding used tiles
+Writing animation data 'L2END.ADT'
+Converting Tileset 'SC04A.LBM'
+Converting Tileset 'SC04B.LBM'
+Writing Room 'l2endb.map'
+Writing Palette 'l2endb.pal'
+Writing Room 'l2enda.map'
+Writing Palette 'l2enda.pal'
+Writing Block Table 'L2END.blk'
+Num 16x16 (2x2-8x8) tiles = 102
+Writing Floor Table 'L2END.flr'
+Total   4 Color 8x8 Characters = 0
+Total  16 Color 8x8 Characters = 281
+Total 256 Color 8x8 Characters = 0
+Total     Mode7 8x8 Characters = 0
+Writing Character Font 'L2END.chr'
+
+Conventional Mem Free:   368160 bytes
+         EMS Mem free:  6542336 bytes
+         XMS Mem free: not used
+tP16 Version 02.061  Copyright (c) Echidna (this work is unpublished)
+Finding used tiles
+Writing animation data 'L3BEGIN.ADT'
+Converting Tileset 'SC04X.LBM'
+Converting Tileset 'SC04Y.LBM'
+Writing Room 'l3beginb.map'
+Writing Palette 'l3beginb.pal'
+Writing Room 'l3begina.map'
+Writing Palette 'l3begina.pal'
+Writing Block Table 'L3BEGIN.blk'
+Num 16x16 (2x2-8x8) tiles = 95
+Writing Floor Table 'L3BEGIN.flr'
+Total   4 Color 8x8 Characters = 0
+Total  16 Color 8x8 Characters = 259
+Total 256 Color 8x8 Characters = 0
+Total     Mode7 8x8 Characters = 0
+Writing Character Font 'L3BEGIN.chr'
+
+Conventional Mem Free:   368160 bytes
+         EMS Mem free:  6542336 bytes
+         XMS Mem free: not used
+tP16 Version 02.061  Copyright (c) Echidna (this work is unpublished)
+Finding used tiles
+Writing animation data 'L5BEGIN.ADT'
+Converting Tileset 'SC05A.LBM'
+Converting Tileset 'SC05B.LBM'
+Writing Room 'l5beginb.map'
+Writing Palette 'l5beginb.pal'
+Writing Room 'l5begina.map'
+Writing Palette 'l5begina.pal'
+Writing Block Table 'L5BEGIN.blk'
+Num 16x16 (2x2-8x8) tiles = 96
+Writing Floor Table 'L5BEGIN.flr'
+Total   4 Color 8x8 Characters = 0
+Total  16 Color 8x8 Characters = 283
+Total 256 Color 8x8 Characters = 0
+Total     Mode7 8x8 Characters = 0
+Writing Character Font 'L5BEGIN.chr'
+
+Conventional Mem Free:   368192 bytes
+         EMS Mem free:  6542336 bytes
+         XMS Mem free: not used
+tP16 Version 02.061  Copyright (c) Echidna (this work is unpublished)
+Finding used tiles
+Writing animation data 'L7BEGIN.ADT'
+Converting Tileset 'SC07B.LBM'
+Writing Room 'l7beginb.map'
+Writing Palette 'l7beginb.pal'
+Writing Room 'l7begina.map'
+Writing Palette 'l7begina.pal'
+Writing Block Table 'L7BEGIN.blk'
+Num 16x16 (2x2-8x8) tiles = 102
+Writing Floor Table 'L7BEGIN.flr'
+Total   4 Color 8x8 Characters = 0
+Total  16 Color 8x8 Characters = 261
+Total 256 Color 8x8 Characters = 0
+Total     Mode7 8x8 Characters = 0
+Writing Character Font 'L7BEGIN.chr'
+
+Conventional Mem Free:   363232 bytes
+         EMS Mem free:  6406144 bytes
+         XMS Mem free: not used
+tP16 Version 02.061  Copyright (c) Echidna (this work is unpublished)
+Finding used tiles
+Writing animation data 'L7MIDDLE.ADT'
+Converting Tileset 'SC07Y.LBM'
+Writing Room 'l7midb.map'
+Writing Palette 'l7midb.pal'
+Writing Room 'l7mida.map'
+Writing Palette 'l7mida.pal'
+Writing Block Table 'L7MIDDLE.blk'
+Num 16x16 (2x2-8x8) tiles = 91
+Writing Floor Table 'L7MIDDLE.flr'
+Total   4 Color 8x8 Characters = 0
+Total  16 Color 8x8 Characters = 243
+Total 256 Color 8x8 Characters = 0
+Total     Mode7 8x8 Characters = 0
+Writing Character Font 'L7MIDDLE.chr'
+
+Conventional Mem Free:   369600 bytes
+         EMS Mem free:  6573056 bytes
+         XMS Mem free: not used
+tP16 Version 02.061  Copyright (c) Echidna (this work is unpublished)
+Finding used tiles
+Writing animation data 'L7END.ADT'
+Converting Tileset 'SC06A.LBM'
+Converting Tileset 'SC06B.LBM'
+Writing Room 'l7endb.map'
+Writing Palette 'l7endb.pal'
+Writing Room 'l7enda.map'
+Writing Palette 'l7enda.pal'
+Writing Block Table 'L7END.blk'
+Num 16x16 (2x2-8x8) tiles = 110
+Writing Floor Table 'L7END.flr'
+Total   4 Color 8x8 Characters = 0
+Total  16 Color 8x8 Characters = 279
+Total 256 Color 8x8 Characters = 0
+Total     Mode7 8x8 Characters = 0
+Writing Character Font 'L7END.chr'
+
+Conventional Mem Free:   368192 bytes
+         EMS Mem free:  6542336 bytes
+         XMS Mem free: not used
+tP16 Version 02.061  Copyright (c) Echidna (this work is unpublished)
+Finding used tiles
+Writing animation data 'YOULOSE.ADT'
+Converting Tileset 'SCL01B.LBM'
+Writing Room 'youloseb.map'
+Writing Palette 'youloseb.pal'
+Writing Room 'youlosea.map'
+Writing Palette 'youlosea.pal'
+Writing Block Table 'YOULOSE.blk'
+Num 16x16 (2x2-8x8) tiles = 72
+Writing Floor Table 'YOULOSE.flr'
+Total   4 Color 8x8 Characters = 0
+Total  16 Color 8x8 Characters = 225
+Total 256 Color 8x8 Characters = 0
+Total     Mode7 8x8 Characters = 0
+Writing Character Font 'YOULOSE.chr'
+
+Conventional Mem Free:   363232 bytes
+         EMS Mem free:  6406144 bytes
+         XMS Mem free: not used
+tP16 Version 02.061  Copyright (c) Echidna (this work is unpublished)
+Finding used tiles
+Writing animation data 'OPTIONS.ADT'
+Converting Tileset 'SC01A.LBM'
+Converting Tileset 'SC01B.LBM'
+Writing Room 'optionsb.map'
+Writing Palette 'optionsb.pal'
+Writing Room 'optionsa.map'
+Writing Palette 'optionsa.pal'
+Writing Block Table 'OPTIONS.blk'
+Num 16x16 (2x2-8x8) tiles = 129
+Writing Floor Table 'OPTIONS.flr'
+Total   4 Color 8x8 Characters = 0
+Total  16 Color 8x8 Characters = 293
+Total 256 Color 8x8 Characters = 0
+Total     Mode7 8x8 Characters = 0
+Writing Character Font 'OPTIONS.chr'
+
+Conventional Mem Free:   368160 bytes
+         EMS Mem free:  6542336 bytes
+         XMS Mem free: not used
+SWD Data Compressor - Version 1.1, 03/16/92.
+.
+SWD Data Compressor - Version 1.1, 03/16/92.
+..........................
+SWD Data Compressor - Version 1.1, 03/16/92.
+.
+SWD Data Compressor - Version 1.1, 03/16/92.
+......................
+SWD Data Compressor - Version 1.1, 03/16/92.
+..
+SWD Data Compressor - Version 1.1, 03/16/92.
+.
+SWD Data Compressor - Version 1.1, 03/16/92.
+.
+SWD Data Compressor - Version 1.1, 03/16/92.
+........
+SWD Data Compressor - Version 1.1, 03/16/92.
+.
+SWD Data Compressor - Version 1.1, 03/16/92.
+.
+SWD Data Compressor - Version 1.1, 03/16/92.
+.
+SWD Data Compressor - Version 1.1, 03/16/92.
+.
+SWD Data Compressor - Version 1.1, 03/16/92.
+.......
+SWD Data Compressor - Version 1.1, 03/16/92.
+.
+SWD Data Compressor - Version 1.1, 03/16/92.
+.
+SWD Data Compressor - Version 1.1, 03/16/92.
+.
+SWD Data Compressor - Version 1.1, 03/16/92.
+.
+SWD Data Compressor - Version 1.1, 03/16/92.
+........
+SWD Data Compressor - Version 1.1, 03/16/92.
+.
+SWD Data Compressor - Version 1.1, 03/16/92.
+.
+SWD Data Compressor - Version 1.1, 03/16/92.
+.
+SWD Data Compressor - Version 1.1, 03/16/92.
+.
+SWD Data Compressor - Version 1.1, 03/16/92.
+.......
+SWD Data Compressor - Version 1.1, 03/16/92.
+.
+SWD Data Compressor - Version 1.1, 03/16/92.
+.
+SWD Data Compressor - Version 1.1, 03/16/92.
+.
+SWD Data Compressor - Version 1.1, 03/16/92.
+.
+SWD Data Compressor - Version 1.1, 03/16/92.
+........
+SWD Data Compressor - Version 1.1, 03/16/92.
+.
+SWD Data Compressor - Version 1.1, 03/16/92.
+.
+SWD Data Compressor - Version 1.1, 03/16/92.
+.
+SWD Data Compressor - Version 1.1, 03/16/92.
+.
+SWD Data Compressor - Version 1.1, 03/16/92.
+.......
+SWD Data Compressor - Version 1.1, 03/16/92.
+.
+SWD Data Compressor - Version 1.1, 03/16/92.
+.
+SWD Data Compressor - Version 1.1, 03/16/92.
+.
+SWD Data Compressor - Version 1.1, 03/16/92.
+.
+SWD Data Compressor - Version 1.1, 03/16/92.
+......
+SWD Data Compressor - Version 1.1, 03/16/92.
+.
+SWD Data Compressor - Version 1.1, 03/16/92.
+.
+SWD Data Compressor - Version 1.1, 03/16/92.
+.
+SWD Data Compressor - Version 1.1, 03/16/92.
+.
+SWD Data Compressor - Version 1.1, 03/16/92.
+........
+SWD Data Compressor - Version 1.1, 03/16/92.
+.
+SWD Data Compressor - Version 1.1, 03/16/92.
+.
+SWD Data Compressor - Version 1.1, 03/16/92.
+.
+SWD Data Compressor - Version 1.1, 03/16/92.
+.
+SWD Data Compressor - Version 1.1, 03/16/92.
+......
+SWD Data Compressor - Version 1.1, 03/16/92.
+.
+SWD Data Compressor - Version 1.1, 03/16/92.
+.
+SWD Data Compressor - Version 1.1, 03/16/92.
+.
+SWD Data Compressor - Version 1.1, 03/16/92.
+.
+SWD Data Compressor - Version 1.1, 03/16/92.
+....
+SWD Data Compressor - Version 1.1, 03/16/92.
+.
+SWD Data Compressor - Version 1.1, 03/16/92.
+.
+SWD Data Compressor - Version 1.1, 03/16/92.
+.
+SWD Data Compressor - Version 1.1, 03/16/92.
+.
+SWD Data Compressor - Version 1.1, 03/16/92.
+........
+SWD Data Compressor - Version 1.1, 03/16/92.
+.
+SWD Data Compressor - Version 1.1, 03/16/92.
+.

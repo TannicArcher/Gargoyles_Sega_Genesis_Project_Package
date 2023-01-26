@@ -1,0 +1,20 @@
+	include	testani.68k
+
+	ani_palette	GR90510
+	ani_sprites	GR90510
+
+GR90510_anim	animation
+@1	ani_sprite	GR90510_0001
+	ani_sprite	GR90510_0002
+	ani_sprite	GR90510_0003
+	ani_sprite	GR90510_0004
+	ani_sprite	GR90510_0005
+	ani_sprite	GR90510_0006
+	ani_sprite	GR90510_0007
+	ani_sprite	GR90510_0008
+	ani_sprite	GR90510_0009
+	ani_sprite	GR90510_0010
+	ani_goto	@1
+	ani_end
+
+	ani_footer

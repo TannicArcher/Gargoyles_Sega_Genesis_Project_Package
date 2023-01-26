@@ -1,0 +1,96 @@
+chop RaptorBot animations : 2 secs/frame : palette 4
+GOLIATH ANIMATION CONVERTION ...
+rem ** CHOP the animations **
+call spr gg9301 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gg9301.anm
+Used 1 sprites, with a total of 1 characters, in 0.0 seconds
+Used 2 sprites, with a total of 8 characters, in 0.0 seconds
+Used 2 sprites, with a total of 8 characters, in 0.0 seconds
+Used 2 sprites, with a total of 8 characters, in 0.0 seconds
+Used 2 sprites, with a total of 6 characters, in 0.0 seconds
+Used 1 sprites, with a total of 6 characters, in 0.0 seconds
+Used 2 sprites, with a total of 7 characters, in 0.0 seconds
+Used 1 sprites, with a total of 6 characters, in 0.0 seconds
+call spr gg9302 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gg9302.anm
+Used 1 sprites, with a total of 4 characters, in 0.0 seconds
+Used 5 sprites, with a total of 26 characters, in 0.2 seconds
+Used 4 sprites, with a total of 18 characters, in 0.0 seconds
+Used 5 sprites, with a total of 18 characters, in 0.0 seconds
+Used 6 sprites, with a total of 18 characters, in 0.0 seconds
+Used 4 sprites, with a total of 17 characters, in 0.0 seconds
+Used 6 sprites, with a total of 21 characters, in 0.1 seconds
+Used 5 sprites, with a total of 20 characters, in 0.0 seconds
+Used 3 sprites, with a total of 16 characters, in 0.0 seconds
+Used 2 sprites, with a total of 13 characters, in 0.0 seconds
+Used 2 sprites, with a total of 13 characters, in 0.0 seconds
+call spr gg9303 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gg9303.anm
+Used 5 sprites, with a total of 20 characters, in 0.0 seconds
+Used 1 sprites, with a total of 12 characters, in 0.0 seconds
+Used 2 sprites, with a total of 10 characters, in 0.0 seconds
+Used 2 sprites, with a total of 10 characters, in 0.0 seconds
+Used 2 sprites, with a total of 8 characters, in 0.0 seconds
+call spr gg9304 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gg9304.anm
+Used 1 sprites, with a total of 16 characters, in 0.0 seconds
+Used 2 sprites, with a total of 15 characters, in 0.0 seconds
+Used 2 sprites, with a total of 13 characters, in 0.0 seconds
+Used 1 sprites, with a total of 8 characters, in 0.0 seconds
+Used 1 sprites, with a total of 12 characters, in 0.0 seconds
+Used 1 sprites, with a total of 12 characters, in 0.0 seconds
+Used 1 sprites, with a total of 12 characters, in 0.0 seconds
+Used 2 sprites, with a total of 11 characters, in 0.0 seconds
+Used 1 sprites, with a total of 12 characters, in 0.0 seconds
+call spr gg9305 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gg9305.anm
+Used 3 sprites, with a total of 12 characters, in 0.0 seconds
+Used 3 sprites, with a total of 12 characters, in 0.0 seconds
+Used 2 sprites, with a total of 10 characters, in 0.0 seconds
+Used 2 sprites, with a total of 10 characters, in 0.0 seconds
+Used 2 sprites, with a total of 10 characters, in 0.0 seconds
+Used 3 sprites, with a total of 10 characters, in 0.0 seconds
+call spr gg9306 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gg9306.anm
+Used 3 sprites, with a total of 14 characters, in 0.0 seconds
+Used 3 sprites, with a total of 13 characters, in 0.0 seconds
+Used 3 sprites, with a total of 11 characters, in 0.0 seconds
+Used 3 sprites, with a total of 13 characters, in 0.0 seconds
+Used 3 sprites, with a total of 15 characters, in 0.0 seconds
+Used 3 sprites, with a total of 11 characters, in 0.0 seconds
+call spr gg9307 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gg9307.anm
+Used 3 sprites, with a total of 21 characters, in 0.0 seconds
+Used 3 sprites, with a total of 21 characters, in 0.0 seconds
+Used 4 sprites, with a total of 12 characters, in 0.0 seconds
+Used 5 sprites, with a total of 7 characters, in 0.0 seconds
+Used 3 sprites, with a total of 4 characters, in 0.0 seconds
+rem ** COLLECT the animations **
+call col gg9301
+collect gg9301.col
+call col gg9302
+collect gg9302.col
+call col gg9303
+collect gg9303.col
+call col gg9304
+collect gg9304.col
+call col gg9305
+collect gg9305.col
+call col gg9306
+collect gg9306.col
+call col gg9307
+collect gg9307.col
+call modany2
+
+.ANY FILE FORMATTER V1.00CPS
+
+Sequence # (2 letter prefix+seq # (gg01))? gg93
+Working ... gg9301.any --> gg9301.ant
+Working ... gg9302.any --> gg9302.ant
+Working ... gg9303.any --> gg9303.ant
+Working ... gg9304.any --> gg9304.ant
+Working ... gg9305.any --> gg9305.ant
+Working ... gg9306.any --> gg9306.ant
+Working ... gg9307.any --> gg9307.ant
+
+OK! All done.

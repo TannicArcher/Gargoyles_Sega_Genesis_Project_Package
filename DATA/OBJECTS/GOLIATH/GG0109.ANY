@@ -1,0 +1,18 @@
+	include	testani.68k
+
+	ani_palette	GG0109
+	ani_sprites	GG0109
+
+GG0109_anim	animation
+@1	ani_sprite	GG0109_0001
+	ani_sprite	GG0109_0002
+	ani_sprite	GG0109_0003
+	ani_sprite	GG0109_0004
+	ani_sprite	GG0109_0005
+	ani_sprite	GG0109_0006
+	ani_sprite	GG0109_0007
+	ani_sprite	GG0109_0008
+	ani_goto	@1
+	ani_end
+
+	ani_footer

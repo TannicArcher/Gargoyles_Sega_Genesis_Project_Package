@@ -1,0 +1,12 @@
+;* Animation from room 'forgflmb'
+;*
+AMAP_FORGFLMB0_START:
+	ani_dma L7M7FNL0_DATA+$1000,$0200,$0100,4,0	; Frame  1 ( 1) of  8
+	ani_dma L7M7FNL0_DATA+$1100,$0200,$0100,4,0	; Frame  2 ( 2) of  8
+	ani_dma L7M7FNL0_DATA+$1200,$0200,$0100,4,0	; Frame  3 ( 3) of  8
+	ani_dma L7M7FNL0_DATA+$1300,$0200,$0100,4,0	; Frame  4 ( 4) of  8
+	ani_dma L7M7FNL0_DATA+$1400,$0200,$0100,4,0	; Frame  5 ( 5) of  8
+	ani_dma L7M7FNL0_DATA+$1500,$0200,$0100,4,0	; Frame  6 ( 6) of  8
+	ani_dma L7M7FNL0_DATA+$1600,$0200,$0100,4,0	; Frame  7 ( 7) of  8
+	ani_dma L7M7FNL0_DATA+$1700,$0200,$0100,4,0	; Frame  8 ( 8) of  8
+	dc.l	CEnd

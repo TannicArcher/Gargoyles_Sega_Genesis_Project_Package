@@ -1,0 +1,143 @@
+max_hxs		equ	4
+min_hxs		equ	-4
+max_hys		equ	4
+min_hys		equ	-4
+		
+		
+
+plr_home	lea	bltmp123,a1
+		lea	blstat,a2
+		lea	blxyfrm,a3
+		lea	bltmp456,a4
+		add.w	d0,a3
+		add.w	d0,a1
+		add.w	d0,a2
+		
+		jsr	tst_b_solid1	;test background
+		bmi	.fin
+		
+		tst.b	bl_tmp1(a1)
+		beq	.1
+		
+		moveq	#0,d1
+		move.w	bl_tmp2(a1),d1
+		bmi	.mv
+		bsr	get_centre1
+		
+		move.w	bl_xpos(a3),d4
+		move.w	bl_ypos(a3),d5
+
+.dx		;addq.b	#1,bl_tmp4(a4,d0.w)
+		;cmp.b	#2,bl_tmp4(a4,d0.w)
+		;bne.s	.a
+		;clr.b	bl_tmp4(a4,d0.w)
+
+		tst.b	bl_tmp1a(a1)	;time out
+		beq	.fin
+		subq.b	#1,bl_tmp1a(a1)
+
+		cmp.w	d4,d2
+		blt.s	.lft
+
+.rte		cmp.b	#max_hxs,bl_tmp3(a1)
+		beq.s	.dy
+		addq.b	#1,bl_tmp3(a1)
+		bra	.dy
+
+.lft		cmp.b	#min_hxs,bl_tmp3(a1)
+		beq.s	.dy
+		subq.b	#1,bl_tmp3(a1)
+
+.dy		cmp.w	d5,d3
+		blt.s	.dn
+
+.up		cmp.b	#max_hys,bl_tmp3a(a1)
+		beq.s	.a
+		addq.b	#1,bl_tmp3a(a1)
+		bra	.a
+
+.dn		cmp.b	#min_hys,bl_tmp3a(a1)
+		beq.s	.a
+		subq.b	#1,bl_tmp3a(a1)
+
+.a		moveq	#0,d1
+		move.b	bl_tmp3(a1),d1
+		bpl.s	.b
+		neg.b	d1
+		sub.w	d1,bl_xpos(a3)
+		bra	.c
+.b		add.w	d1,bl_xpos(a3)
+
+.c		move.b	bl_tmp3a(a1),d1
+		bpl.s	.d
+		neg.b	d1
+		sub.w	d1,bl_ypos(a3)
+		bra	.e
+.d		add.w	d1,bl_ypos(a3)
+
+.e		tst.b	bl_tmp3(a1)
+		beq.s	.ud
+		tst.b	bl_tmp3a(a1)
+		beq.s	.lr
+		bmi.s	.uu
+		
+.dd		tst.b	bl_tmp3(a1)
+		bmi.s	.11
+		bsr	nx_fy
+		bra	.20
+.11		bsr	fx_fy
+		bra	.20
+
+.uu		tst.b	bl_tmp3(a1)
+		bmi.s	.12
+		bsr	nx_ny
+		bra	.20
+.12		bsr	fx_ny
+
+.20		move.w	#home2_frm,bl_frm(a3)
+		bra	wp_nxt
+
+
+.lr		move.w	#home3_frm,bl_frm(a3)
+		tst.b	bl_tmp3(a1)
+		bpl.s	.lr2
+		bset.b	#blxflp,bl_stat(a2)
+		bra	wp_nxt
+.lr2		bclr.b	#blxflp,bl_stat(a2)
+		bra	wp_nxt
+.ud		move.w	#home1_frm,bl_frm(a3)
+		tst.b	bl_tmp3a(a1)
+		bmi.s	.ud2
+		bset.b	#blyflp,bl_stat(a2)
+		bra	wp_nxt
+.ud2		bclr.b	#blyflp,bl_stat(a2)
+		bra	wp_nxt
+
+.1		tst.b	bl_tmp1a(a1)
+		beq.s	.nxt
+		subq.b	#1,bl_tmp1a(a1)
+.mv		bsr	x_strate
+		bra	wp_nxt
+
+.nxt		addq.b	#1,bl_tmp1(a1)
+		move.b	#$80,bl_tmp1a(a1)
+		bra	wp_nxt
+
+.fin		bsr	set_2x2_exp
+		bra	wp_nxt
+	
+
+nx_fy		bclr.b	#blxflp,bl_stat(a2)
+		bset.b	#blyflp,bl_stat(a2)
+     		rts
+fx_fy		bset.b	#blxflp,bl_stat(a2)
+   		bset.b	#blyflp,bl_stat(a2)
+     		rts
+nx_ny		bclr.b	#blxflp,bl_stat(a2)
+   		bclr.b	#blyflp,bl_stat(a2)
+		rts
+fx_ny		bset.b	#blxflp,bl_stat(a2)
+     		bclr.b	#blyflp,bl_stat(a2)
+		rts
+
+

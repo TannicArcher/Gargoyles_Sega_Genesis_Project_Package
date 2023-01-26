@@ -1,0 +1,812 @@
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ 3D Coordinate Routines.						   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ Contains everything to translate x,y,z coordinates and		   บ
+; บ convert them to screen x,y coordinates.				   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+
+; - Equates et al ----------------------------------------------------------
+
+MaxZc			equ	1024
+MinZc			equ	128
+MaxAngle		equ	512
+
+		
+; - TABLES -----------------------------------------------------------------
+			
+Sin			incbin	sintab.dat
+			even
+Cos			incbin	costab.dat
+			even
+
+
+; - X,Y,Z Matrix data ------------------------------------------------------
+
+Grid2			dc.w	-$20,-$20,0, -$10,-$20,0, 0,-$20,0, $10,-$20,0, $20,-$20,0
+			dc.w	-$20,-$10,0, -$10,-$10,0, 0,-$10,0, $10,-$10,0, $20,-$10,0
+			dc.w	-$20,0,0, -$10,0,0, 0,0,0, $10,0,0, $20,0,0
+			dc.w	-$20,$10,0, -$10,$10,0, 0,$10,0, $10,$10,0, $20,$10,0
+			dc.w	-$20,$20,0, -$10,$20,0, 0,$20,0, $10,$20,0, $20,$20,0
+
+Grid			dc.w	-$20,-$20,0, -$10,-$20,0, 0,-$20,0, $10,-$20,0, $20,-$20,0
+			dc.w	-$20,-$10,0, -$10,-$10,-$10, 0,-$10,-$10, $10,-$10,-$10, $20,-$10,0
+			dc.w	-$20,0,0, -$10,0,-$10, 0,0,-$20, $10,0,-$10, $20,0,0
+			dc.w	-$20,$10,0, -$10,$10,-$10, 0,$10,-$10, $10,$10,-$10, $20,$10,0
+			dc.w	-$20,$20,0, -$10,$20,0, 0,$20,0, $10,$20,0, $20,$20,0
+
+Grid3			dc.w	-$10,-$18,$10, 0,-$28,$10,  $10,-$18,$10
+			dc.w	-$30,0,$10, $30,0,$10
+			dc.w	-$10,$18,$10, 0,$28,$10,  $10,$18,$10
+			dc.w	-$10,-$20,0, 0,-$30,0,  $10,-$20,0
+			dc.w	-$30,0,0, 0,0,0, $30,0,0
+			dc.w	-$10,$20,0, 0,$30,0,  $10,$20,0
+			dc.w	-$10,-$18,-$10, 0,-$28,-$10,  $10,-$18,-$10
+			dc.w	-$30,0,-$10, $30,0,-$10
+			dc.w	-$10,$18,-$10, 0,$28,-$10,  $10,$18,-$10
+
+Grid4			dc.w	-$28,$20,$18, -$30,$28,$20, 0,$20,-$30, $30,-$10,-$10, $40,-$20,$38
+			dc.w	$10,-$18,-$20, -$40,-$28,0, $30,-$10,$28, $10,-$28,$18, $20,-$20,-$20
+			dc.w	-$20,0,$10, -$10,$10,$10, 0,0,0, $10,0,$18, $20,0,$20
+			dc.w	$10,$10,-$18, -$18,-$18,$38, $28,$10,$30, -$10,$48,-$18, $10,$40,-$40
+			dc.w	-$40,$10,$40, -$10,$20,-$40, $10,$30,-$28, $10,$30,$28, -$30,$20,-$28	
+
+Grids			dc.l	Grid,Grid2,Grid3,Grid4
+
+
+; - Charset, anim and palette data -----------------------------------------
+
+OrbVRAM			equ	$d800
+OrbBASE			equ	OrbVRAM/32
+OrbLen			equ	(24*32)/2
+OrbPAL			PALETTE	$0111,$0000,$0000,$0000,$0000,$0000,$0000,$0000
+			PALETTE	$0000,$0100,$0210,$0320,$0430,$0540,$0650,$0760
+			HEX 00000000002200440046006600680088
+			HEX 008A00AA00AC00CC00CE00EE04EE08EE
+			HEX 000004440CCC0AAA0888066600060008
+			HEX 000A000C000E044E066E088E0AAE0CCE
+			HEX 00000000000000000000000000000000
+			HEX 00000000000000000000000000000000
+OrbChr			incbin	r&d\orb.chr
+OrbInc			include	r&d\orb.inc
+OrbANM			anmdef	ANM_Orb,OrbChr,0,0,0,0
+ANM_Orb			;anm	ORB_0001,4,0
+			anm1	ORB_0002,4,0
+			anm	AEnd
+
+
+; - Setup the Object matrix and gfx data etc. ------------------------------
+
+RotateSETUP		move.w	#$2700,sr
+			
+			jsr	InitVRamAlloc
+			jsr	InitOBJECTS
+			
+			jsr	ClrScrlA
+			jsr	ClrScrlB
+
+			blit_vr OrbChr,OrbVRAM,OrbLen,vram	;blit max size
+			
+			move.w	#(320/2)+$10,CenterX
+			move.w	#(200/2)+$20,CenterY
+			move.l	#MinZc+$14,Zc
+			move.b	#1,Xc
+			clr.w	Xangle
+			clr.w	Yangle
+			clr.w	Zangle
+			jsr	Randy
+			and.w	#7,d7
+			move.w	d7,Xdelta
+			jsr	Randy
+			and.w	#7,d7
+			move.w	d7,Ydelta
+			jsr	Randy
+			and.w	#7,d7
+			move.w	d7,Zdelta
+			bsr	CalcAngles
+
+			moveq	#(5*5)-1,d6				;setup 25 objects
+.looop			jsr	GetFreeOBJECT_HI
+			jsr	SetupObjectRES		
+			move.l	OB_RefAnRam(a0),a2
+			move.w	#OrbBASE+1,_VRAM_Adiv32(a2)		;Set Base of resident sprite in VRAM
+;			move.w	#OrbBASE,_VRAM_Adiv32(a2)		;Set Base of resident sprite in VRAM
+			move.w	#Test_OB,OB_Type(a0)
+;			move.b	#_ob_hiprior+_ob_nooff,OB_Flag2(a0)
+			move.b	#_ob_nooff,OB_Flag2(a0)
+			bset.b	#ob_noscroll,OB_Flag5(a0)
+			lea	OrbANM,a1
+			jsr	SetNewAnim
+			dbra	d6,.looop
+
+			move.w	#1,GridDex
+			bsr	SetGrid
+			bsr	SortSETUP
+			bsr	SortObjectsZ
+		
+			lea	DisneyLogoCHR,a0	;compressed chr data
+			jsr	BlitCharset
+			lea	DisneyLogoMAP,a0	;compressed chr data
+			lea	MapA_Buff,a1		;destination buffer
+			jsr	DecompressSWD		;decompress data
+			move.l	#ScrlB_Base,d6
+			moveq	#0,d1			;print the logo to screen
+			moveq	#0,d2
+			jsr	GetScreenAddrs
+			lea	MapA_Buff,a0
+			moveq	#39,d0
+			moveq	#25,d1
+			move.w	#cp2+pri,d4		;palette 2, hi priority
+			jsr	windowblock
+
+			move.w	#-$8,PixX_Copy		;position it
+			move.w	#-$20,PixY_Copy
+
+			move.w	#A3dVBLANK,VBLANKPhase	;vblank phase
+			
+			move	#$2000,sr		;enable irq
+			st.b	service			
+			lea	OrbPAL,a1		;fade
+			jsr	lite_fader
+			jmp	wait_fade
+	
+
+; - Do some control stuff from the Joypad ----------------------------------
+
+RotateTEST		jsr	WaitFrm
+
+			cmp.b	#$f0,joy1
+			bne.s	.1a
+			jmp	ResetTheGame
+			
+.1a			btst.b	#start,d_joy1
+			beq.s	.a1s
+			eor.b	#1,Xc
+			jsr	Randy
+			and.w	#7,d7
+			move.w	d7,Xdelta
+			jsr	Randy
+			and.w	#7,d7
+			move.w	d7,Ydelta
+			jsr	Randy
+			and.w	#7,d7
+			move.w	d7,Zdelta
+
+.a1s			move.w	Xangle,d1
+			move.w	Yangle,d2
+			move.w	Zangle,d3
+
+			tst.b	Xc
+			bne	.bb
+
+			btst.b	#up,joy1
+			beq.s	.w1
+			bsr	.up
+			bra	.w2
+.w1			btst.b	#down,joy1
+			beq	.w2
+			bsr	.down
+.w2			btst.b	#left,joy1
+			bne	.left
+			btst.b	#right,joy1
+			bne	.right
+			
+			btst.b	#but_a,d_joy1
+			beq.s	.rrr
+			bsr	SetGrid
+.rrr			bra	RotateTEST
+
+.up			cmp.l	#MaxZc,Zc
+			bge.s	.u1
+			add.l	#4,Zc
+.u1			rts
+.down			cmp.l	#MinZc,Zc
+			ble.s	.d1
+			sub.l	#4,Zc
+.d1			rts
+
+.left			btst.b	#but_a,joy1
+			beq.s	.l1
+			bsr	.leftX
+.l1			btst.b	#but_b,joy1
+			beq.s	.l2
+			bsr	.leftY
+.l2			btst.b	#but_c,joy1
+			beq	.a
+.leftZ			sub.w	Zdelta,d3
+			bra	.a
+.leftX			sub.w	Xdelta,d1
+			rts
+.leftY			sub.w	Ydelta,d2
+			rts
+
+.right			btst.b	#but_a,joy1
+			beq.s	.r1
+			bsr	.rightX
+.r1			btst.b	#but_b,joy1
+			beq.s	.r2
+			bsr	.rightY
+.r2			btst.b	#but_c,joy1
+			beq	.a
+.rightZ			add.w	Zdelta,d3
+			bra	.a
+.rightX			add.w	Xdelta,d1
+			rts
+.rightY			add.w	Ydelta,d2
+			rts
+
+.bb			btst.b	#but_a,d_joy1
+			beq.s	.rr
+			bsr	SetGrid
+.rr			add.w	Xdelta,d1
+			add.w	Ydelta,d2
+			add.w	Zdelta,d3
+.a			and.w	#$1ff,d1
+			and.w	#$1ff,d2
+			and.w	#$1ff,d3
+			move.w	d1,Xangle
+			move.w	d2,Yangle
+			move.w	d3,Zangle
+
+.aa			bsr	CalcAngles
+			bra	RotateTEST
+
+
+; - Read the data into the X,Y,Z of Objects --------------------------------
+
+SetGrid			addq.w	#1,GridDex
+			and.w	#3,GridDex
+			move.w	GridDex,d1
+			asl.w	#2,d1
+			lea	Grids,a1
+			move.l	0(a1,d1.w),a1
+			lea	OBJECT_RAM,a0
+			moveq	#(5*5)-1,d6				;setup 49 objects
+.looop			move.w	d6,d4
+			mulu	#6,d4
+			move.w	0(a1,d4.w),OB_WXpos(a0)			;put data
+			move.w	2(a1,d4.w),OB_WYpos(a0)
+			move.w	4(a1,d4.w),OB_WZpos(a0)
+			move.w	0(a1,d4.w),OB_Var1(a0)			;dup originals
+			move.w	2(a1,d4.w),OB_Var2(a0)
+			move.w	4(a1,d4.w),OB_Var3(a0)
+			lea	128(a0),a0
+			dbra	d6,.looop
+			rts
+
+
+; - Orb object control logic -----------------------------------------------
+			
+Orb_Logic		move.w	OB_Var1(a0),OB_WXpos(a0)	;restore original x,y,z
+			move.w	OB_Var2(a0),OB_WYpos(a0)	;so that we can screw around with them!
+			move.w	OB_Var3(a0),OB_WZpos(a0)
+			move.w	CosZ,d1				;tie the Z into
+			bpl.s	.1				;the cosine of Zangle
+			neg.w	d1				;this gives a neat swooping effect
+			lsr.w	#2,d1
+			sub.w	d1,OB_WZpos(a0)
+			bra	.2
+.1			lsr.w	#2,d1
+			add.w	d1,OB_WZpos(a0)
+.2			move.w	OB_WXpos(a0),d1			;world x	
+			move.w	OB_WYpos(a0),d2			;world y
+			move.w	OB_WZpos(a0),d3			;world z
+			bsr	RotateXYZ			;do da bizz
+			move.w	d1,OB_Xpos(a0)			;screen x
+			move.w	d2,OB_Ypos(a0)			;screen y
+			move.w	d3,OB_Zpos(a0)			;screen z (used for sort etc.)
+			cmp.w	#$60,d3				;make orbs go infront of logo
+			ble.s	.a		       		;at certain z
+			move.b	#_ob_nooff,OB_Flag2(a0)
+			rts
+.a			move.b	#_ob_hiprior+_ob_nooff,OB_Flag2(a0)
+			rts
+
+
+
+; - CODE -------------------------------------------------------------------
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ ROTATEXYZ - Rotate a point @ x,y,z around world origin 0,0,0	   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ Entry: d1=World Xpos : d2=World Ypos : d3=World Zpos		   บ
+; บ  Exit: d1=Rotated Screen Xpos : d2=Rotated Screen Ypos		   บ
+; บ	   d3=Rotated Screen Zpos		  			   บ
+; บ  Used: d1-d7 (Not Saved)						   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ Rotates a point at x,y,z around point 0,0,0 by Xangle, Yangle, Zangle  บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+RotateXYZ		move.w	CosX,d4				;Cos(Xangle)
+			move.w	SinX,d5				;Sin(Xangle)
+			move.w	d4,d6
+			move.w	d5,d7
+			muls	d2,d4				;Ypos*Cos(Xangle)
+			muls	d3,d5				;Zpos*Sin(Xangle)
+			sub.l	d5,d4				;Ypos*Cos(Xangle)-Zpos*Sin(Xangle)
+			muls	d2,d7				;Ypos*Sin(Xangle)
+			muls	d3,d6				;Zpos*Cos(Xangle)
+			add.l	d7,d6				;Ypos*Sin(Xangle)+Zpos*Cos(Xangle)
+			lsr.l	#8,d4
+			lsr.l 	#8,d6
+			move.l	d4,d2				;y
+			move.l	d6,d3				;z
+
+			move.w	CosY,d4				;Cos(Yangle)
+			move.w	SinY,d5				;Sin(Yangle)
+			move.w	d4,d6				
+			move.w	d5,d7
+			muls	d1,d4				;Xpos*Cos(Yangle)
+			muls	d3,d5				;Zpos*Sin(Yangle)
+			sub.l	d5,d4				;Xpos*Cos(Yangle)-Zpos*Sin(Yangle)
+			muls	d1,d7				;Xpos*Sin(Yangle)
+			muls	d3,d6				;Zpos*Cos(Yangle)
+			add.l	d7,d6				;Xpos*Sin(Yangle)+Zpos*Cos(Yangle)
+			lsr.l	#8,d4
+			lsr.l	#8,d6
+			move.l	d4,d1				;x
+			move.l	d6,d3				;z
+			
+			move.w	CosZ,d4				;Cos(Zangle)
+			move.w	SinZ,d5				;Sin(Zangle)
+			move.w	d4,d6				
+			move.w	d5,d7
+			muls	d1,d4				;Xpos*Cos(Zangle)
+			muls	d2,d5				;Ypos*Sin(Zangle)
+			sub.l	d5,d4				;Xpos*Cos(Zangle)-Ypos*Sin(Zangle)
+			muls	d1,d7				;Xpos*Sin(Zangle)
+			muls	d2,d6				;Ypos*Cos(Zangle)
+			add.l	d7,d6				;Xpos*Sin(Zangle)+Ypos*Cos(Zangle)
+			move.l	d4,d1				;x
+			move.l	d6,d2				;y
+
+			;drop thru to convert
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ CONVERTXY - Converts a rotated x,y,z to a Screen x,y		   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ Entry: d1=Xpos : d2=Ypos : d3=Zpos					   บ
+; บ  Exit: d1=Screen X : d2=Screen Y					   บ
+; บ  Used: d1-d5							   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+ConvertXY		add.l	Zc,d3			;dz=dz+zc
+			move.l	d3,d7			;gives slight fish eye lens effect
+			divs	d3,d1			;dx=dx/dz
+			add.w	CenterX,d1		;dx=dx+xc
+			divs	d7,d2			;dy=dy/dz
+			add.w	CenterY,d2		;dy=dy+yc
+			rts
+
+;			
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ CalcAngles								   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ Entry: Xangle, Yangle, Zangle					   บ
+; บ  Exit: Cos/Sin of each angle. Perspective and pre adds.		   บ
+; บ  Used: d1-d5/a0-a1							   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ Pre calculates and stores as much data as possible.			   บ
+; บ This reduces the burden on the Rotation routine.			   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+CalcAngles		lea	Cos,a0
+			lea	Sin,a1
+			move.w	Xangle,d3
+			asl.w	#1,d3
+			move.w	0(a0,d3.w),CosX			;d4=Cos(Xangle)
+			move.w	0(a1,d3.w),SinX			;d5=Sin(Xangle)
+			move.w	Yangle,d3
+			asl.w	#1,d3
+			move.w	0(a0,d3.w),CosY			;d4=Cos(Yangle)
+			move.w	0(a1,d3.w),SinY			;d5=Sin(Yangle)
+			move.w	Zangle,d3
+			asl.w	#1,d3
+			move.w	0(a0,d3.w),CosZ			;d4=Cos(Zangle)
+			move.w	0(a1,d3.w),SinZ			;d5=Sin(Zangle)
+			rts
+
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ SORT								   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ Entry: Sort_Z = The Zpos' of each active Object		  	   บ
+; บ  	   Sort_D = The Object Index of each of the active Objects	   บ
+; บ  Exit: Sorted Sort_D table (used in HandleObjectsSORTED)		   บ
+; บ  Used: Lots of Registers						   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ This is a fast (ish) bubble sort. The sorted data is left intact	   บ
+; บ and then the new Zpos' are re-read into the Sort_Z table. The up-	   บ
+; บ dated table is then sorted again. And so it continues ...		   บ
+; บ 									   บ
+; บ Worst case for the sort would be if the whole matrix (Z) were flipped  บ
+; บ in one frame (this would bring the sort to a grinding standstill for   บ
+; บ a few seconds (ahem)).						   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+SortSETUP		lea	Sort_Z,a0
+			lea	Sort_D,a1
+			moveq	#MaxObs-1,d0
+.la1			move.w	#-1,(a1)+
+			clr.w	(a0)+
+			dbra	d0,.la1
+			
+			lea	OBJECT_RAM,a0
+			lea	Sort_D,a1
+			lea	Sort_Z,a2
+			moveq	#0,d0			
+			moveq	#0,d2
+			moveq	#(MaxObs-1)*2,d1		
+.1			btst.b	#ob_active,OB_Flag1(a0)	
+			beq.s	.n
+			move.w	d2,(a1)+
+			move.w	OB_Zpos(a0),(a2)+
+			addq.w	#2,d0			
+.n			lea	128(a0),a0
+			addq.w	#2,d2
+			subq.w	#2,d1
+			bpl.s	.1
+
+			move.w	d0,SortElem1
+			lsr.w	#1,d0
+			subq.w	#1,d0
+			move.w	d0,SortElem2
+			rts
+
+
+SortObjectsZ		lea	Sort_Z,a1		;update Zpos'
+			lea	Sort_D,a2
+			move.w	SortElem2,d1
+.l3			lea	OBJECT_RAM,a0
+			move.w	(a2)+,d2
+			asl.w	#6,d2
+			add.w	d2,a0
+			move.w	OB_Zpos(a0),(a1)+
+			dbra	d1,.l3
+			
+			move.w	SortElem1,d0
+			move.w	#-2,d1
+			
+			subq.w	#2,d0			
+			blt.s	.fin
+			move.w	d0,s_tmp1		;no. of elements in list
+.l1			addq.w	#2,d1			
+ 			cmp.w	s_tmp1,d1		;finished?
+			blt.s	.xw
+.fin			rts
+ 
+.xw			lea	Sort_Z,a2
+			add.w	d1,a2
+			move.w	2(a2),d3		;need to swap?
+			cmp.w	0(a2),d3		
+			bge.s	.l1
+			move.w	0(a2),2(a2)		;swap z
+			move.w	d3,0(a2)
+			
+			lea	Sort_D,a1
+			add.w	d1,a1
+			move.w	0(a1),d2		;swap pointer
+			move.w	2(a1),0(a1)
+			move.w	d2,2(a1)
+		
+			move.w	d1,s_tmp2		;save index
+	 
+.l2			tst.w	d1			;test if not last entry
+ 			beq.s	.nxt	
+	 
+			lea	Sort_Z,a2
+			add.w	d1,a2
+			move.w	0(a2),d2		;need to swap?
+ 			cmp.w	-2(a2),d2		
+			bge.s	.nxt
+.b			move.w	-2(a2),0(a2)		;swap z
+			move.w	d2,-2(a2)
+		
+ 			lea	Sort_D,a1
+			add.w	d1,a1
+			move.w	0(a1),d2		;swap pointer
+			move.w	-2(a1),0(a1)
+			move.w	d2,-2(a1)
+		
+			subq.w	#2,d1
+ 			bra	.l2	
+
+.nxt			move.w	s_tmp2,d1		;restore index 
+ 			bra	.l1			;loop
+		 
+
+
+
+BitmapSETUP		move.w	#$2700,sr
+
+			move.w	#BitmapVBLANK,VBLANKPhase
+			
+			move	#$2300,sr		;enable irq
+			st.b	service			
+			lea	OrbPAL,a1		;fade
+			jsr	lite_fader
+			jmp	wait_fade
+	
+
+
+BitmapTEST		jsr	WaitFrm
+	
+			cmp.b	#$f0,joy1
+			bne	BitmapTEST
+			jmp	ResetTheGame
+			
+			bra	BitmapTEST
+
+
+;; - TABLES -----------------------------------------------------------------
+;
+;SINTab1			incbin	sintab1.bin
+;COSTab1			incbin	costab1.bin
+;SINTab2			incbin	sintab2.bin
+;COSTab2			incbin	costab2.bin
+;			even
+;
+;sr_X			dc.w	0
+;sr_Y			dc.w	0
+;sr_SCALE		dc.w	0
+;sr_ROT			dc.w	0
+;			even
+;
+;			rsreset
+;_sr_X			rs.w	1		
+;_sr_Y			rs.w	1
+;_sr_Z			rs.w	1
+;_sr_R			rs.w	1
+;
+;testdata		dc.w	0,0,100,45
+;
+;SR_test			lea	testdata,a6
+;
+;ScaleRotate		lea	SINTab1,a0
+;			lea	COSTab1,a1
+;			lea	SINTab2,a2
+;			lea	COSTab2,a3
+;			
+;			move.w	_sr_R(a6),d0			;rotation
+;			move.w	_sr_Z(a6),d1			;scale factor
+;
+;			moveq	#0,d4				;calc scanning deltas
+;			moveq	#0,d5
+;			moveq	#0,d6
+;			moveq	#0,d7
+;			move.b	0(a1,d0.w),d4			;get costable1(rotation)
+;			mulu	d1,d4				;*scale factor	
+;			lsr.w	#8,d4				;/256
+;			move.w	d4,DeltaX1			;delta x
+;			move.b	0(a0,d0.w),d5			;get sintable1(rotation)
+;			mulu	d1,d5				;*scale factor	
+;			lsr.w	#8,d5				;/256
+;			move.w	d5,DeltaY1			;delta y
+;			move.b	0(a3,d0.w),d6			;get costable2(rotation)
+;			mulu	d1,d6				;*scale factor	
+;			lsr.w	#8,d6				;/256
+;			move.w	d6,DeltaX2 			;delta x
+;			move.b	0(a2,d0.w),d7			;get sintable2(rotation)
+;			mulu	d1,d7				;*scale factor	
+;			lsr.w	#8,d7				;/256
+;			move.w	d7,DeltaY2			;delta y
+;
+;			;center on image to rotate
+;			move.w	ImageWide,d0			;pre divided by 2
+;			mulu	d4,d0				;*d1x
+;			move.w	ImageDeep,d1			;pre divided by 2
+;			mulu	d6,d1				;*d2x
+;			sub.w	d0,d2				;x-
+;			sub.w	d1,d2				;x-
+;			move.w	d2,CenterX
+;			move.w	ImageWide,d0			;pre divided by 2
+;			mulu	d5,d0				;*d1y
+;			move.w	ImageDeep,d1			;pre divided by 2
+;			mulu	d7,d1				;*d2y
+;			sub.w	d0,d3				;y-
+;			sub.w	d1,d3				;y-
+;			move.w	d3,CenterY
+;
+;			move.l	SourceImage,a0
+;			move.l	DestImage,a1
+;			clr.w	DestIndx
+;
+;			move.w	ImageDeep,d0			
+;			
+;			move.w	CenterX,d2			;get center as start point
+;			move.w	CenterY,d3
+;
+;			move.w	ImageWide,d1
+;			move.w	d1,d4
+;
+;.HLoop			add.w	DeltaX1,d2			;add deltas
+;			add.w	DeltaY1,d3
+;			mulu	d4,d3	  			
+;			add.w	d2,d3				;d3=pixel pos in source data
+;			bsr	GetPixel			;pull a pixel from source
+;			bsr	PutPixel			;put the pixel into the destination
+;			addq.w	#1,DestIndx			;next destination
+;			dbra	d1,HLoop			;loop
+		
+;; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+;; บ BYTE per PIXEL							   บ
+;; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+;; บ Entry: a6 = data							   บ
+;; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+;; บ Converts SEGA %aaaabbbb formated graphic data to %aaaaaaaa bbbbbbbb	   บ
+;; บ format data. Each nibble of graphic data becomes a full byte.	   บ
+;; บ 									   บ
+;; บ Data Structure (a6) ;						   บ
+;; บ 	Source Data 		(.l)					   บ
+;; บ 	Destination Data 	(.l)					   บ
+;; บ 	Source Width (pixels)	(.w)					   บ
+;; บ 	Source Height (pixels)	(.w)					   บ
+;; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+;
+;			rsreset
+;SourceDATA		rs.l	1
+;DestinationDATA		rs.l	1
+;SourceWIDE		rs.w	1
+;SourceHIGH		rs.w	1
+;			
+;srctest			hex	00 11 22 00
+;			hex	33 00 00 44
+;			hex	55 66 77 88
+;			hex	99 aa bb cc
+;			hex 	dd 00 00 ee
+;			hex	ff 00 00 01
+;			hex	23 45 67 89 
+;			hex	ab cd ef 00
+;
+;desttest		equ	SCRATCH_RAM+$100
+;
+;bpptesttab		dc.l	srctest,desttest
+;			dc.w	8,8
+;	
+;bpptest			lea	bpptesttab,a6
+;
+;BYTEperPIXEL		lea	BPPTab,a3
+;			move.l	SourceDATA(a6),a1
+;			move.l	DestinationDATA(a6),a2
+;			move.w	SourceWIDE(a6),d1
+;			mulu	SourceHIGH(a6),d1
+;			lsr.w	#1,d1
+;			subq.w	#1,d1
+;.loop			moveq	#0,d2
+;			move.b	(a1)+,d2
+;			add.w	d2,d2
+;			move.w	0(a3,d2.w),(a2)+
+;			dbra	d1,.loop
+;.xit			rts
+;
+;
+;; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+;; บ NIBBLE per PIXEL							   บ
+;; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+;; บ Entry: a6 = data							   บ
+;; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+;; บ Converts expanded %aaaaaaaa bbbbbbbb formated graphic to		   บ
+;; บ SEGA %aaaabbbb graphic data						   บ
+;; บ 									   บ
+;; บ Data Structure (a6) ;						   บ
+;; บ 	Source Data 		(.l)					   บ
+;; บ 	Destination Data 	(.l)					   บ
+;; บ 	Source Width (pixels)	(.w)					   บ
+;; บ 	Source Height (pixels)	(.w)					   บ
+;; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+;
+;npptesttab		dc.l	desttest,desttest	
+;			dc.w	8,8
+;
+;npptest			lea	npptesttab,a6
+;
+;NIBBLEperPIXEL		move.l	SourceDATA(a6),a1
+;			move.l	DestinationDATA(a6),a2
+;			move.w	SourceWIDE(a6),d1
+;			mulu	SourceHIGH(a6),d1
+;			lsr.w	#1,d1
+;			subq.w	#1,d1
+;.loop			moveq	#0,d2
+;			move.w	(a1)+,d2
+;			and.w	#$0ff0,d2
+;			lsr.w	#4,d2
+;			move.b	d2,(a2)+
+;			dbra	d1,.loop
+;.xit			rts
+;
+;
+;
+;BPPcc			=	0
+;BPPTab			rept	256
+;			dc.b	(BPPcc&$F0)!((BPPcc&$F0)>>4)
+;			dc.b	(BPPcc&$0F)!((BPPcc&$0F)<<4)
+;BPPcc			=	BPPcc+1
+;			endr
+
+;RotateXYZ		lea	Cos,a0
+;			lea	Sin,a1
+;
+;			move.w	Xangle,d3
+;			asl.w	#1,d3
+;			move.w	0(a0,d3.w),d4			;d4=Cos(Xangle)
+;			move.w	0(a1,d3.w),d5			;d5=Sin(Xangle)
+;			move.w	d4,d6
+;			move.w	d5,d7
+;			muls	d1,d4				;Ypos*Cos(Xangle)
+;			muls	d2,d5				;Zpos*Sin(Xangle)
+;			sub.l	d5,d4				;Ypos*Cos(Xangle)-Zpos*Sin(Xangle)
+;			muls	d1,d7				;Ypos*Sin(Xangle)
+;			muls	d2,d6				;Zpos*Cos(Xangle)
+;			add.l	d7,d6				;Ypos*Sin(Xangle)+Zpos*Cos(Xangle)
+;			lsr.l	#8,d4
+;			lsr.l 	#8,d6
+;			move.l	d4,d1				;y
+;			move.l	d6,d2				;z
+;
+;			move.w	Yangle,d3
+;			asl.w	#1,d3
+;			move.w	0(a0,d3.w),d4			;d4=Cos(Yangle)
+;			move.w	0(a1,d3.w),d5			;d5=Sin(Yangle)
+;			move.w	d4,d6				;Xtemp=Xpos*Cos(Yangle)-Zpos*Sin(Yangle)
+;			move.w	d5,d7
+;			muls	d0,d4				;Xpos*Cos(Yangle)
+;			muls	d2,d5				;Zpos*Sin(Yangle)
+;			sub.l	d5,d4				;Xpos*Cos(Yangle)-Zpos*Sin(Yangle)
+;			muls	d0,d7				;Xpos*Sin(Yangle)
+;			muls	d2,d6				;Zpos*Cos(Yangle)
+;			add.l	d7,d6				;Xpos*Sin(Yangle)+Zpos*Cos(Yangle)
+;			lsr.l	#8,d4
+;			lsr.l	#8,d6
+;			move.l	d4,d0				;x
+;			move.l	d6,d2				;z
+;			
+;			move.w	Zangle,d3
+;			asl.w	#1,d3
+;			move.w	0(a0,d3.w),d4			;d4=Cos(Zangle)
+;			move.w	0(a1,d3.w),d5			;d5=Sin(Zangle)
+;			move.w	d4,d6				
+;			move.w	d5,d7
+;			muls	d0,d4				;d4=Xpos*Cos(Zangle)
+;			muls	d1,d5				;d5=Ypos*Sin(Zangle)
+;			sub.l	d5,d4				;d4=Xpos*Cos(Zangle)-Ypos*Sin(Zangle)
+;			muls	d0,d7				;d7=Xpos*Sin(Zangle)
+;			muls	d1,d6				;d6=Ypos*Cos(Zangle)
+;			add.l	d7,d6				;d6=Xpos*Sin(Zangle)+Ypos*Cos(Zangle)
+;			move.l	d4,d0				;x
+;			move.l	d6,d1				;y
+;			rts
+;
+;
+;; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+;; บ CONVERTXY - Converts a rotated x,y,z to a Screen x,y		   บ
+;; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+;; บ Entry: d0=Xpos : d1=Ypos : d2=Zpos					   บ
+;; บ  Exit: d3=Screen X : d4=Screen Y					   บ
+;; บ  Used: d0-d4/a0-a3							   บ
+;; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+;
+;ConvertXY		move.w	Xangle,d3
+;			asl.w	#1,d3
+;			move.w	0(a1,d3.w),d4
+;			muls	#50,d4
+;			lsr.l	#8,d4	
+;			add.w	CenterX,d4
+;			move.w	Yangle,d3
+;			asl.w	#1,d3
+;			move.w	0(a0,d3.w),d5
+;			muls	#30,d5
+;			lsr.l	#8,d5	
+;			add.w	CenterY,d5
+;			    
+;			add.l	Zc,d2			;dz=dz+zc
+;			move.l	d2,d7
+;			divs	d2,d0			;dx=dx/dz
+;			add.l	d4,d0			;dx=dx+xc
+;			move.l	d0,d3			;=dx
+;			divs	d7,d1			;dy=dy/dz
+;			add.l	d5,d1			;dy=dy+yc
+;			move.l	d1,d4			;=dy
+;			rts
+;
+
+

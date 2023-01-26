@@ -1,0 +1,112 @@
+chop TriloBot animations : 2 secs/frame : palette 4
+GOLIATH ANIMATION CONVERTION ...
+rem ** CHOP the animations **
+call spr gg97701 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gg97701.anm
+Used 11 sprites, with a total of 75 characters, in 1.0 seconds
+call spr gg97702 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gg97702.anm
+Used 9 sprites, with a total of 63 characters, in 1.0 seconds
+Used 13 sprites, with a total of 68 characters, in 1.0 seconds
+Used 12 sprites, with a total of 73 characters, in 1.0 seconds
+Used 16 sprites, with a total of 73 characters, in 1.0 seconds
+Used 17 sprites, with a total of 78 characters, in 1.0 seconds
+Used 18 sprites, with a total of 69 characters, in 1.0 seconds
+Used 12 sprites, with a total of 55 characters, in 1.0 seconds
+Used 9 sprites, with a total of 56 characters, in 1.0 seconds
+Used 11 sprites, with a total of 64 characters, in 1.0 seconds
+Used 13 sprites, with a total of 72 characters, in 1.0 seconds
+Used 17 sprites, with a total of 70 characters, in 1.0 seconds
+Used 17 sprites, with a total of 70 characters, in 1.0 seconds
+Used 17 sprites, with a total of 75 characters, in 1.0 seconds
+Used 12 sprites, with a total of 69 characters, in 1.0 seconds
+call spr gg97703 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gg97703.anm
+Used 2 sprites, with a total of 7 characters, in 0.0 seconds
+call spr gg97704 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gg97704.anm
+Used 2 sprites, with a total of 12 characters, in 0.0 seconds
+Used 2 sprites, with a total of 9 characters, in 0.0 seconds
+Used 2 sprites, with a total of 9 characters, in 0.0 seconds
+call spr gg97705 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gg97705.anm
+Used 14 sprites, with a total of 99 characters, in 1.0 seconds
+call spr gg97706 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gg97706.anm
+Used 9 sprites, with a total of 47 characters, in 1.0 seconds
+Used 11 sprites, with a total of 51 characters, in 1.0 seconds
+Used 11 sprites, with a total of 52 characters, in 1.0 seconds
+Used 9 sprites, with a total of 51 characters, in 1.0 seconds
+call spr gg97708 %1 1
+chop /t1 /b254 /r253 /c240 /p1 gg97708.anm
+Used 3 sprites, with a total of 5 characters, in 0.0 seconds
+Used 3 sprites, with a total of 5 characters, in 0.0 seconds
+Used 3 sprites, with a total of 5 characters, in 0.0 seconds
+call spr gg97709 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gg97709.anm
+Used 4 sprites, with a total of 12 characters, in 0.0 seconds
+Used 6 sprites, with a total of 26 characters, in 0.0 seconds
+Used 8 sprites, with a total of 18 characters, in 0.2 seconds
+Used 5 sprites, with a total of 19 characters, in 0.0 seconds
+Used 7 sprites, with a total of 20 characters, in 0.0 seconds
+call spr gg97710 %1 1
+chop /t1 /b254 /r253 /c240 /p1 gg97710.anm
+Used 1 sprites, with a total of 1 characters, in 0.0 seconds
+Used 1 sprites, with a total of 1 characters, in 0.0 seconds
+Used 1 sprites, with a total of 1 characters, in 0.0 seconds
+Used 1 sprites, with a total of 1 characters, in 0.0 seconds
+Used 1 sprites, with a total of 1 characters, in 0.0 seconds
+Used 1 sprites, with a total of 1 characters, in 0.0 seconds
+call spr gg97711 %1 1
+chop /t1 /b254 /r253 /c240 /p1 gg97711.anm
+Used 1 sprites, with a total of 2 characters, in 0.0 seconds
+Used 1 sprites, with a total of 2 characters, in 0.0 seconds
+Used 1 sprites, with a total of 2 characters, in 0.0 seconds
+call spr gg97712 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gg97712.anm
+Used 13 sprites, with a total of 72 characters, in 1.0 seconds
+Used 16 sprites, with a total of 74 characters, in 1.0 seconds
+Used 15 sprites, with a total of 74 characters, in 1.0 seconds
+Used 16 sprites, with a total of 69 characters, in 1.0 seconds
+Used 9 sprites, with a total of 65 characters, in 1.0 seconds
+Used 13 sprites, with a total of 55 characters, in 1.0 seconds
+Used 9 sprites, with a total of 51 characters, in 1.0 seconds
+Used 10 sprites, with a total of 53 characters, in 1.0 seconds
+call spr gg97713 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gg97713.anm
+Used 8 sprites, with a total of 53 characters, in 1.0 seconds
+Used 11 sprites, with a total of 55 characters, in 1.0 seconds
+Used 11 sprites, with a total of 53 characters, in 1.0 seconds
+Used 12 sprites, with a total of 55 characters, in 1.0 seconds
+rem ** COLLECT the animations **
+call col gg97701
+collect gg97701.col
+call col gg97702
+collect gg97702.col
+call col gg97703
+collect gg97703.col
+call col gg97704
+collect gg97704.col
+call col gg97705
+collect gg97705.col
+call col gg97706
+collect gg97706.col
+call col gg97708
+collect gg97708.col
+call col gg97709
+collect gg97709.col
+call col gg97710
+collect gg97710.col
+call col gg97711
+collect gg97711.col
+call col gg97712
+collect gg97712.col
+call col gg97713
+collect gg97713.col
+call modany2
+
+.ANY FILE FORMATTER V1.00CPS
+
+Sequence # (2 letter prefix+seq # (gg01))? 
+
+OK! All done.

@@ -1,0 +1,21 @@
+	include	testani.68k
+
+	ani_palette	NUMBERSG
+	ani_sprites	NUMBERSG
+
+NUMBERSG_anim	animation
+@1	ani_sprite	NUMBERSG_0001
+	ani_sprite	NUMBERSG_0002
+	ani_sprite	NUMBERSG_0003
+	ani_sprite	NUMBERSG_0004
+	ani_sprite	NUMBERSG_0005
+	ani_sprite	NUMBERSG_0006
+	ani_sprite	NUMBERSG_0007
+	ani_sprite	NUMBERSG_0008
+	ani_sprite	NUMBERSG_0009
+	ani_sprite	NUMBERSG_0010
+	ani_sprite	NUMBERSG_0011
+	ani_goto	@1
+	ani_end
+
+	ani_footer

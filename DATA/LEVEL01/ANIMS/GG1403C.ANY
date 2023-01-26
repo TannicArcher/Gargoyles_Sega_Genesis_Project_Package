@@ -1,0 +1,14 @@
+	include	testani.68k
+
+	ani_palette	GG1403C
+	ani_sprites	GG1403C
+
+GG1403C_anim	animation
+@1	ani_sprite	GG1403C_0001
+	ani_sprite	GG1403C_0002
+	ani_sprite	GG1403C_0003
+	ani_sprite	GG1403C_0004
+	ani_goto	@1
+	ani_end
+
+	ani_footer

@@ -1,0 +1,18 @@
+	include	testani.68k
+
+	ani_palette	GG1704
+	ani_sprites	GG1704
+
+GG1704_anim	animation
+@1	ani_sprite	GG1704_0001
+	ani_sprite	GG1704_0002
+	ani_sprite	GG1704_0003
+	ani_sprite	GG1704_0004
+	ani_sprite	GG1704_0005
+	ani_sprite	GG1704_0006
+	ani_sprite	GG1704_0007
+	ani_sprite	GG1704_0008
+	ani_goto	@1
+	ani_end
+
+	ani_footer

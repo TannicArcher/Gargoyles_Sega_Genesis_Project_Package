@@ -1,0 +1,12 @@
+;* Animation from room 'flame2'
+;*
+AMAP_FLAME20_START:
+	ani_dma TITLPAGE_DATA+$2400,$0480,$0600,4,0	; Frame  1 ( 1) of  8
+	ani_dma TITLPAGE_DATA+$2a00,$0480,$0600,4,0	; Frame  2 ( 2) of  8
+	ani_dma TITLPAGE_DATA+$3000,$0480,$0600,4,0	; Frame  3 ( 3) of  8
+	ani_dma TITLPAGE_DATA+$3600,$0480,$0600,4,0	; Frame  4 ( 4) of  8
+	ani_dma TITLPAGE_DATA+$3c00,$0480,$0600,4,0	; Frame  5 ( 5) of  8
+	ani_dma TITLPAGE_DATA+$4200,$0480,$0600,4,0	; Frame  6 ( 6) of  8
+	ani_dma TITLPAGE_DATA+$4800,$0480,$0600,4,0	; Frame  7 ( 7) of  8
+	ani_dma TITLPAGE_DATA+$4e00,$0480,$0600,4,0	; Frame  8 ( 8) of  8
+	dc.l	CEnd

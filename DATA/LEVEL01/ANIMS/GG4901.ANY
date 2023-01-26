@@ -1,0 +1,11 @@
+	include	testani.68k
+
+	ani_palette	GG4901
+	ani_sprites	GG4901
+
+GG4901_anim	animation
+@1	ani_sprite	GG4901
+	ani_goto	@1
+	ani_end
+
+	ani_footer

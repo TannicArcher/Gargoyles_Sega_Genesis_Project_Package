@@ -1,0 +1,13 @@
+	include	testani.68k
+
+	ani_palette	GE1905B
+	ani_sprites	GE1905B
+
+GE1905B_anim	animation
+@1	ani_sprite	GE1905B_0001
+	ani_sprite	GE1905B_0002
+	ani_sprite	GE1905B_0003
+	ani_goto	@1
+	ani_end
+
+	ani_footer

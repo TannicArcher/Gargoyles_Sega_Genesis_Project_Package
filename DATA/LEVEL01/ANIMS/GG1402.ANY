@@ -1,0 +1,28 @@
+	include	testani.68k
+
+	ani_palette	GG1402
+	ani_sprites	GG1402
+
+GG1402_anim	animation
+@1	ani_sprite	GG1402_0001
+	ani_sprite	GG1402_0002
+	ani_sprite	GG1402_0003
+	ani_sprite	GG1402_0004
+	ani_sprite	GG1402_0005
+	ani_sprite	GG1402_0006
+	ani_sprite	GG1402_0007
+	ani_sprite	GG1402_0008
+	ani_sprite	GG1402_0009
+	ani_sprite	GG1402_0010
+	ani_sprite	GG1402_0011
+	ani_sprite	GG1402_0012
+	ani_sprite	GG1402_0013
+	ani_sprite	GG1402_0014
+	ani_sprite	GG1402_0015
+	ani_sprite	GG1402_0016
+	ani_sprite	GG1402_0017
+	ani_sprite	GG1402_0018
+	ani_goto	@1
+	ani_end
+
+	ani_footer

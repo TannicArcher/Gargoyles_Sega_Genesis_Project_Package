@@ -1,0 +1,28 @@
+	include	testani.68k
+
+	ani_palette	GV0505
+	ani_sprites	GV0505
+
+GV0505_anim	animation
+@1	ani_sprite	GV0505_0001
+	ani_sprite	GV0505_0002
+	ani_sprite	GV0505_0003
+	ani_sprite	GV0505_0004
+	ani_sprite	GV0505_0005
+	ani_sprite	GV0505_0006
+	ani_sprite	GV0505_0007
+	ani_sprite	GV0505_0008
+	ani_sprite	GV0505_0009
+	ani_sprite	GV0505_0010
+	ani_sprite	GV0505_0011
+	ani_sprite	GV0505_0012
+	ani_sprite	GV0505_0013
+	ani_sprite	GV0505_0014
+	ani_sprite	GV0505_0015
+	ani_sprite	GV0505_0016
+	ani_sprite	GV0505_0017
+	ani_sprite	GV0505_0018
+	ani_goto	@1
+	ani_end
+
+	ani_footer

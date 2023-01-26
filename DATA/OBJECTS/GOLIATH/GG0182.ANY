@@ -1,0 +1,16 @@
+	include	testani.68k
+
+	ani_palette	GG0182
+	ani_sprites	GG0182
+
+GG0182_anim	animation
+@1	ani_sprite	GG0182_0001
+	ani_sprite	GG0182_0002
+	ani_sprite	GG0182_0003
+	ani_sprite	GG0182_0004
+	ani_sprite	GG0182_0005
+	ani_sprite	GG0182_0006
+	ani_goto	@1
+	ani_end
+
+	ani_footer

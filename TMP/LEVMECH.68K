@@ -1,0 +1,239 @@
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ HANDLE LEVEL MECHANICS						   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ All Level Specific SPECIAL MECHANICS are contained hereunafter	   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+
+SetupExt		lea	CAnim_Del,a0		;clr colour animation vars
+			lea	CAnim_Dex,a1
+			moveq	#$1f,d0
+.l4			clr.b	(a1)+
+			move.b	d0,(a0)+
+			dbra	d0,.l4
+	 	
+			move.w	levnum,d0
+			asl.w	#2,d0
+			jmp	LEVec(pc,d0.w)
+
+			;special level setup vectors
+LEVec			bra	L11Set
+			bra	L12Set
+			bra	L13Set
+			bra	L14Set		
+			bra	L21Set
+			bra	L22Set
+			bra	L23Set
+			bra	L24Set		
+			bra	L31Set
+			bra	L32Set
+			bra	L33Set
+			bra	L34Set		
+			bra	L41Set
+			bra	L42Set
+			bra	L43Set
+			bra	L44Set		
+			bra	L51Set		
+			bra	L61Set
+			bra	L62Set
+			bra	L63Set
+			bra	L64Set		
+			bra	L71Set
+			bra	L72Set
+			bra	L73Set
+			bra	L74Set		
+			bra	L99Set
+
+
+; - Level 1 ----------------------------------------------------------------
+
+L11Set			clr.b	cyc_num			;col cycle #
+			clr.b	can_num			;col anim #
+			move.b	#4,b_fx_num		;Scroll FX #
+			st.b	char_an_num		;char anim #
+			move.w	#HorLineScroll!VerWholScroll,d0
+			jsr	SetScroll
+			clr.b	FullScroll_Hor
+			st.b	FullScroll_Ver
+			rts
+
+L12Set			bra	L11Set
+L13Set			bra	L11Set
+L14Set			bra	L11Set
+
+
+; - Level 2 ----------------------------------------------------------------
+
+L21Set			bra	L11Set
+L22Set			bra	L11Set
+L23Set			bra	L11Set
+L24Set			bra	L11Set
+
+
+; - Level 3 ----------------------------------------------------------------
+
+L31Set			clr.b	cyc_num			;col cycle #
+			move.b	#1,can_num		;col anim #
+			move.b	#5,b_fx_num		;Scroll FX #
+			st.b	char_an_num		;char anim #
+			clr.w	SignCAnimDel
+			move.l	#s1cat,SignCAnimVec
+			move.w	#HorLineScroll!VerWholScroll,d0
+			jsr	SetScroll
+			clr.b	FullScroll_Hor
+			st.b	FullScroll_Ver
+			rts
+L32Set			bra	L31Set
+L33Set			bra	L31Set
+L34Set			bra	L31Set
+
+
+; - Level 4 ----------------------------------------------------------------
+
+L41Set			bra	L11Set
+L42Set			bra	L11Set
+L43Set			bra	L11Set
+L44Set			bra	L11Set
+
+
+; - Level 5 ----------------------------------------------------------------
+
+L51Set			clr.b	cyc_num			;col cycle #
+			clr.b	can_num			;col anim #
+			move.b	#4,b_fx_num		;Scroll FX #
+			st.b	char_an_num		;char anim #
+			move.w	#HorLineScroll!VerWholScroll,d0
+			jsr	SetScroll
+			clr.b	FullScroll_Hor
+			st.b	FullScroll_Ver
+			clr.w	Phase
+			rts
+
+; - Level 6 ----------------------------------------------------------------
+
+L61Set			bra	L11Set
+L62Set			bra	L11Set
+L63Set			bra	L11Set
+L64Set			bra	L11Set
+
+
+; - Level 7 ----------------------------------------------------------------
+
+L71Set			bra	L11Set
+L72Set			bra	L11Set
+L73Set			bra	L11Set
+L74Set			bra	L11Set
+
+
+; - Level playroom ---------------------------------------------------------
+
+L99Set			bra	L11Set
+
+
+
+
+HandleLevelMechanics	move.w	levnum,d1
+			asl.w	#2,d1
+			jmp	LMVec(pc,d1.w)
+
+LMVec			bra	L11Mech
+			bra	L12Mech
+			bra	L13Mech
+			bra	L14Mech
+			bra	L21Mech
+			bra	L22Mech
+			bra	L23Mech
+			bra	L24Mech
+			bra	L31Mech
+			bra	L32Mech
+			bra	L33Mech
+			bra	L34Mech
+			bra	L41Mech
+			bra	L42Mech
+			bra	L43Mech
+			bra	L44Mech
+			bra	L51Mech
+			bra	L61Mech
+			bra	L62Mech
+			bra	L63Mech
+			bra	L64Mech
+			bra	L71Mech
+			bra	L72Mech
+			bra	L73Mech
+			bra	L74Mech
+			bra	L99Mech
+
+; - Level 1 ----------------------------------------------------------------
+
+L11Mech			rts
+L12Mech			rts
+L13Mech			rts
+L14Mech			rts
+
+
+; - Level 2 ----------------------------------------------------------------
+
+L21Mech			rts
+L22Mech			rts
+L23Mech			rts
+L24Mech			rts
+
+
+; - Level 3 ----------------------------------------------------------------
+
+L31Mech			rts
+L32Mech			rts
+L33Mech			rts
+L34Mech			rts
+
+
+; - Level 4 ----------------------------------------------------------------
+
+L41Mech			rts
+L42Mech			rts
+L43Mech			rts
+L44Mech			rts
+
+
+; - Level 5 ----------------------------------------------------------------
+
+L51Mech			rts
+
+
+; - Level 6 ----------------------------------------------------------------
+
+L61Mech			rts
+L62Mech			rts
+L63Mech			rts
+L64Mech			rts
+
+
+; - Level 7 ----------------------------------------------------------------
+
+L71Mech			rts
+L72Mech			rts
+L73Mech			rts
+L74Mech			rts
+
+
+; - Level Playroom ---------------------------------------------------------
+
+
+L99Mech			rts
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

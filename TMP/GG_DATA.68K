@@ -1,0 +1,76 @@
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ Gargoyles - SEGA Genesis. DATA					   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ Started 	: 6/29/94						   บ
+; บ Author 	: Chris Shrigley					   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ Life is but a glimpse of the bigger picture.			   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+			include	globals.inc
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ Sound Data SECTION							   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+		SECTION	GGD_SOUND
+
+			include	music\gems\gems.a
+
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ Shell Data SECTION							   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+		SECTION	GGD_SHELL
+
+SegaLogoCHR		incbin	data\shell\segalogo.cpk
+DisneyLogoCHR		incbin	data\shell\dislogo.cpk
+DisneyLogoMAP		incbin	data\shell\dislogo.mpk
+DisneyLogoPAL		incbin	data\shell\dislogo.pal
+TitlePageCHR		incbin	data\shell\titlpage.cpk
+TitlePageMAP		incbin	data\shell\titlpage.mpk
+TitlePagePAL		incbin	data\shell\titlpage.pal
+Font8x8CHR		incbin	data\shell\font8x8.cpk
+
+ScratchChr1		incbin	data\shell\scratcha.chr
+ScratchChr2		incbin	data\shell\scratchb.chr
+ScratchChr3		incbin	data\shell\scratchc.chr
+ScratchChr4		incbin	data\shell\scratchd.chr
+
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ Misc. Data SECTION							   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+		SECTION	GGD_MISC
+
+CAnimDL1		incbin	data\shell\font8x8.chr
+			
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ Level Data SECTION							   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+		SECTION	GGD_LEVELS
+
+LevelData		include	levdata.68k
+			
+			
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ Sprite/Animation Data SECTION					   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+		SECTION	GGD_SPRITES
+
+AnimData		include	sprtdata.68k	
+
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ The End SECTION							   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+		SECTION	GGD_THEEND
+
+The_End			dc.b	"the end",-1
+BinLength		equ	The_End+8

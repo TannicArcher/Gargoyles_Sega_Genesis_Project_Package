@@ -1,0 +1,129 @@
+;------------------
+;
+;GG_AI.658
+;
+;  ENEMY AI HANDLER
+;
+;
+;------------------
+;RAPTORBOT AI
+
+;-----
+
+AI_CB	MACRO
+
+	DB	(\31<<6)!(\30<<5)!(\29<<4)!(\28<<3)!(\27<<2)!(\26<<1)!(\25)
+	DB	(\24<<7)!(\23<<6)!(\22<<5)!(\21<<4)!(\20<<3)!(\19<<2)!(\18<<1)!(\17)
+	DB	(\16<<7)!(\15<<6)!(\14<<5)!(\13<<4)!(\12<<3)!(\11<<2)!(\10<<1)!(\9)
+	DB	(\8<<7)!(\7<<6)!(\6<<5)!(\5<<4)!(\4<<3)!(\3<<2)!(\2<<1)!(\1)
+
+	ENDM
+
+;-----
+
+AI_DATA	MACRO
+
+	DW	\1,\2
+	DB	\3,\4,\5,\6
+	DL	\7,\8
+
+	ENDM
+
+;-----
+
+AI_END_LIST	MACRO
+
+	DB	-1
+
+	ENDM
+;-----
+;EQUATES
+
+YES	EQU	1
+NO	EQU	0
+HALF_CHANCE	EQU	$01
+LESS_CHANCE	EQU	$03
+LOW_CHANCE	EQU	$07
+LITTLE_CHANCE	EQU	$0F
+EMPTY	EQU	0
+
+;------------------
+
+		  
+
+;-----
+;DATA FOR INIT_RAPTOR	ROUTINE
+	
+RAPTOR_AI	AI_CB 	&	;Condition bits macro.
+   	YES,&		;Proximity test check RIGHT.
+	YES,&		;Proximity test check LEFT.
+	YES,&		;Proximity test check ABOVE.
+	YES,&		;Proximity test check BELOW.
+	NO,&		;Player must be to the LEFT of the enemy.
+	NO,&		;Player must be to the RIGHT of the enemy.
+	YES,&		;Player must be FACING the enemy.
+	NO,&		;Player must have BACK towards enemy.
+	YES,&		;Player must be on the GROUND.
+	NO,&		;Player must be in the AIR.
+	NO,&		;Player must be on the CEILING.
+	NO,&		;Player must be on the WALL.
+	NO,&		;Player must be IDLING.
+	NO,&		;Player must be BEING HIT.
+	NO,&		;Player must be DIEING.
+	NO,&		;Player must be JUMPING.
+	NO,&		;Player must be FALLING.
+	NO,&		;Player must be ATTACKING.
+	NO,&		;Player must be GRABBING.
+	NO,&		;Unused.
+	NO,&		;Unused.
+	NO,&		;Unused.
+	NO,&		;Unused.
+	NO,&		;Unused.
+	NO,&		;Unused.
+	NO,&		;Unused.
+	NO,&		;Unused.
+	NO,&		;Unused.
+	NO,&		;Unused.
+	NO,&		;Unused.
+	NO		;Unused.
+
+	AI_DATA	&	;AI Data macro.
+	$40,&		;Proximity to Player in X.
+	$20,&		;Proximity to Player in Y.
+	HALF_CHANCE,&	;Chance that called routine will NOT be called.
+	1,&		;Enemy data #1.
+	2,&		;Enemy data #1.
+	3,&		;Enemy data #1.
+	0,&		;Future expansion.
+	INIT_RAPTOR	;This routine is called if all conditions are met.
+
+;-----
+	AI_END_LIST	;End of AI list.		
+;-----
+
+;------------------
+AI_HANDLER	MODULE
+
+
+	PHP
+;-----
+
+;-----
+	PLP	
+	RTL	
+
+
+	MODEND
+
+;------------------
+
+INIT_RAPTOR	MODULE
+
+
+	MODEND
+
+;------------------
+;------------------
+;------------------
+;------------------
+

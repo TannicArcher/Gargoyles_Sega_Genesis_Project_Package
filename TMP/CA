@@ -1,0 +1,186 @@
+cyc_pal		dc.l	-1,pal1,pal1,pal3
+
+cyc_1st		dc.b	-1,13,14,1		;1st colour
+cyc_2nd		dc.b	-1,15,15,13		;last colour
+
+cyc_dir		dc.b	-1,0,0,0		;0=< : 1=>
+cyc_dela	dc.b	-1,5,9,2
+
+
+tst_cycles	moveq	#0,d1
+		cmp.w	#3,levnum
+		bne.s	.t1
+		cmp.w	#$3b60,pix_x
+		bgt.s	.l2_cyc2
+		addq.w	#1,d1
+		cmp.w	#$38a0,pix_x
+		bgt.s	.l2_cyc1
+		addq.w	#1,d1
+		cmp.w	#$3640,pix_x
+		bgt.s	.l2_cyc2
+		addq.w	#1,d1
+		cmp.w	#$3400,pix_x
+		bgt.s	.l2_cyc1
+		addq.w	#1,d1
+		cmp.w	#$2a80,pix_x
+		bgt.s	.l2_cyc2
+		addq.w	#1,d1
+		cmp.w	#$2800,pix_x
+		bgt.s	.l2_cyc1
+		rts
+.l2_cyc1	move.b	#1,cyc_num
+		bra	rcol_lv2	
+.l2_cyc2	move.b	#2,cyc_num
+		bra	rcol_lv2	
+
+.t1		rts
+
+rcol_lv2	cmp.w	last_rcol,d1
+		beq.s	.x
+		move.w	d1,last_rcol
+		move.w	#$0A40,pal1+26
+		move.w	#$0C60,pal1+28
+		move.w	#$0E80,pal1+30
+.x		rts
+
+
+		;colour cyling
+		;
+col_cycle	tst.b	cyc_num
+		beq.s	.x
+		tst.b	cyc_del
+		beq.s	.ok
+		subq.b	#1,cyc_del
+.x		rts
+
+.ok		moveq	#0,d1
+		moveq	#0,d2
+		moveq	#0,d3
+		moveq	#0,d4
+
+		move.b	cyc_num,d1
+		lea	cyc_dela,a1
+		move.b	0(a1,d1.w),cyc_del
+
+		lea	cyc_dir,a1
+		move.b	0(a1,d1.w),d2
+		lea	cyc_1st,a1
+		move.b	0(a1,d1.w),d3
+		lea	cyc_2nd,a1
+		move.b	0(a1,d1.w),d4
+		asl.w	#2,d1
+		lea	cyc_pal,a1
+		move.l	0(a1,d1.w),a1
+		move.l	a1,a2
+		asl.w	#1,d3
+		asl.w	#1,d4
+		add.l	d3,a1
+		add.l	d4,a2
+
+		tst.b	d2
+		beq.s	.backward
+
+.forward	move.l	a2,a3
+		subq.l	#2,a3
+		
+		cmp.l	a3,a1		;two colours
+		bne.s	.o2
+		move.w	(a2),d2
+		move.w	(a3),(a2)
+		move.w	d2,(a3)
+		rts
+.o2		move.w	(a2),d2
+.l1		move.w	(a3),(a2)
+   		subq.l	#2,a2
+		subq.l	#2,a3
+		cmp.l	a3,a1
+		bne.s	.l1
+		move.w	(a3),(a2)
+		move.w	d2,(a3)
+		rts
+
+.backward	move.l	a1,a3
+		addq.l	#2,a3
+		
+		cmp.l	a3,a2
+		bne.s	.o1
+		move.w	(a1),d2
+		move.w	(a3),(a1)
+		move.w	d2,(a3)
+		rts
+.o1		move.w	(a1),d2
+.l2		move.w	(a3),(a1)
+   		addq.l	#2,a1
+		addq.l	#2,a3
+		cmp.l	a3,a2
+		bne.s	.l2
+		move.w	(a3),(a1)
+		move.w	d2,(a3)
+		rts
+
+
+; ************************************************************************** ;
+
+can_v		dc.l	-1,can1,can2
+
+can1		dc.b	0,1,2,3,-1	
+can2		dc.b	4,-1
+
+can_pal		dc.l	pal3,pal3,pal4,pal4,pal4
+can_col		dc.b	10,11,10,11,7
+can_cnt		dc.b	4,4,4,4,4
+can_off		dc.w	0,10,0,10,20
+
+can_tab		dc.w	$003,$004,$005,$004,-1
+		dc.w	$014,$015,$016,$015,-1
+		dc.w	$030,$040,$050,$040,-1
+ 
+col_anim	tst.b	can_num
+		bne.s	.2
+.x		rts
+		
+.2		lea	zero,a1
+		movem.l	(a1)+,d0-d7
+
+		move.b	can_num,d1
+		asl.b	#2,d1
+		lea	can_v,a1
+		move.l	0(a1,d1.w),a1
+		
+		moveq	#0,d1
+.loop		move.b	0(a1,d1.w),d2
+		bmi.s	.x
+		
+		lea	can_del,a2
+		tst.b	0(a2,d1.w)
+		beq.s	.ok
+		subq.b	#1,0(a2,d1.w)
+		bra	.nxt
+.ok		lea	can_cnt,a3
+		move.b	0(a3,d2.w),0(a2,d1.w)
+					
+		lea	can_col,a2
+		move.b	0(a2,d2.w),d3
+		asl.b	#1,d3
+		asl.w	#1,d2
+		lea	can_off,a2
+		move.w	0(a2,d2.w),d4
+		lea	can_dex,a4
+		add.b	0(a4,d1.w),d4
+		asl.w	#1,d2
+		lea	can_pal,a2
+		move.l	0(a2,d2.w),a2
+		
+		lea	can_tab,a3
+		move.w	0(a3,d4.w),d5
+		bmi.s	.1
+		asl.w	#1,d5
+		move.w	d5,0(a2,d3.w)
+		addq.b	#2,0(a4,d1.w)
+.nxt		addq.b	#1,d1
+		bra	.loop
+.1		clr.b	0(a4,d1.w)
+		bra	.loop
+
+				
+		

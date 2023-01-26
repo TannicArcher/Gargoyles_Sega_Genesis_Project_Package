@@ -1,0 +1,25 @@
+	include	testani.68k
+
+	ani_palette	GV0402
+	ani_sprites	GV0402
+
+GV0402_anim	animation
+@1	ani_sprite	GV0402_0001
+	ani_sprite	GV0402_0002
+	ani_sprite	GV0402_0003
+	ani_sprite	GV0402_0004
+	ani_sprite	GV0402_0005
+	ani_sprite	GV0402_0006
+	ani_sprite	GV0402_0007
+	ani_sprite	GV0402_0008
+	ani_sprite	GV0402_0009
+	ani_sprite	GV0402_0010
+	ani_sprite	GV0402_0011
+	ani_sprite	GV0402_0012
+	ani_sprite	GV0402_0013
+	ani_sprite	GV0402_0014
+	ani_sprite	GV0402_0015
+	ani_goto	@1
+	ani_end
+
+	ani_footer

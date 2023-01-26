@@ -1,0 +1,26 @@
+	include	testani.68k
+
+	ani_palette	SCRACH2
+	ani_sprites	SCRACH2
+
+SCRACH2_anim	animation
+@1	ani_sprite	SCRACH2_0001
+	ani_sprite	SCRACH2_0002
+	ani_sprite	SCRACH2_0003
+	ani_sprite	SCRACH2_0004
+	ani_sprite	SCRACH2_0005
+	ani_sprite	SCRACH2_0006
+	ani_sprite	SCRACH2_0007
+	ani_sprite	SCRACH2_0008
+	ani_sprite	SCRACH2_0009
+	ani_sprite	SCRACH2_0010
+	ani_sprite	SCRACH2_0011
+	ani_sprite	SCRACH2_0012
+	ani_sprite	SCRACH2_0013
+	ani_sprite	SCRACH2_0014
+	ani_sprite	SCRACH2_0015
+	ani_sprite	SCRACH2_0016
+	ani_goto	@1
+	ani_end
+
+	ani_footer

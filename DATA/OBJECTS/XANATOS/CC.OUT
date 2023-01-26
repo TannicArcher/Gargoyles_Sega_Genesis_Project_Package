@@ -1,0 +1,97 @@
+chop RaptorBot animations : 2 secs/frame : palette 4
+GOLIATH ANIMATION CONVERTION ...
+rem ** CHOP the animations **
+call spr gr97903 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gr97903.anm
+Used 9 sprites, with a total of 41 characters, in 1.0 seconds
+Used 7 sprites, with a total of 46 characters, in 1.0 seconds
+Used 7 sprites, with a total of 46 characters, in 1.0 seconds
+Used 7 sprites, with a total of 46 characters, in 1.0 seconds
+Used 8 sprites, with a total of 44 characters, in 1.0 seconds
+Used 7 sprites, with a total of 42 characters, in 1.0 seconds
+Used 8 sprites, with a total of 40 characters, in 1.0 seconds
+call spr gr97904 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gr97904.anm
+Used 8 sprites, with a total of 40 characters, in 1.0 seconds
+Used 4 sprites, with a total of 34 characters, in 0.0 seconds
+Used 7 sprites, with a total of 39 characters, in 1.0 seconds
+Used 7 sprites, with a total of 39 characters, in 1.0 seconds
+call spr gr97908 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gr97908.anm
+Used 8 sprites, with a total of 41 characters, in 1.0 seconds
+Used 5 sprites, with a total of 36 characters, in 0.1 seconds
+Used 10 sprites, with a total of 51 characters, in 1.0 seconds
+Used 10 sprites, with a total of 46 characters, in 1.0 seconds
+Used 8 sprites, with a total of 41 characters, in 1.0 seconds
+Used 13 sprites, with a total of 49 characters, in 1.0 seconds
+Used 11 sprites, with a total of 58 characters, in 1.0 seconds
+Used 13 sprites, with a total of 46 characters, in 1.0 seconds
+Used 7 sprites, with a total of 37 characters, in 1.0 seconds
+Used 7 sprites, with a total of 38 characters, in 1.0 seconds
+Used 8 sprites, with a total of 43 characters, in 1.0 seconds
+Used 8 sprites, with a total of 43 characters, in 1.0 seconds
+call spr gr97910 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gr97910.anm
+Used 8 sprites, with a total of 40 characters, in 1.0 seconds
+Used 6 sprites, with a total of 34 characters, in 0.4 seconds
+Used 6 sprites, with a total of 36 characters, in 0.8 seconds
+Used 8 sprites, with a total of 35 characters, in 1.0 seconds
+Used 6 sprites, with a total of 31 characters, in 0.3 seconds
+Used 11 sprites, with a total of 46 characters, in 1.0 seconds
+Used 16 sprites, with a total of 59 characters, in 1.0 seconds
+Used 10 sprites, with a total of 60 characters, in 1.0 seconds
+Used 10 sprites, with a total of 44 characters, in 1.0 seconds
+Used 11 sprites, with a total of 43 characters, in 1.0 seconds
+Used 9 sprites, with a total of 48 characters, in 1.0 seconds
+Used 9 sprites, with a total of 42 characters, in 1.0 seconds
+call spr gr97916 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gr97916.anm
+Used 7 sprites, with a total of 38 characters, in 1.0 seconds
+Used 6 sprites, with a total of 30 characters, in 0.6 seconds
+Used 5 sprites, with a total of 30 characters, in 0.0 seconds
+Used 7 sprites, with a total of 36 characters, in 1.0 seconds
+Used 9 sprites, with a total of 41 characters, in 1.0 seconds
+call spr gr97917 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gr97917.anm
+Used 1 sprites, with a total of 1 characters, in 0.0 seconds
+Used 1 sprites, with a total of 1 characters, in 0.0 seconds
+Used 1 sprites, with a total of 1 characters, in 0.0 seconds
+Used 1 sprites, with a total of 1 characters, in 0.0 seconds
+Used 1 sprites, with a total of 1 characters, in 0.0 seconds
+Used 1 sprites, with a total of 1 characters, in 0.0 seconds
+call spr gr97918 %1 2
+chop /t1 /b254 /r253 /c240 /p2 gr97918.anm
+Used 1 sprites, with a total of 1 characters, in 0.0 seconds
+Used 1 sprites, with a total of 1 characters, in 0.0 seconds
+Used 1 sprites, with a total of 1 characters, in 0.0 seconds
+Used 1 sprites, with a total of 1 characters, in 0.0 seconds
+Used 1 sprites, with a total of 1 characters, in 0.0 seconds
+rem ** COLLECT the animations **
+call col gr97903
+collect gr97903.col
+call col gr97904
+collect gr97904.col
+call col gr97908
+collect gr97908.col
+call col gr97910
+collect gr97910.col
+call col gr97916
+collect gr97916.col
+call col gr97917
+collect gr97917.col
+call col gr97918
+collect gr97918.col
+call modany2
+
+.ANY FILE FORMATTER V1.00CPS
+
+Sequence # (2 letter prefix+seq # (gg01))? gr979
+Working ... gr97903.any --> gr97903.ant
+Working ... gr97904.any --> gr97904.ant
+Working ... gr97908.any --> gr97908.ant
+Working ... gr97910.any --> gr97910.ant
+Working ... gr97916.any --> gr97916.ant
+Working ... gr97917.any --> gr97917.ant
+Working ... gr97918.any --> gr97918.ant
+
+OK! All done.

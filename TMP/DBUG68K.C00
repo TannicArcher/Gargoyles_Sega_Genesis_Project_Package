@@ -1,0 +1,122 @@
+#readram0
+ 00000000  003FFFFF
+ 00FF0000  00FFFFFF
+#writeram0
+ 00000000  003FFFFF
+ 00FF0000  00FFFFFF
+#update
+ FF 0003
+#video
+ 03 84 24
+#label level
+ 04 7F 7F
+#colour attributes
+ 17 1F 3E B0 4F 5E 0C 70 C0 87 8E 8E F0 90 4F 87 7C 0E 0A 28 2F 70
+#mono attributes
+ 07 0F 70 70 07 70 0F 70 01 07 0F 0F 70 0F 07 07 70 07 07 07 0F 70
+#default tabs
+ 68K 0F 17 28 30 00 00 00 00
+ 658 0F 17 28 30 00 00 00 00
+ Z80 0F 17 28 30 00 00 00 00
+ C   04 00 00 00 00 00 00 00
+#window
+ 01 00 00 00
+ 00 01 4C 0A 3F 02
+ 00000000
+#window
+ 03 02 00 00
+ 00 1B 28 22 08 1C
+ FFFF57C4
+#window
+ 03 01 00 00
+ 4B 1B 62 22 53 1C
+ 0000434E
+#window
+ 03 02 00 00
+ 62 1B 83 22 6A 1C
+ 000042E6
+#window
+ 03 01 00 00
+ 28 1B 4B 22 30 1C
+ FFFF58C4
+#window
+ 05 00 40 00
+ 62 0A 83 12 6C 0F
+ 00000114
+#file
+C:\GARGOYLE\GG_CODE.68K
+#tabs
+ 0F 17 28 30 00 00 00 00
+
+#window
+ 06 00 00 00
+ 4C 08 83 0A 4E 09
+ 00000000
+#window
+ 85 00 40 00
+ 00 0A 62 1B 2A 0B
+ 00000062
+#file
+C:\GARGOYLE\OBLOGIC3.68K
+#tabs
+ 0F 17 28 30 00 00 00 00
+
+#window
+ 04 00 00 00
+ 4C 01 83 08 4E 04
+ 00000000
+#window
+ 05 00 40 00
+ 62 12 83 1B 6C 17
+ 0000009C
+#file
+C:\GARGOYLE\SPRTDATA.68K
+#tabs
+ 0F 17 28 30 00 00 00 00
+
+#history
+ 00 0
+ 00 0
+ 00 0
+ 00 0
+ 00 0
+ 00 0
+ 00 0
+ 00 0
+ 02 >>
+ 02 k:\gargoyle\genesis\publish\gg_game.bin
+ 02 k:\gargoyle\genesis\publish\gg_game.bin
+ 02 k:\gargoyle\genesis\publish\gg_game.bin
+ 02 k:\gargoyle\genesis\publish\gg_4jody.bin
+ 02 k:\gargoyle\genesis\publish\gg_game2.bin
+ 02 k:\gargoyle\genesis\publish\gg_game.bin
+ 02 k:\gargoyle\genesis\publish\gg_game.bin
+ 03 binlength
+ 03 binlength
+ 03 binlength
+ 03 binlength
+ 03 binlength
+ 03 binlength
+ 03 binlength
+ 03 binlength
+ 06 3
+ 06 9
+ 06 38
+ 06 0
+ 0A spibotslammedlogic
+ 0A spibotslammedlogic
+ 0A spibotthrownlandlogic
+ 0A spibotsethits
+ 0A activeobjectnumber
+ 0A activeobjectram
+ 0A handleobjects
+ 0A handleobjects
+ 0B sb_climb
+ 0B #31*#32
+ 0B 31*32
+ 0B #35*#.02
+ 0B 35*.02
+ 0B obdblen
+ 0B obdblen
+ 0B corner_ob
+ 0F add.w #$20,d2

@@ -1,0 +1,144 @@
+Programmer (Genesis):	
+Chris Shrigley
+Programmer (SNES):	
+Joe Sengir
+Senior Producer:		
+Patrick Gilmore
+Assistant Producer:	
+David Bergantino
+Lead Artist:		
+Thom Ang
+Backgrounds:		
+Katharine Murta Adams
+Tom Barlow
+Tom Breeden
+Shelli L. Droe
+Kurt Dumas
+Raymond Fung
+Tamara Holcomb
+Brian Horton
+Hugh Jamieson
+Ruby Lee
+Jody C. McMurrian
+Roddy Navarro
+Paige Pooler
+Nancy O. Ramirez
+Matthew Smith
+Oliver Wade
+Brent Whittington
+Art Support:	
+Arden Ishimaru
+Dao Le
+Toby Espiritu
+Additional Art:	
+Mark Lorenzen
+3-D Artists:	
+Spencer Hale
+Ed Trillo
+J.P. Asperin	
+Game Design (SNES):	
+Thomas Fessler
+Game Design (Genesis):	
+Joel Goodsell
+Music Composition:	
+Michael Giacchino
+Patrick Collins
+Music and Audio Engineering	
+Patrick Collins
+Eurocom  - Steve Duckworth (SNES)
+Neil Baldwin
+Sound Effects:
+Project Manager:	
+Bob Rademacher
+Production Administrator:	
+James Mellott
+Programming support:	
+Jayne Shrigley
+Gary Graeper
+Additional Programming Support (SNES):	
+Al Baker		
+Creative Capers Entertainment
+Animation Producer:	
+G. Sue Shakespeare
+Animation Directors:	
+Terry Shakespeare
+David Molina
+Directing Animator:	
+Greg Tiernan
+Character Poses:	
+Adam Van Wyk
+Production Manager:	
+Darci Ernst
+Production Accountant:	
+Patrice Monis
+Animation:	
+Connor Flynn
+Ron M.  Friedman
+Michael Kiely
+Dermot O'Connor
+Adam VanWyk
+Ron Zorman
+Clean-up Artists:	
+Adam Burke
+Richard Draper
+Aidan Flynn
+Ron M. Friedman
+Tom Higgins
+Shannon Murphy
+Sandra Ryan
+Richard Smitheman
+Janice Tolentino
+Monica Zorman
+Animation Checkers:	
+Penelope Sevier
+Carla Washburn
+Camera Manager:	
+Robert Rose
+Test Camera:	
+Brendan Harris
+Tony Quinn
+Arantxa Rodriguez
+Asst. Prod. Coordinator:	
+Kathy Burton
+Production Assistants:	
+James Arnold
+Leanne Howard
+Bobbi Swartzendruber
+Renegade Animation	
+Director:	
+Darrell Van Citters
+Producer:	
+Ashley Quinn
+Lead Animator:	
+Dean Wellins
+Additional Animation:	
+Lee McCaulla
+Assistant Animation:	
+Heidi Daven
+Diana Dixon
+Sandy Henkin
+Karenia Kaminski
+Mark Cote
+Cristi Lyon
+Bill Mims
+Randy Myers
+Jennifer Stillwell
+Calvin Suggs
+Vicki Woodside
+Product Evaluation Supervisor	
+Jeff Blattner
+Lead Tester	
+Kevin Ocampo
+Shane Cleavlin
+Aki Kim
+Game Testers	
+Brian Adriano
+Roger Bray
+John Castro
+Daryl David
+Jerry Gillett
+Matthew Montgomery
+Wilfredo Panganiban
+Marcus Pregent
+Luigi Priore
+	

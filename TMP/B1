@@ -1,0 +1,130 @@
+traject1	jsr	tst_b_solid1
+		bpl.s	dtraj
+sexp3		moveq	#0,d1
+		bsr	set_2x2_exp
+		bra	wp_nxt
+
+traject2	jsr	tst_b_solid1
+		bpl.s	dtraj
+sexp2		moveq	#0,d1
+		bsr	set_2x2_exp1
+		bra	wp_nxt
+
+traject3	jsr	tst_b_solid1
+		bpl.s	dtraj
+sexp1		moveq	#mush,d1
+		bsr	set_4x4_exp
+		bra	wp_nxt
+
+traject4	jsr	tst_b_solid1
+		bpl.s	dtraj
+		moveq	#0,d1
+		bsr	set_2x2_exp1
+		bsr	set_firey
+		bra	wp_nxt
+
+traject_s	jsr	tst_b_solid
+		bmi.s	sexp2
+
+
+dtraj		bsr	wp_bit1
+		
+		;lea	bltmp789,a1
+		;bsr	spin_bul2
+
+		bsr	get_bul_spd
+		move.w	d1,d6
+		
+		lea	bltmp456,a4
+		add.w	d0,a4
+
+		move.w	bl_tmp2(a2),d1		;tdy
+		cmp.w	bl_tmp1(a2),d1		;tdx
+		bcc.s	.100
+
+.200		tst.w	bl_tmp3(a2)		;td
+		bpl.s	.3
+		bsr	tadd_xxx
+		bsr	tadd_dy
+		bra	.10
+.3		bsr	tadd_yyy
+		bsr	tsub_dx
+.10		subq.w	#1,d6
+		bne.s	.200
+		bra	wp_nxt
+
+.100		tst.w	bl_tmp3(a2)		;td
+		bmi.s	.4
+		bsr	tadd_yyy
+		bsr	tsub_dx
+		bra	.11
+.4		bsr	tadd_xxx
+		bsr	tadd_dy
+.11		subq.w	#1,d6
+		bne.s	.100
+		bra	wp_nxt
+
+
+tadd_xxx	tst.w	bl_tmp4(a4)		;txdir
+		bmi.s	.2
+		addq.w	#1,bl_xpos(a3)		;txd
+		rts
+.2		subq.w	#1,bl_xpos(a3)
+		rts
+
+tadd_yyy	tst.w	bl_tmp5(a4)		;tydir
+		bmi.s	.2
+		addq.w	#1,bl_ypos(a3)		;tyd
+		rts
+.2		subq.w	#1,bl_ypos(a3)
+		rts
+
+tadd_dy		move.w	bl_tmp2(a2),d1		;tdy
+		add.w	d1,bl_tmp3(a2)		;td
+		rts
+tsub_dx		move.w	bl_tmp1(a2),d1		;tdx
+		sub.w	d1,bl_tmp3(a2)		;td
+		rts
+		
+
+traj_set	lea	blxyfrm,a1
+		lea	bltmp123,a2
+		lea	bltmp456,a3
+		add.w	d7,a2
+		add.w	d7,a3
+		
+		move.w	targ_y,d1
+		move.w	bl_ypos(a1,d7.w),d2
+		sub.w	#$80,d2
+		sub.w	d2,d1			;dy=d2-d1
+		
+		move.w	d1,bl_tmp2(a2)
+		beq.s	.3
+		bmi.s	.4
+		clr.w	bl_tmp3(a2)
+		moveq	#1,d1
+		bra	.5
+.3		move.w	#-1,bl_tmp3(a2)
+		moveq	#1,d1
+		bra	.5
+.4		neg.w	d1
+		move.w	d1,bl_tmp2(a2)	
+		clr.w	bl_tmp3(a2)
+		move.w	#-1,d1
+.5		move.w	d1,bl_tmp5(a3)
+
+		move.w	targ_x,d1
+		move.w	bl_xpos(a1,d7.w),d2
+		sub.w	#$80,d2
+		sub.w	d2,d1
+		bmi.s	.1
+		
+		move.w	d1,bl_tmp1(a2)
+		move.w	#1,bl_tmp4(a3)
+		rts
+.1		neg.w	d1
+		move.w	d1,bl_tmp1(a2)
+		move.w	#-1,bl_tmp4(a3)
+		rts
+	
+

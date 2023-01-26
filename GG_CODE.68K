@@ -1,0 +1,958 @@
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ Gargoyles - SEGA Genesis. CODE					   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ Started 	: 6/29/94						   บ
+; บ Author 	: Chris Shrigley					   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ Life is but a glimpse of the bigger picture.			   บ
+; บ 									   บ
+; บ Portions of this Game Engine are (c) 1992,'93,'94 Chris Shrigley	   บ
+; บ Other portions are (c) 1994,'95 Disney Interactive Entertainment	   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ Gargoyles main code SEGMENT						   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+		SECTION	GG_CODE
+		
+		REGS	PC=TheStart
+		REGS	SSP=TheStack
+		REGS	SR=$2700
+
+;		opt	ae+,an-,c+,d-,e+,l+,s+,v+,w+,ws+,x-,op+,os+,ow+,oz+,oaq+,osq+,omq+
+		opt	ae+,an-,c+,d-,e+,l+,s+,v+,w+,x-,op+,os+,ow+,oz+,oaq+,osq+,omq+
+
+		
+			include	globals.inc
+			include	equates.inc
+			include	hitequ.inc
+			include	macros.inc
+
+			include startup.68k		;genesis startup stuff
+			include	main.68k		;game frame (nmis, irqs etc) 
+			include	shell.68k		;game shell/fluff
+			include	scroll.68k		;scroll control
+			include	dma.68k			;DMA stuff
+			include objects.68k		;all object handling stuff
+			include	oblogic1.68k		;Goliath object logic routines
+			include	oblogic2.68k		;specific object logic routines
+			include	oblogic3.68k		;more specific object logic routines
+			include	oblogic4.68k		;more specific object logic routines
+			include detect.68k		;sprt/bckgrnd & sprt/sprt detection
+			include vramaloc.68k		;VRAM/RAM allocators
+			include levmech.68k		;all level specific mechanics
+			include	3dstuff.68k
+CODE_END		even
+		
+
+			SECTION	GG_DATA
+
+			include tables.inc		;lots of tables/palettes etc.
+			include	obdata.inc		;init data tables for objects
+			include	animdata.inc		;anim data tables for objects
+
+DATA_END		even
+
+
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ Gargoyles main RAM SEGMENT						   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+		SECTION	GG_RAM
+
+difficulty		dc.b	0
+button_a		dc.b	0
+button_b		dc.b	0
+button_c		dc.b	0
+controller		dc.b	0
+SoundFLG		dc.b	0
+MusicFLG		dc.b	0
+DemoIndex		dc.b	0
+WarmCheck		dc.w	0
+demo_mode		dc.b	0
+			even
+
+ram_start		;protected variables
+			;* only affected internally
+			;* cleared/setup by game initialisation 
+			;  titlepage etc.
+			;
+dmaram			dc.l	0
+dma_address		dc.w	0
+Phase			dc.w	0
+VBLANKPhase		dc.w	0
+HBLANKVec		dc.l	0
+sprind			dc.w	0
+rndseed			dc.l	0		;random vars
+rndnum			dc.w	0
+nrndnum			dc.w	0
+nrndnum2		dc.w	0
+DMA_Stack		dc.l	0
+color			dc.w	0
+zero			ds.l	16
+yes			dc.b	0
+no			dc.b	0
+pause_flg		dc.b	0
+pause_phase		dc.b	0
+slowmo			dc.b	0	
+vbl_flg			dc.b	0
+service			dc.b	0
+working			dc.b	0
+			even
+GameFlowINDEX		dc.w	0
+
+DebugArea		dc.w	0
+
+ThreeFingerFLG	    	dc.b	0
+JoelHelloFLG		dc.b	0
+GoliathProjectileFLG	dc.b	0
+PlrEnergy		dc.w	0
+s_button_a		dc.b	0
+s_button_b		dc.b	0
+s_button_c		dc.b	0
+s_difficulty		dc.b	0
+
+			even
+
+; - JOYPAD Variables -------------------------------------------------------
+
+joy1			dc.b	0		;joystick vars
+d_joy1			dc.b	0
+o_joy1			dc.b	0
+l_joy1			dc.b	0
+joy2			dc.b	0
+d_joy2			dc.b	0
+o_joy2			dc.b	0
+l_joy2			dc.b	0	
+
+
+; - DEMO MODE Variables ----------------------------------------------------
+
+demo_timeout		dc.w	0
+demo_data		dc.l	0
+record_dex		dc.w	0
+record_flag		dc.b	0
+demo_djoy_1		dc.b	0
+demo_djoy_2		dc.b	0
+			even	
+
+
+; - SOUND Variables --------------------------------------------------------
+
+sfx_poll		dc.l	0
+sfx_number1		dc.l	0
+sfx_number2		dc.l	0
+sfx_number3		dc.l	0
+stop_sfx		dc.l	0
+music_number		dc.l	0
+last_music		dc.l	0
+music_tmp		dc.l	0	
+
+
+; - GAME Variables ---------------------------------------------------------
+
+score			dc.l	0	;critical game vars
+levnum			dc.w	0
+temp_levnum		dc.w	0
+new_level		dc.w	0
+LevelFlr		dc.l	0
+LevelCon		dc.l	0
+LevelCAnim		dc.l	0	;char anim data vec
+OBJECTDataLVec		dc.l	0
+sprt_buff		dc.l	0
+map_wide		dc.w	0	;map width
+map_deep		dc.w	0	;map depth
+b_fx_num		dc.b	0
+cyc_num			dc.b	0
+can_num			dc.b	0
+lives			dc.b	0
+continues		dc.b	0
+xtra_cnt		dc.b	0
+cheat_flags		dc.b	0
+second			dc.b	0
+panel_dex		dc.b	0
+TitSelDex		dc.b	0
+OptSelDex		dc.b	0
+PulsateDEX1		dc.b	0
+PulsateDLY		dc.b	0
+			even		
+__PlrX			dc.w	0
+__PlrY			dc.w	0
+__ChrA			dc.l	0
+__ChrB			dc.l	0
+__MapA			dc.l	0
+__MapB			dc.l	0
+__BlkA			dc.l	0
+__BlkB			dc.l	0
+__Flr			dc.l	0
+
+
+
+; - SAVE/RESTORE PLR POSITION Variables ------------------------------------
+
+			;plr variables (saved for resurrection)
+savesafe		;**************************************
+Plr_XPos		dc.w	0
+Plr_YPos		dc.w	0
+Plr_Flag1		dc.b	0
+Plr_Flag2		dc.b	0
+map_x_p			dc.w	0		;pixel map x
+map_y_p			dc.w	0		;pixel map y
+pix_x			dc.w	0
+pix_y			dc.w	0
+pix_x1			dc.w	0
+pix_y1			dc.w	0
+pix_x2			dc.w	0
+pix_y2			dc.w	0
+pix_x3			dc.w	0
+pix_y3			dc.w	0
+save_end		;********	
+
+csavesafe		ds.w	(save_end-savesafe)/2
+savexypos		ds.w	2	
+
+SCenterX		dc.w	0
+SCenterY		dc.w	0
+ClipLeft		dc.w	0
+ClipRight		dc.w	0
+ClipTop			dc.w	0
+ClipBottom		dc.w	0
+
+; - PALETTE FADER/ANIMATOR/CYCLER Variables ---------------------------
+
+GamePalette		ds.b	128			;games palette
+GamePal1		equ	GamePalette
+GamePal2		equ	GamePalette+32
+GamePal3		equ	GamePalette+64
+GamePal4		equ	GamePalette+96
+
+fade_palette		dc.l	0
+pfader			dc.w	0
+pfader_d		dc.w	0			
+whiteout_flg		dc.b	0			;palette fade vars	
+blackout_flg		dc.b	0
+whitein_flg		dc.b	0
+blackin_flg		dc.b	0
+fade_dex		dc.b	0
+fade_cnt		dc.b	0
+faded_flg		dc.b	0
+can_del			ds.b	8			;max of 8 colour animations
+can_dex			ds.b	8
+			even
+CAnim_Del		ds.b	32			;max of 32 chars animating
+CAnim_Dex		ds.b	32	
+
+cyc_delay		ds.b	8
+cyc_index		ds.b	8
+
+DeathFadeReleaseFLG	dc.b	0
+DeathFadeDoneFLG	dc.b	0
+			even
+
+; - SCROLL Variables -------------------------------------------------------
+
+lft_lim			dc.w	0	;scroll limits
+rte_lim			dc.w	0
+top_lim			dc.w	0
+bot_lim			dc.w	0
+mapline_tab		ds.w	$180		;max 256 blks deep
+l_edge			ds.w	16*4		;left edge buffer
+r_edge			ds.w	16*4		;right edge buffer	  	
+t_edge			ds.w	edge_width*4	;top edge buffer
+b_edge			ds.w	edge_width*4	;bottom edge buffer
+l_edge_addr1		dc.l	0		;dma addrs of edges
+l_edge_addr2		dc.l	0		;dma addrs of edges
+r_edge_addr1		dc.l	0
+r_edge_addr2		dc.l	0
+t_edge_addr1		dc.l	0
+t_edge_addr2		dc.l	0
+b_edge_addr1		dc.l	0
+b_edge_addr2		dc.l	0
+blit_lft		dc.b	0
+blit_rte		dc.b	0
+blit_top		dc.b	0
+blit_bot		dc.b	0
+x_speed			dc.w	0
+y_speed			dc.w	0
+xspeed			dc.w	0
+yspeed			dc.w	0
+tmapxp			dc.w	0
+map_x_b			dc.w	0		;block map x
+map_y_b			dc.w	0		;block map y
+moved_rte		dc.b	0
+moved_lft		dc.b	0
+moved_up		dc.b	0
+moved_dn		dc.b	0
+up_flg			dc.b	0
+dn_flg			dc.b	0
+lft_flg			dc.b	0
+rte_flg			dc.b	0
+lift_t_delay		dc.b	0
+FullScroll_Hor		dc.b	0
+FullScroll_Ver		dc.b	0
+lock_right		dc.b	0
+lock_left		dc.b	0
+lock_up			dc.b	0
+lock_down		dc.b	0
+tlock_right		dc.b	0
+tlock_left		dc.b	0
+tlock_up		dc.b	0
+tlock_down		dc.b	0
+spesh_lock		dc.b	0
+been_a_lock		dc.b	0
+PalLightCNT		dc.b	0
+first_pass		dc.b	0
+ScreenShakeFLG		dc.b	0
+ScreenShakeRandFLG	dc.b	0
+ScreenShakeRandDEL	dc.b	0
+ScreenShakeDEX		dc.b	0
+ScreenShakeLastDIR	dc.w	0
+			even		
+ScreenShakeLastY	dc.w	0
+
+ShakeX			dc.w	0
+ShakeY			dc.w	0
+
+TargetX			dc.w	0
+TargetY			dc.w	0
+
+; - OBJECT TRIGGER Variables -----------------------------------------------
+
+OBPOS_X			dc.w	0
+OBPOS_Y			dc.w	0
+OBOnOffFlags		ds.b	256				;flags whether an object is on already
+OBObNumbers		ds.b	256				;storage for objects, object number
+
+			;0 = not destroyed
+			;1 = destroyed but re-trigger as wreckage
+			;2 = destroyed but re-trigger as normal
+			;-1 = destroyed and don't re-trigger
+OBIsKilled		ds.b	256				;flags objects destroyed over whole level
+
+
+; - LEVEL SPECIFIC Variables -----------------------------------------------
+
+Boss_Database		dc.l	0
+Boss_ObjectNumber	dc.w	0
+BossEnergy		dc.w	0
+BossPercentile		dc.w	0
+PlayingBOSS		dc.b	0
+PlayingPREBOSS		dc.b	0
+BossFirstPass		dc.b	0
+			even		
+
+LevelVARS_START
+
+			;level 1.1
+SunSetFLG		dc.b	0
+			even
+
+			;Level 3
+SignCAnimDel		dc.b	0
+SignCAnimDex		dc.b	0
+SignCAnimVec		dc.l	0
+
+LevelWalls		ds.b	16
+LevelSkylights		ds.b	16
+LevelLights		ds.b	16
+LevelEdgesLeft		ds.b	16
+LevelEdgesRight		ds.b	16
+LevelVentsR		ds.b	16
+LevelVentsL		ds.b	16
+LevelVentsTimerR	ds.w	16
+LevelVentsTimerL	ds.w	16
+LevelPasteWalls		ds.b	16
+LevelGates		ds.b	8
+LevelCastlePieces	ds.b	4
+EnergizerDeadFLG	ds.b	10
+EnergizerWalls		ds.b	10
+LevelRaptors		ds.b	8
+LevelRaptorsON		ds.b	8
+LevelEyeRaptors		ds.b	4
+EyeRooftopUpTRG		dc.b	0
+EyeRooftopUpFLG		dc.b	0
+EyeRooftopUpDoneFLG	dc.b	0
+EyeRooftopDnTRG		dc.b	0
+EyeRooftopDnFLG		dc.b	0
+EyeRooftopDnDoneFLG	dc.b	0
+LevelEnd		
+
+CrashPauseFLG		dc.b	0
+CrashPauseDLY		dc.b	0
+SwirlSFX		dc.b	0
+
+ElecSideTOG		dc.b	0
+
+EyeRooftopSmashFLG	dc.b	0
+
+;LevelFinishFLG		dc.b	0
+SteamVentFLG		dc.b	0
+VentADD			dc.b	0
+VentFLG			dc.b	0
+VentDLY			dc.b	0
+VentVAR1		dc.b	0
+VentVAR2		dc.b	0
+VentRTE			dc.b	0
+VentLFT			dc.b	0
+
+EnergizerHitDLY		dc.b	0
+
+BossDefeatedFLG		dc.b	0
+
+ArrowsOnFLG		dc.b	0
+ArrowsDoneFLG		dc.b	0
+BalistasOnFLG		dc.b	0
+BalistasTOG		dc.b	0
+BalistasDLY		dc.b	0
+FireballHeadTOG		dc.b	0
+CouldronDestroyFLG	dc.b	0
+DoubleOilFLG		dc.b	0
+			even
+
+EyeObjectNumber		dc.l	0
+EyeFinishedFLG		dc.b	0
+EyePoweredUpFLG		dc.b	0
+EyeHitFLG		dc.b	0
+EyeHitCNT		dc.b	0
+EyeDeadFLG		dc.b	0
+MutVikFloorFallFLG	dc.b	0
+MutVikHammerSidesFLG	dc.b	0
+LeftLedgeFallenFLG	dc.b	0
+RightLedgeFallenFLG	dc.b	0
+LedgeFallingFLG		dc.b	0
+			even
+WaveDex			dc.w	0
+TempX			dc.w	0
+TempY			dc.w	0
+TempA			dc.w	0
+
+PlasmaBallFLG		dc.b	0
+			even
+OPToggle1		dc.b	0
+OPToggle2		dc.b	0
+OPToggledFLG		dc.b	0
+			even
+
+DemonaFLG1		dc.b	0
+DemonaFLG2		dc.b	0
+DemonaFLG3		dc.b	0
+DemonaFLG4		dc.b	0
+DemonaLookFLG		dc.b	0
+DemonaAttackFLG		dc.b	0
+EyeHitEdgeFLG		dc.b	0
+BigGunCycle		dc.b	0
+PhoenixDemonaFLG	dc.b	0
+	  
+RabidDeadFLG		dc.b	0
+RabbidHHDeadCNT		dc.b	0
+FinalBossPHASE		dc.b	0
+
+PatternFLG		dc.b	0
+PatternDEX		dc.b	0
+PatternNUM		dc.b	0
+PatternCNT		dc.b	0
+			even
+			
+WallPasteTimers		ds.b	4
+
+TunnelFLG		dc.b	0
+TunnelTYP		dc.b	0
+TunnelDLY		dc.b	0		
+TunnelONE		ds.b	6
+TunnelColumn		dc.b	0		
+InsideFLG		dc.b	0
+TunnelEdgeFlipFLG	dc.b	0
+
+			even
+
+LevelVARS_END
+
+DECOMPRESSION_RAM
+
+EnergizedFLG		ds.b	10
+
+; - TITLEPAGE/INTRO/FLUFF Variables ----------------------------------------
+
+logo_off		dc.w	0	;titlepage vars
+logo_timer		dc.w	0			
+
+
+; - 3D Math Variables ------------------------------------------------------
+
+Xangle			dc.w	0
+Yangle			dc.w	0
+Zangle			dc.w	0
+Xdelta			dc.w	0
+Ydelta			dc.w	0
+Zdelta			dc.w	0
+Xc			dc.l	0
+Yc			dc.l	0
+Zc			dc.l	0
+CenterX			dc.w	0
+CenterY			dc.w	0
+CosX			dc.w	0
+SinX			dc.w	0
+CosY			dc.w	0
+SinY			dc.w	0
+CosZ			dc.w	0
+SinZ			dc.w	0
+s_tmp1			dc.w	0
+s_tmp2			dc.w	0
+ZsortS			dc.l	0
+Sort_D			ds.w	MaxObs
+Sort_Z			ds.w	MaxObs
+SortElem1		dc.w	0
+SortElem2		dc.w	0
+GridDex			dc.w	0
+			even
+
+Trigger_LEFT		dc.b	0
+Trigger_RIGHT		dc.b	0
+Trigger_TOP		dc.b	0
+Trigger_BOTTOM		dc.b	0
+walking_left		dc.b	0
+walking_right		dc.b	0
+walking_up		dc.b	0
+walking_down		dc.b	0
+			even	
+
+
+; - OBJECT DETECTION Variables ---------------------------------------------
+
+UnderHEAD		dc.b	0
+UnderHEAD_c		dc.l	0
+UnderTOP		dc.b	0
+UnderTOP_c		dc.l	0
+Under			dc.b	0
+Under_c			dc.l	0
+UnderBOT		dc.b	0
+UnderBOT_c		dc.l	0
+UnderFEET		dc.b	0
+UnderFEET_c		dc.l	0
+
+UnderLEFTHEAD		dc.b	0
+UnderLEFTHEAD_c		dc.l	0
+UnderLEFTTOP		dc.b	0
+UnderLEFTTOP_c		dc.l	0
+UnderLEFT		dc.b	0
+UnderLEFT_c		dc.l	0
+UnderLEFTBOT		dc.b	0
+UnderLEFTBOT_c		dc.l	0
+UnderLEFTFEET		dc.b	0
+UnderLEFTFEET_c		dc.l	0
+
+UnderRIGHTHEAD		dc.b	0
+UnderRIGHTHEAD_c	dc.l	0
+UnderRIGHTTOP		dc.b	0
+UnderRIGHTTOP_c		dc.l	0
+UnderRIGHT		dc.b	0
+UnderRIGHT_c		dc.l	0
+UnderRIGHTBOT		dc.b	0
+UnderRIGHTBOT_c		dc.l	0
+UnderRIGHTFEET		dc.b	0
+UnderRIGHTFEET_c	dc.l	0
+
+
+NUnderLEFTHEAD		dc.b	0
+NUnderLEFTTOP		dc.b	0
+NUnderLEFT		dc.b	0
+NUnderLEFTLEFT		dc.b	0
+NUnderLEFTBOT		dc.b	0
+NUnderLEFTFEET		dc.b	0
+
+NUnderHEAD		dc.b	0
+NUnderTOP		dc.b	0
+NUnder			dc.b	0
+NUnderBOT		dc.b	0
+NUnderFEET		dc.b	0
+
+NUnderRIGHTHEAD		dc.b	0
+NUnderRIGHTTOP		dc.b	0
+NUnderRIGHT		dc.b	0
+NUnderRIGHTRIGHT	dc.b	0
+NUnderRIGHTBOT		dc.b	0
+NUnderRIGHTFEET		dc.b	0
+
+NUnderLEFTLEFTHEAD	dc.b	0
+NUnderRIGHTRIGHTHEAD	dc.b	0
+NUnderLEFTLEFTBOT	dc.b	0
+NUnderRIGHTRIGHTBOT	dc.b	0
+
+
+			rsreset
+OB_CBox1X1		rs.w	1		;offensive collision box #1 (x1)	
+OB_CBox1Y1		rs.w	1		;offensive collision box #1 (y1)	
+OB_CBox1X2		rs.w	1		;offensive collision box #1 (x2)	
+OB_CBox1Y2		rs.w	1		;offensive collision box #1 (y2)	
+OB_CBox2X1		rs.w	1		;offensive collision box #2 (x1)	
+OB_CBox2Y1		rs.w	1		;offensive collision box #2 (y1)	
+OB_CBox2X2		rs.w	1		;offensive collision box #2 (x2)	
+OB_CBox2Y2		rs.w	1		;offensive collision box #2 (y2)	
+OB_CBox3X1		rs.w	1		;offensive collision box #3 (x1)	
+OB_CBox3Y1		rs.w	1		;offensive collision box #3 (y1)	
+OB_CBox3X2		rs.w	1		;offensive collision box #3 (x2)	
+OB_CBox3Y2		rs.w	1		;offensive collision box #3 (y2)	
+OB_CBox4X1		rs.w	1		;offensive collision box #4 (x1)	
+OB_CBox4Y1		rs.w	1		;offensive collision box #4 (y1)	
+OB_CBox4X2		rs.w	1		;offensive collision box #4 (x2)	
+OB_CBox4Y2		rs.w	1		;offensive collision box #4 (y2)	
+
+ObjectCollisionRAM	ds.w	MaxObs*16
+OB_Priority		dc.w	0
+OB_Palette		dc.w	0
+
+OB_CBCount		dc.b	0
+			even
+
+; - ENEMY Specific Variables -----------------------------------------------
+
+AI_Exclude		dc.l	0
+WEIGHT_VRAM_L		dc.w	0	
+WEIGHT_VRAM_A		dc.w	0
+WEIGHT_VRAM_Adiv32	dc.w	0	
+FPOST_VRAM_L		dc.w	0	
+FPOST_VRAM_A		dc.w	0
+FPOST_VRAM_Adiv32	dc.w	0	
+
+MutSpiLegsDeadCNT	dc.b	0
+MutSpiBotPHASE		dc.b	0
+MutSpiWorkingFLG	dc.b	0
+ElevatorShearDoneFLG	dc.b	0
+ElevatorGoneFLG		dc.b	0
+yybase_index		dc.b	0
+
+SorcererCallingFLG	dc.b	0
+			even
+LightningTopOB		dc.l	0
+
+HeadFlameFLG		dc.b	0
+HeadFlameVAL		dc.b	0
+GeneratedRobotCNT	dc.b	0
+WallFlameActiveFLG	dc.b	0
+			even
+XanatosDeadCNT		dc.b	0
+XanatosMinionCNT	dc.b	0
+XanatosNextFLG		dc.b	0
+			even
+ForegroundPostX		dc.w	0
+			    
+		
+TrackObjectNumber	dc.w	0
+TrackObjectDatabase	dc.l	0
+
+
+; - GOLIATH Variables ------------------------------------------------------
+
+Plr_Database		dc.l	0
+Plr_ObjectNumber	dc.w	0
+Plr_X_Spd_L		dc.w	0
+Plr_X_Spd_R		dc.w	0
+Plr_Y_Spd_U		dc.w	0
+Plr_Y_Spd_D		dc.w	0
+LookYPOS		dc.w	0
+LookXPOS		dc.w	0
+GolStrongFLG		dc.w	0
+GolRunFLG		dc.b	0
+GolRunCNT		dc.b	0
+GolInWaterFLG		dc.b	0
+GolWaterSlideFLG	dc.b	0
+GolPreJumpFLG		dc.b	0
+GolPreClawFLG		dc.b	0
+GolPreGrabFLG		dc.b	0
+GolJumpType		dc.b	0
+GolJumpBackCnt		dc.b	0
+invincible		dc.b	0
+GolIdleCNT		dc.w	0
+GolIdle2CNT		dc.b	0
+GolLookDownFLG		dc.b	0
+GolLookUpFLG		dc.b	0
+GolLookLeftFLG		dc.b	0
+GolLookRightFLG		dc.b	0
+GolWaitTick		dc.b	0		;general pupose tick timer for goliath
+GolSlideDownCNT		dc.b	0
+GolSlideDownSPD		dc.b	0
+GolJumpFLG		dc.b	0
+GolFallFLG		dc.b	0
+GolThrowReleaseFLG	dc.b	0
+RapBotThrownFLG		dc.b	0
+GolThrowFLG		dc.b	0
+GolSlamFLG		dc.b	0
+GolSlamOutFLG		dc.b	0
+GolFlappedFLG		dc.b	0
+GolLastXFlp		dc.b	0
+NoFollowFLG		dc.b	0
+PlayerDeadFLG		dc.b	0
+GameOverFLG		dc.b	0
+ContinueFLG		dc.b	0
+GolContinueFLG		dc.b	0
+UpdateLivesFLG		dc.b	0
+NewGameFLG		dc.b	0
+PlrHotHitDLY		dc.b	0
+BumpLeftFLG		dc.b	0
+BumpRightFLG		dc.b	0
+GolSpriteCarryDLY	dc.b	0
+GolBumpDLY		dc.b	0
+PlrFallOnWeightFLG	dc.b	0
+PlrJumpOnWeightFLG	dc.b	0
+NextLevelFLG		dc.b	0
+GolOnFloorFLG		dc.b	0
+GolOnWallLeftFLG	dc.b	0
+GolOnWallRightFLG	dc.b	0
+GolOnCeilingFLG		dc.b	0
+StopThePlayer		dc.b	0
+RotateFLG		dc.b	0
+HitDemonaFloorFLG	dc.b	0
+JOWDelay		dc.b	0
+IsGolOnWeightFLG	dc.b	0
+			even
+DetectedWeightOB	dc.l	0
+
+GolInvincibleFLG	dc.w	0
+GolThrowXPos		dc.w	0
+GolThrowYPos		dc.w	0
+GolThrownVelX		dc.w	0
+GolThrownVelY		dc.w	0
+InteruptX		dc.w	0
+InteruptY		dc.w	0
+
+			even
+GolFlashCNT		dc.b	0
+GolFlashTOG		dc.b	0
+
+LAST_YPOS		dc.w	0
+LAST_XPOS		dc.w	0
+LAST_YDIR		dc.b	0
+LAST_XDIR		dc.b	0
+
+EndPlrVars		dc.b	0
+			even
+
+
+; - SHELL/FLUFF Variables --------------------------------------------------
+
+vsram_a			dc.l	0
+vsram_c			dc.w	0
+vsram_1			dc.w	0
+vsram_2			dc.w	0
+vsram_3			dc.w	0
+vsram_4			dc.w	0
+vsram_5			dc.w	0
+vsram_6			dc.w	0
+vsram_7			dc.w	0
+vsram_8			dc.w	0
+vsram_9			dc.w	0
+			even
+tmp1_b			dc.b	0
+tmp2_b			dc.b	0
+tmp3_b			dc.b	0
+tmp4_b			dc.b	0
+tmp1_w			dc.w	0
+tmp2_w			dc.w	0
+tmp3_w			dc.w	0
+tmp4_w			dc.w	0
+tmp1_l			dc.l	0
+tmp2_l			dc.l	0
+tmp3_l			dc.l	0
+tmp4_l			dc.l	0
+
+CreditDex		dc.w	0
+CreditsFLG		dc.b	0
+FadeOutFLG		dc.b	0
+			even
+
+LineByLine		ds.w	64*8
+CellByCell		ds.w	80
+
+BFX_Var1		dc.b	0
+BFX_Var1a		dc.b	0
+BFX_Var2		dc.b	0
+BFX_Var2a		dc.b	0
+BFX_Var3		dc.b	0
+BFX_Var3a		dc.b	0
+BFX_Var4		dc.b	0
+BFX_Var4a		dc.b	0
+BFX_Var5		dc.b	0
+BFX_Var5a		dc.b	0
+BFX_Var6		dc.b	0
+BFX_Var6a		dc.b	0
+BFX_Var7		dc.b	0
+BFX_Var7a		dc.b	0
+BFX_Var8		dc.b	0
+BFX_Var8a		dc.b	0
+
+SoundTestSEQ		dc.b	0
+
+			even
+
+; ** TEMPORARY FOR TITLESCREEN TUBE EFFECT
+			even
+;screen_tab		ds.w	1024
+;tube_index		dc.w	0
+
+BurnDatabase		dc.l	0
+BurnProcess		dc.b	0
+BurnFirst		dc.b	0
+
+
+			even
+FlameBuffWide		equ	4*8
+FlameBuffDeep		equ	6*8
+CWidth			equ	FlameBuffWide/8
+CDepth			equ	FlameBuffDeep/8
+FlameBuff		;ds.b	FlameBuffWide*(FlameBuffDeep+1)
+FlameBuff1		equ	FlameBuff+FlameBuffWide
+FlameBuff2		;ds.b	(CWidth*CDepth)*32
+
+SCANLINE_ADDRS		dc.l	0
+SCANLINE_DATA		dc.w	0
+FXTABLE_ADDRS		dc.l	0
+FXTABLE_RESET		dc.l	0
+SCANLINE_START		dc.w	0
+SCANLINE_INTERVAL	dc.w	0
+;SCANLINE_BUFFER	ds.w	512
+
+
+; ****************************************
+		
+			even
+
+; - BUFFERS, BUFFERS and more BUFFERS --------------------------------------
+
+; - ANIMATION Buffers and Variables --------------------------------
+
+HealthBufferNME		ds.b	4
+HealthBufferFlagsNME	ds.b	4
+HealthBufferPLR		ds.b	(4*32)
+
+OBJECT_RAM_INDEX	dc.w	0
+OBJECT_RAM		ds.b	OB_DATA_SIZE*MaxObs		;object databases			
+object_ram_end		
+SprtAttr_RAM		ds.b	80*8				;Shadow Hardware SPRT ATTRS
+SprtAttr_RAM_End	
+_SprtAttr_RAM		dc.l	0
+
+ActiveObjectRam		ds.l	MaxObs
+;ActiveObjectNumber	ds.w	MaxObs
+ActiveObjectCnt		dc.w	0
+
+
+			even
+sdef_cnt		dc.w	0
+attr_off		dc.w	0
+hflip			dc.b	0	
+vflip			dc.b	0
+linker			dc.b	0
+NewAnCnt		dc.b	0				;rolling animation index setting 0..3
+;ob_h			dc.w	0
+;ob_w			dc.w	0
+			even
+
+CHAR_RAM		ds.b	CH_DATA_SIZE*MaxChrs		;Char animation databases			
+
+
+; - Scroll DMA buffers -----------------------------------------------------
+
+PixY_Copy		ds.w	80
+PixX_Copy		ds.w	$200		;512.w 256.l
+ScrlA_FX		ds.w	$200		;512.w 256.l
+ScrlB_FX		ds.w	$100		;512.w 256.l
+PixY_B			dc.w	0
+PixX_B			dc.w	0
+PixY_A			dc.w	0
+PixX_A			dc.w	0
+PixY_AB			dc.w	0
+PixX_AB			dc.w	0
+
+
+; - MAP/BLOCK DMA buffers --------------------------------------------------
+
+TheZone			equ	$800
+MapA_Buff		ds.b	$5800+TheZone	;26k basic map
+MapA_Buff_e		
+
+record_ram		equ	MapA_Buff+$5000
+
+
+;MapB_Buff		ds.b	(64*32)*2	;64*32 chars = 32*16 blocks * 4 words
+;MapB_Buff_e
+
+DECOMPRESSION_RAM_END
+
+Floor_Buff		ds.b	$4400;3800		;8 Kbyte for floor table
+Floor_Buff_End		
+
+CheatVecDex		dc.w	0
+CheatDex		dc.w	0
+
+; - Palette DMA buffers ----------------------------------------------------
+
+Pal1			ds.w	$10
+Pal2			ds.w	$10         
+Pal3			ds.w	$10      
+Pal4			ds.w	$10    
+CD_Pal			dc.b	0
+CD_Col			dc.b	0
+red			dc.w	0
+green			dc.w	0
+blue			dc.w	0
+TempPalette		ds.w	$40
+
+
+; - OBJECT DMA buffers -----------------------------------------------------
+
+			RSRESET
+_VRAM_A			rs.w	1			;Address of VRAM block
+_VRAM_Adiv32		rs.w	1			;Address of VRAM block / 32
+_VRAM_L			rs.w	1			;Length of VRAM Block
+_VRAM_Res		rs.w	1			;reserved for later use
+ObjectRAMTab		ds.w	MaxObs*4
+_ROM_A_T		dc.l	0
+			even
+
+; - DATA STRUCTURE for allocation tables (VRAM/RAM) ------------------------
+
+VRamItems		equ	32	;upto 32 vram items
+			rsreset
+VRam_Link		rs.w	1			;0
+VRam_Addr		rs.w	1			;2
+VRam_Size		rs.w	1			;4
+VRam_Len		rs.w	0			;6
+VRamAllocBuff		ds.w	VRamItems*3		;vram allocation table
+VRamAllocFree		ds.w	1			;pointer to first unused record
+VRamAllocUsed		ds.w	3			;pointer to first used record
+
+
+			if	1=0
+RamItems		equ	16	;upto 16 ram items (flown)
+			rsreset
+Ram_Link		rs.w	1			;0
+Ram_Addr		rs.w	1			;2
+Ram_Size		rs.w	1			;4
+Ram_Len			rs.w	0			;6
+RamAllocBuff		ds.w	RamItems*3		;ram allocation table
+RamAllocFree		ds.w	1			;pointer to first unused record
+RamAllocUsed		ds.w	3			;pointer to first used record
+OBRAM			ds.b	2			
+			endif
+
+			even
+tmpa0			dc.l	0
+tmp_sp			dc.l	0
+
+ram_end			dc.l	0
+
+; - THE STACK --------------------------------------------------------------
+
+			ds.w	$100	
+TheStack	
+			ds.w	$100
+TheDmaStack
+
+doing_vblank		dc.b	0
+			even
+
+last_ram		dc.b	-1
+
+

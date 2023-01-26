@@ -1,0 +1,30 @@
+
+Psy-Q Mega-CD version 1.24
+
+
+Assembly completed.
+0 error(s) from 52480 lines in 12.4 seconds
+Temporary file of 409600 bytes was created
+
+Psy-Q Mega-CD version 1.24
+
+
+Assembly completed.
+0 error(s) from 299135 lines in 25.1 seconds
+Temporary file of 1196032 bytes was created
+
+Psy-Q Mega-CD version 1.24
+
+
+Assembly completed.
+0 error(s) from 52480 lines in 18.9 seconds
+Temporary file of 409600 bytes was created
+
+PSYLINK version 1.20
+
+C:\GARGOYLE\MUSIC\GEMS\PAL\GEMS.A(801) : Error : Symbol 'music_flg' multiply defined
+Errors during pass 1 - pass 2 aborted
+Linking completed.
+1 error(s) in 3.1 seconds
+NMAKE :  U1077: 'C:\PSYQ\PSYLINK' : return code '0x3'
+Stop.

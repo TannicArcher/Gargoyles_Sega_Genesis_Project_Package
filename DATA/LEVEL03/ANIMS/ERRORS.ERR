@@ -1,0 +1,10 @@
+
+Psy-Q Mega-CD version 1.24
+
+C:\GARGOYLE\OBLOGIC3.68K(5238) : Error : Branch (32768 bytes) is out of range
+
+Assembly completed.
+1 error(s) from 293245 lines in 19.2 seconds
+Temporary file of 1032192 bytes was created
+NMAKE :  U1077: 'C:\PSYQ\ASM68K' : return code '0x3'
+Stop.

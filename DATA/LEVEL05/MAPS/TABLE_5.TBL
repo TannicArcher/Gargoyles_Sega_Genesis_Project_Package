@@ -1,0 +1,33 @@
+;*
+;* TABLE_5.tbl
+;*
+;* Tagged Char Table
+;*
+TABLE_5TAGtl0	equ	0+TOTAL_ASCII	; TRUE sega character number for tag 0tl
+TABLE_5TAGtr0	equ	1+TOTAL_ASCII	; TRUE sega character number for tag 0tr
+TABLE_5TAGbl0	equ	2+TOTAL_ASCII	; TRUE sega character number for tag 0bl
+TABLE_5TAGbr0	equ	3+TOTAL_ASCII	; TRUE sega character number for tag 0br
+TABLE_5TAGtl1	equ	4+TOTAL_ASCII	; TRUE sega character number for tag 1tl
+TABLE_5TAGtr1	equ	5+TOTAL_ASCII	; TRUE sega character number for tag 1tr
+TABLE_5TAGbl1	equ	6+TOTAL_ASCII	; TRUE sega character number for tag 1bl
+TABLE_5TAGbr1	equ	7+TOTAL_ASCII	; TRUE sega character number for tag 1br
+TABLE_5TAGtl2	equ	8+TOTAL_ASCII	; TRUE sega character number for tag 2tl
+TABLE_5TAGtr2	equ	9+TOTAL_ASCII	; TRUE sega character number for tag 2tr
+TABLE_5TAGbl2	equ	10+TOTAL_ASCII	; TRUE sega character number for tag 2bl
+TABLE_5TAGbr2	equ	11+TOTAL_ASCII	; TRUE sega character number for tag 2br
+TABLE_5TAGtl3	equ	12+TOTAL_ASCII	; TRUE sega character number for tag 3tl
+TABLE_5TAGtr3	equ	13+TOTAL_ASCII	; TRUE sega character number for tag 3tr
+TABLE_5TAGbl3	equ	14+TOTAL_ASCII	; TRUE sega character number for tag 3bl
+TABLE_5TAGbr3	equ	15+TOTAL_ASCII	; TRUE sega character number for tag 3br
+TABLE_5TAGtl4	equ	16+TOTAL_ASCII	; TRUE sega character number for tag 4tl
+TABLE_5TAGtr4	equ	17+TOTAL_ASCII	; TRUE sega character number for tag 4tr
+TABLE_5TAGbl4	equ	18+TOTAL_ASCII	; TRUE sega character number for tag 4bl
+TABLE_5TAGbr4	equ	19+TOTAL_ASCII	; TRUE sega character number for tag 4br
+TABLE_5TAGtl5	equ	20+TOTAL_ASCII	; TRUE sega character number for tag 5tl
+TABLE_5TAGtr5	equ	21+TOTAL_ASCII	; TRUE sega character number for tag 5tr
+TABLE_5TAGbl5	equ	22+TOTAL_ASCII	; TRUE sega character number for tag 5bl
+TABLE_5TAGbr5	equ	23+TOTAL_ASCII	; TRUE sega character number for tag 5br
+TABLE_5TAGtl6	equ	24+TOTAL_ASCII	; TRUE sega character number for tag 6tl
+TABLE_5TAGtr6	equ	25+TOTAL_ASCII	; TRUE sega character number for tag 6tr
+TABLE_5TAGbl6	equ	26+TOTAL_ASCII	; TRUE sega character number for tag 6bl
+TABLE_5TAGbr6	equ	27+TOTAL_ASCII	; TRUE sega character number for tag 6br

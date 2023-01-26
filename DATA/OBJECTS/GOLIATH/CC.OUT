@@ -1,0 +1,626 @@
+chop goliath animations : 1 secs/frame : palette 3
+GOLIATH ANIMATION CONVERTION ...
+rem ** CHOP the animations **
+call spr gg0101 %1 %2
+chop /t1 /b254 /r253 /c240 /p2 gg0101.anm
+Used 9 sprites, with a total of 54 characters, in 1.0 seconds
+Used 9 sprites, with a total of 52 characters, in 1.0 seconds
+Used 9 sprites, with a total of 50 characters, in 1.0 seconds
+Used 8 sprites, with a total of 53 characters, in 1.0 seconds
+Used 10 sprites, with a total of 55 characters, in 1.0 seconds
+Used 10 sprites, with a total of 54 characters, in 1.0 seconds
+Used 14 sprites, with a total of 52 characters, in 1.0 seconds
+Used 14 sprites, with a total of 54 characters, in 1.0 seconds
+Used 13 sprites, with a total of 54 characters, in 1.0 seconds
+call spr gg0102 %1 %2
+chop /t1 /b254 /r253 /c240 /p2 gg0102.anm
+Used 9 sprites, with a total of 41 characters, in 1.0 seconds
+Used 10 sprites, with a total of 42 characters, in 1.0 seconds
+Used 11 sprites, with a total of 42 characters, in 1.0 seconds
+Used 7 sprites, with a total of 40 characters, in 1.0 seconds
+Used 9 sprites, with a total of 42 characters, in 1.0 seconds
+Used 10 sprites, with a total of 43 characters, in 1.0 seconds
+Used 8 sprites, with a total of 42 characters, in 1.0 seconds
+Used 9 sprites, with a total of 41 characters, in 1.0 seconds
+Used 11 sprites, with a total of 40 characters, in 1.0 seconds
+Used 8 sprites, with a total of 40 characters, in 1.0 seconds
+Used 8 sprites, with a total of 44 characters, in 1.0 seconds
+Used 9 sprites, with a total of 44 characters, in 1.0 seconds
+call spr gg0103a %1 %2
+chop /t1 /b254 /r253 /c240 /p2 gg0103a.anm
+Used 7 sprites, with a total of 31 characters, in 1.0 seconds
+Used 5 sprites, with a total of 29 characters, in 0.1 seconds
+Used 8 sprites, with a total of 34 characters, in 1.0 seconds
+Used 6 sprites, with a total of 40 characters, in 0.8 seconds
+Used 5 sprites, with a total of 31 characters, in 0.3 seconds
+Used 7 sprites, with a total of 39 characters, in 1.0 seconds
+Used 7 sprites, with a total of 45 characters, in 1.0 seconds
+Used 7 sprites, with a total of 51 characters, in 1.0 seconds
+call spr gg0103b %1 %2
+chop /t1 /b254 /r253 /c240 /p2 gg0103b.anm
+Used 8 sprites, with a total of 37 characters, in 1.0 seconds
+Used 7 sprites, with a total of 33 characters, in 1.0 seconds
+Used 6 sprites, with a total of 35 characters, in 1.0 seconds
+Used 5 sprites, with a total of 32 characters, in 0.2 seconds
+Used 4 sprites, with a total of 31 characters, in 0.0 seconds
+Used 5 sprites, with a total of 26 characters, in 0.0 seconds
+Used 4 sprites, with a total of 27 characters, in 0.0 seconds
+Used 5 sprites, with a total of 28 characters, in 0.1 seconds
+Used 4 sprites, with a total of 29 characters, in 0.0 seconds
+Used 5 sprites, with a total of 30 characters, in 0.2 seconds
+call spr gg0103c %1 %2
+chop /t1 /b254 /r253 /c240 /p2 gg0103c.anm
+Used 8 sprites, with a total of 36 characters, in 1.0 seconds
+Used 8 sprites, with a total of 40 characters, in 1.0 seconds
+Used 6 sprites, with a total of 43 characters, in 1.0 seconds
+Used 6 sprites, with a total of 40 characters, in 1.0 seconds
+call spr gg0104 %1 %2
+chop /t1 /b254 /r253 /c240 /p2 gg0104.anm
+Used 7 sprites, with a total of 35 characters, in 1.0 seconds
+Used 8 sprites, with a total of 38 characters, in 1.0 seconds
+Used 8 sprites, with a total of 37 characters, in 1.0 seconds
+call spr gg0105 %1 %2
+chop /t1 /b254 /r253 /c240 /p2 gg0105.anm
+Used 7 sprites, with a total of 35 characters, in 1.0 seconds
+Used 8 sprites, with a total of 38 characters, in 1.0 seconds
+Used 8 sprites, with a total of 45 characters, in 1.0 seconds
+call spr gg0106 %1 %2
+chop /t1 /b254 /r253 /c240 /p2 gg0106.anm
+Used 10 sprites, with a total of 46 characters, in 1.0 seconds
+Used 9 sprites, with a total of 40 characters, in 1.0 seconds
+Used 6 sprites, with a total of 39 characters, in 1.0 seconds
+Used 6 sprites, with a total of 29 characters, in 0.5 seconds
+Used 5 sprites, with a total of 32 characters, in 0.2 seconds
+Used 10 sprites, with a total of 39 characters, in 1.0 seconds
+Used 7 sprites, with a total of 33 characters, in 1.0 seconds
+Used 8 sprites, with a total of 34 characters, in 1.0 seconds
+Used 7 sprites, with a total of 31 characters, in 0.7 seconds
+call spr gg0107 %1 %2
+chop /t1 /b254 /r253 /c240 /p2 gg0107.anm
+Used 7 sprites, with a total of 29 characters, in 1.0 seconds
+Used 6 sprites, with a total of 29 characters, in 0.2 seconds
+Used 5 sprites, with a total of 24 characters, in 0.0 seconds
+Used 7 sprites, with a total of 29 characters, in 1.0 seconds
+Used 6 sprites, with a total of 31 characters, in 0.9 seconds
+Used 6 sprites, with a total of 33 characters, in 1.0 seconds
+Used 6 sprites, with a total of 31 characters, in 1.0 seconds
+Used 5 sprites, with a total of 34 characters, in 0.2 seconds
+call spr gg0108 %1 %2
+chop /t1 /b254 /r253 /c240 /p2 gg0108.anm
+Used 7 sprites, with a total of 40 characters, in 1.0 seconds
+Used 12 sprites, with a total of 61 characters, in 1.0 seconds
+Used 12 sprites, with a total of 55 characters, in 1.0 seconds
+Used 12 sprites, with a total of 62 characters, in 1.0 seconds
+Used 13 sprites, with a total of 61 characters, in 1.0 seconds
+Used 11 sprites, with a total of 49 characters, in 1.0 seconds
+Used 7 sprites, with a total of 29 characters, in 1.0 seconds
+call spr gg0109 %1 %2
+chop /t1 /b254 /r253 /c240 /p2 gg0109.anm
+Used 6 sprites, with a total of 40 characters, in 0.3 seconds
+Used 10 sprites, with a total of 51 characters, in 1.0 seconds
+Used 9 sprites, with a total of 48 characters, in 1.0 seconds
+Used 8 sprites, with a total of 44 characters, in 1.0 seconds
+Used 10 sprites, with a total of 44 characters, in 1.0 seconds
+Used 10 sprites, with a total of 44 characters, in 1.0 seconds
+Used 7 sprites, with a total of 45 characters, in 1.0 seconds
+Used 9 sprites, with a total of 42 characters, in 1.0 seconds
+call spr gg0110 %1 %2
+chop /t1 /b254 /r253 /c240 /p2 gg0110.anm
+Used 6 sprites, with a total of 29 characters, in 0.6 seconds
+Used 7 sprites, with a total of 34 characters, in 1.0 seconds
+Used 9 sprites, with a total of 33 characters, in 1.0 seconds
+Used 6 sprites, with a total of 33 characters, in 0.6 seconds
+Used 8 sprites, with a total of 34 characters, in 1.0 seconds
+call spr gg0111 %1 %2
+chop /t1 /b254 /r253 /c240 /p2 gg0111.anm
+Used 10 sprites, with a total of 40 characters, in 1.0 seconds
+Used 8 sprites, with a total of 36 characters, in 1.0 seconds
+Used 6 sprites, with a total of 34 characters, in 0.1 seconds
+Used 5 sprites, with a total of 29 characters, in 0.1 seconds
+Used 6 sprites, with a total of 37 characters, in 0.6 seconds
+call spr gg0115 %1 %2
+chop /t1 /b254 /r253 /c240 /p2 gg0115.anm
+Used 9 sprites, with a total of 52 characters, in 1.0 seconds
+Used 7 sprites, with a total of 44 characters, in 1.0 seconds
+Used 8 sprites, with a total of 47 characters, in 1.0 seconds
+Used 10 sprites, with a total of 47 characters, in 1.0 seconds
+Used 9 sprites, with a total of 44 characters, in 1.0 seconds
+Used 7 sprites, with a total of 37 characters, in 1.0 seconds
+Used 7 sprites, with a total of 35 characters, in 1.0 seconds
+Used 8 sprites, with a total of 34 characters, in 1.0 seconds
+Used 5 sprites, with a total of 35 characters, in 0.2 seconds
+call spr gg0116 %1 %2
+chop /t1 /b254 /r253 /c240 /p2 gg0116.anm
+Used 7 sprites, with a total of 39 characters, in 1.0 seconds
+Used 10 sprites, with a total of 42 characters, in 1.0 seconds
+Used 9 sprites, with a total of 39 characters, in 1.0 seconds
+Used 5 sprites, with a total of 32 characters, in 0.3 seconds
+Used 6 sprites, with a total of 41 characters, in 0.4 seconds
+Used 8 sprites, with a total of 46 characters, in 1.0 seconds
+Used 9 sprites, with a total of 54 characters, in 1.0 seconds
+call spr gg0117 %1 %2
+chop /t1 /b254 /r253 /c240 /p2 gg0117.anm
+Used 8 sprites, with a total of 46 characters, in 1.0 seconds
+Used 10 sprites, with a total of 50 characters, in 1.0 seconds
+Used 9 sprites, with a total of 48 characters, in 1.0 seconds
+Used 9 sprites, with a total of 43 characters, in 1.0 seconds
+Used 5 sprites, with a total of 39 characters, in 0.1 seconds
+Used 6 sprites, with a total of 32 characters, in 1.0 seconds
+Used 6 sprites, with a total of 33 characters, in 1.0 seconds
+Used 7 sprites, with a total of 44 characters, in 1.0 seconds
+Used 7 sprites, with a total of 49 characters, in 1.0 seconds
+call spr gg0118 %1 %2
+chop /t1 /b254 /r253 /c240 /p2 gg0118.anm
+Used 17 sprites, with a total of 62 characters, in 1.0 seconds
+Used 18 sprites, with a total of 67 characters, in 1.0 seconds
+Used 18 sprites, with a total of 67 characters, in 1.0 seconds
+Used 11 sprites, with a total of 52 characters, in 1.0 seconds
+Used 17 sprites, with a total of 58 characters, in 1.0 seconds
+Used 12 sprites, with a total of 56 characters, in 1.0 seconds
+call spr gg0119 %1 %2
+chop /t1 /b254 /r253 /c240 /p2 gg0119.anm
+Used 12 sprites, with a total of 51 characters, in 1.0 seconds
+Used 11 sprites, with a total of 55 characters, in 1.0 seconds
+Used 10 sprites, with a total of 56 characters, in 1.0 seconds
+Used 9 sprites, with a total of 56 characters, in 1.0 seconds
+Used 12 sprites, with a total of 54 characters, in 1.0 seconds
+Used 9 sprites, with a total of 55 characters, in 1.0 seconds
+Used 8 sprites, with a total of 52 characters, in 1.0 seconds
+call spr gg0120 %1 %2
+chop /t1 /b254 /r253 /c240 /p2 gg0120.anm
+Used 5 sprites, with a total of 31 characters, in 0.2 seconds
+Used 7 sprites, with a total of 29 characters, in 1.0 seconds
+Used 6 sprites, with a total of 38 characters, in 1.0 seconds
+Used 7 sprites, with a total of 30 characters, in 0.6 seconds
+Used 7 sprites, with a total of 34 characters, in 1.0 seconds
+Used 9 sprites, with a total of 35 characters, in 1.0 seconds
+Used 5 sprites, with a total of 31 characters, in 0.2 seconds
+Used 7 sprites, with a total of 30 characters, in 0.2 seconds
+Used 7 sprites, with a total of 30 characters, in 0.4 seconds
+Used 5 sprites, with a total of 29 characters, in 0.2 seconds
+Used 5 sprites, with a total of 29 characters, in 0.2 seconds
+Used 7 sprites, with a total of 28 characters, in 0.4 seconds
+Used 5 sprites, with a total of 30 characters, in 0.2 seconds
+Used 6 sprites, with a total of 35 characters, in 1.0 seconds
+Used 8 sprites, with a total of 42 characters, in 1.0 seconds
+call spr gg0121 %1 %2
+chop /t1 /b254 /r253 /c240 /p2 gg0121.anm
+Used 6 sprites, with a total of 34 characters, in 1.0 seconds
+Used 8 sprites, with a total of 38 characters, in 1.0 seconds
+Used 7 sprites, with a total of 35 characters, in 1.0 seconds
+Used 8 sprites, with a total of 33 characters, in 1.0 seconds
+Used 8 sprites, with a total of 33 characters, in 1.0 seconds
+Used 7 sprites, with a total of 34 characters, in 1.0 seconds
+Used 8 sprites, with a total of 32 characters, in 1.0 seconds
+Used 9 sprites, with a total of 37 characters, in 1.0 seconds
+Used 8 sprites, with a total of 33 characters, in 0.9 seconds
+Used 6 sprites, with a total of 32 characters, in 0.4 seconds
+Used 8 sprites, with a total of 36 characters, in 1.0 seconds
+call spr gg0122 %1 %2
+chop /t1 /b254 /r253 /c240 /p2 gg0122.anm
+Used 7 sprites, with a total of 33 characters, in 1.0 seconds
+Used 5 sprites, with a total of 40 characters, in 0.0 seconds
+Used 8 sprites, with a total of 38 characters, in 1.0 seconds
+Used 7 sprites, with a total of 35 characters, in 1.0 seconds
+Used 6 sprites, with a total of 40 characters, in 1.0 seconds
+Used 6 sprites, with a total of 39 characters, in 1.0 seconds
+Used 9 sprites, with a total of 40 characters, in 1.0 seconds
+Used 9 sprites, with a total of 40 characters, in 1.0 seconds
+Used 8 sprites, with a total of 38 characters, in 1.0 seconds
+Used 7 sprites, with a total of 36 characters, in 0.5 seconds
+Used 9 sprites, with a total of 34 characters, in 1.0 seconds
+call spr gg0123 %1 %2
+chop /t1 /b254 /r253 /c240 /p2 gg0123.anm
+Used 9 sprites, with a total of 39 characters, in 1.0 seconds
+Used 10 sprites, with a total of 42 characters, in 1.0 seconds
+Used 11 sprites, with a total of 35 characters, in 1.0 seconds
+call spr gg0124 %1 %2
+chop /t1 /b254 /r253 /c240 /p2 gg0124.anm
+Used 5 sprites, with a total of 37 characters, in 0.2 seconds
+Used 8 sprites, with a total of 39 characters, in 1.0 seconds
+Used 10 sprites, with a total of 39 characters, in 1.0 seconds
+Used 8 sprites, with a total of 38 characters, in 1.0 seconds
+Used 10 sprites, with a total of 42 characters, in 1.0 seconds
+Used 11 sprites, with a total of 44 characters, in 1.0 seconds
+Used 10 sprites, with a total of 47 characters, in 1.0 seconds
+Used 6 sprites, with a total of 40 characters, in 1.0 seconds
+Used 7 sprites, with a total of 36 characters, in 1.0 seconds
+Used 7 sprites, with a total of 32 characters, in 1.0 seconds
+Used 6 sprites, with a total of 32 characters, in 1.0 seconds
+Used 7 sprites, with a total of 36 characters, in 1.0 seconds
+Used 7 sprites, with a total of 36 characters, in 1.0 seconds
+Used 7 sprites, with a total of 38 characters, in 1.0 seconds
+Used 7 sprites, with a total of 38 characters, in 1.0 seconds
+Used 9 sprites, with a total of 38 characters, in 1.0 seconds
+Used 7 sprites, with a total of 34 characters, in 1.0 seconds
+Used 8 sprites, with a total of 34 characters, in 1.0 seconds
+call spr gg0125 %1 %2
+chop /t1 /b254 /r253 /c240 /p2 gg0125.anm
+Used 6 sprites, with a total of 38 characters, in 1.0 seconds
+Used 9 sprites, with a total of 47 characters, in 1.0 seconds
+Used 12 sprites, with a total of 44 characters, in 1.0 seconds
+Used 10 sprites, with a total of 42 characters, in 1.0 seconds
+Used 11 sprites, with a total of 41 characters, in 1.0 seconds
+Used 7 sprites, with a total of 45 characters, in 1.0 seconds
+Used 9 sprites, with a total of 49 characters, in 1.0 seconds
+Used 9 sprites, with a total of 46 characters, in 1.0 seconds
+Used 6 sprites, with a total of 46 characters, in 0.7 seconds
+Used 11 sprites, with a total of 44 characters, in 1.0 seconds
+Used 6 sprites, with a total of 48 characters, in 1.0 seconds
+Used 8 sprites, with a total of 41 characters, in 1.0 seconds
+Used 9 sprites, with a total of 34 characters, in 1.0 seconds
+Used 11 sprites, with a total of 35 characters, in 1.0 seconds
+Used 8 sprites, with a total of 34 characters, in 1.0 seconds
+Used 10 sprites, with a total of 42 characters, in 1.0 seconds
+Used 6 sprites, with a total of 39 characters, in 0.6 seconds
+Used 8 sprites, with a total of 34 characters, in 1.0 seconds
+call spr gg0126 %1 %2
+chop /t1 /b254 /r253 /c240 /p2 gg0126.anm
+Used 6 sprites, with a total of 32 characters, in 0.6 seconds
+Used 12 sprites, with a total of 39 characters, in 1.0 seconds
+Used 11 sprites, with a total of 44 characters, in 1.0 seconds
+Used 10 sprites, with a total of 45 characters, in 1.0 seconds
+Used 8 sprites, with a total of 40 characters, in 1.0 seconds
+Used 8 sprites, with a total of 38 characters, in 1.0 seconds
+call spr gg0127 %1 %2
+chop /t1 /b254 /r253 /c240 /p2 gg0127.anm
+Used 7 sprites, with a total of 35 characters, in 1.0 seconds
+Used 6 sprites, with a total of 32 characters, in 0.1 seconds
+Used 7 sprites, with a total of 32 characters, in 0.6 seconds
+Used 6 sprites, with a total of 31 characters, in 0.1 seconds
+Used 6 sprites, with a total of 30 characters, in 0.5 seconds
+Used 4 sprites, with a total of 30 characters, in 0.0 seconds
+Used 7 sprites, with a total of 31 characters, in 0.9 seconds
+Used 6 sprites, with a total of 34 characters, in 0.3 seconds
+Used 5 sprites, with a total of 33 characters, in 0.0 seconds
+Used 5 sprites, with a total of 32 characters, in 0.0 seconds
+Used 5 sprites, with a total of 32 characters, in 0.1 seconds
+Used 5 sprites, with a total of 30 characters, in 0.1 seconds
+call spr gg0128 %1 %2
+chop /t1 /b254 /r253 /c240 /p2 gg0128.anm
+Used 6 sprites, with a total of 34 characters, in 1.0 seconds
+Used 7 sprites, with a total of 35 characters, in 1.0 seconds
+Used 7 sprites, with a total of 37 characters, in 1.0 seconds
+Used 6 sprites, with a total of 36 characters, in 1.0 seconds
+Used 7 sprites, with a total of 38 characters, in 1.0 seconds
+Used 9 sprites, with a total of 43 characters, in 1.0 seconds
+Used 10 sprites, with a total of 45 characters, in 1.0 seconds
+Used 8 sprites, with a total of 42 characters, in 1.0 seconds
+Used 7 sprites, with a total of 47 characters, in 1.0 seconds
+Used 10 sprites, with a total of 43 characters, in 1.0 seconds
+Used 9 sprites, with a total of 41 characters, in 1.0 seconds
+Used 11 sprites, with a total of 43 characters, in 1.0 seconds
+Used 7 sprites, with a total of 35 characters, in 1.0 seconds
+call spr gg0129 %1 %2
+chop /t1 /b254 /r253 /c240 /p2 gg0129.anm
+Used 9 sprites, with a total of 42 characters, in 1.0 seconds
+Used 7 sprites, with a total of 43 characters, in 1.0 seconds
+Used 6 sprites, with a total of 42 characters, in 0.9 seconds
+Used 10 sprites, with a total of 53 characters, in 1.0 seconds
+Used 9 sprites, with a total of 57 characters, in 1.0 seconds
+Used 7 sprites, with a total of 48 characters, in 1.0 seconds
+Used 12 sprites, with a total of 41 characters, in 1.0 seconds
+Used 9 sprites, with a total of 39 characters, in 1.0 seconds
+Used 6 sprites, with a total of 36 characters, in 0.8 seconds
+call spr gg0130 %1 %2
+chop /t1 /b254 /r253 /c240 /p2 gg0130.anm
+Used 9 sprites, with a total of 37 characters, in 1.0 seconds
+Used 10 sprites, with a total of 40 characters, in 1.0 seconds
+Used 8 sprites, with a total of 45 characters, in 1.0 seconds
+Used 10 sprites, with a total of 43 characters, in 1.0 seconds
+Used 10 sprites, with a total of 55 characters, in 1.0 seconds
+Used 12 sprites, with a total of 57 characters, in 1.0 seconds
+Used 10 sprites, with a total of 52 characters, in 1.0 seconds
+Used 7 sprites, with a total of 40 characters, in 1.0 seconds
+call spr gg0131 %1 %2
+chop /t1 /b254 /r253 /c240 /p2 gg0131.anm
+Used 7 sprites, with a total of 40 characters, in 1.0 seconds
+Used 8 sprites, with a total of 38 characters, in 1.0 seconds
+Used 9 sprites, with a total of 37 characters, in 1.0 seconds
+Used 11 sprites, with a total of 44 characters, in 1.0 seconds
+Used 11 sprites, with a total of 45 characters, in 1.0 seconds
+Used 10 sprites, with a total of 41 characters, in 1.0 seconds
+Used 6 sprites, with a total of 40 characters, in 1.0 seconds
+Used 9 sprites, with a total of 36 characters, in 1.0 seconds
+Used 9 sprites, with a total of 36 characters, in 1.0 seconds
+Used 6 sprites, with a total of 40 characters, in 1.0 seconds
+Used 9 sprites, with a total of 38 characters, in 1.0 seconds
+Used 11 sprites, with a total of 41 characters, in 1.0 seconds
+call spr gg0132 %1 %2
+chop /t1 /b254 /r253 /c240 /p2 gg0132.anm
+Used 5 sprites, with a total of 31 characters, in 0.2 seconds
+Used 5 sprites, with a total of 28 characters, in 0.2 seconds
+Used 3 sprites, with a total of 22 characters, in 0.0 seconds
+call spr gg0133 %1 %2
+chop /t1 /b254 /r253 /c240 /p2 gg0133.anm
+Used 9 sprites, with a total of 35 characters, in 1.0 seconds
+Used 6 sprites, with a total of 36 characters, in 1.0 seconds
+Used 8 sprites, with a total of 35 characters, in 1.0 seconds
+Used 9 sprites, with a total of 36 characters, in 1.0 seconds
+call spr gg0134 %1 %2
+chop /t1 /b254 /r253 /c240 /p2 gg0134.anm
+Used 12 sprites, with a total of 65 characters, in 1.0 seconds
+Used 15 sprites, with a total of 63 characters, in 1.0 seconds
+Used 15 sprites, with a total of 61 characters, in 1.0 seconds
+Used 17 sprites, with a total of 55 characters, in 1.0 seconds
+Used 11 sprites, with a total of 50 characters, in 1.0 seconds
+Used 7 sprites, with a total of 49 characters, in 1.0 seconds
+call spr gg0150 %1 %2
+chop /t1 /b254 /r253 /c240 /p2 gg0150.anm
+Used 6 sprites, with a total of 33 characters, in 0.7 seconds
+Used 7 sprites, with a total of 35 characters, in 1.0 seconds
+Used 6 sprites, with a total of 35 characters, in 0.7 seconds
+Used 4 sprites, with a total of 36 characters, in 0.2 seconds
+call spr gg0151 %1 %2
+chop /t1 /b254 /r253 /c240 /p2 gg0151.anm
+Used 10 sprites, with a total of 49 characters, in 1.0 seconds
+Used 11 sprites, with a total of 45 characters, in 1.0 seconds
+Used 8 sprites, with a total of 45 characters, in 1.0 seconds
+Used 12 sprites, with a total of 48 characters, in 1.0 seconds
+Used 12 sprites, with a total of 46 characters, in 1.0 seconds
+Used 12 sprites, with a total of 49 characters, in 1.0 seconds
+Used 10 sprites, with a total of 49 characters, in 1.0 seconds
+Used 12 sprites, with a total of 48 characters, in 1.0 seconds
+call spr gg0152 %1 %2
+chop /t1 /b254 /r253 /c240 /p2 gg0152.anm
+Used 9 sprites, with a total of 52 characters, in 1.0 seconds
+Used 8 sprites, with a total of 52 characters, in 1.0 seconds
+Used 8 sprites, with a total of 46 characters, in 1.0 seconds
+Used 10 sprites, with a total of 42 characters, in 1.0 seconds
+Used 9 sprites, with a total of 51 characters, in 1.0 seconds
+call spr gg0154 %1 %2
+chop /t1 /b254 /r253 /c240 /p2 gg0154.anm
+Used 7 sprites, with a total of 34 characters, in 0.8 seconds
+Used 8 sprites, with a total of 43 characters, in 1.0 seconds
+Used 6 sprites, with a total of 38 characters, in 0.3 seconds
+Used 6 sprites, with a total of 40 characters, in 0.5 seconds
+Used 6 sprites, with a total of 38 characters, in 0.1 seconds
+Used 7 sprites, with a total of 39 characters, in 1.0 seconds
+Used 8 sprites, with a total of 32 characters, in 1.0 seconds
+Used 5 sprites, with a total of 29 characters, in 0.1 seconds
+Used 6 sprites, with a total of 31 characters, in 0.8 seconds
+Used 8 sprites, with a total of 38 characters, in 1.0 seconds
+Used 6 sprites, with a total of 39 characters, in 1.0 seconds
+Used 8 sprites, with a total of 39 characters, in 1.0 seconds
+Used 7 sprites, with a total of 34 characters, in 1.0 seconds
+Used 8 sprites, with a total of 36 characters, in 1.0 seconds
+Used 8 sprites, with a total of 34 characters, in 1.0 seconds
+call spr gg0155 %1 %2
+chop /t1 /b254 /r253 /c240 /p2 gg0155.anm
+Used 7 sprites, with a total of 34 characters, in 1.0 seconds
+Used 7 sprites, with a total of 37 characters, in 1.0 seconds
+Used 10 sprites, with a total of 43 characters, in 1.0 seconds
+Used 11 sprites, with a total of 44 characters, in 1.0 seconds
+Used 11 sprites, with a total of 45 characters, in 1.0 seconds
+Used 10 sprites, with a total of 43 characters, in 1.0 seconds
+Used 10 sprites, with a total of 37 characters, in 1.0 seconds
+Used 6 sprites, with a total of 37 characters, in 0.8 seconds
+Used 7 sprites, with a total of 41 characters, in 1.0 seconds
+Used 8 sprites, with a total of 37 characters, in 1.0 seconds
+call spr gg0177 %1 %2
+chop /t1 /b254 /r253 /c240 /p2 gg0177.anm
+Used 7 sprites, with a total of 36 characters, in 1.0 seconds
+Used 7 sprites, with a total of 37 characters, in 1.0 seconds
+Used 8 sprites, with a total of 36 characters, in 1.0 seconds
+Used 6 sprites, with a total of 31 characters, in 0.4 seconds
+Used 6 sprites, with a total of 35 characters, in 0.7 seconds
+call spr gg0182 %1 %2
+chop /t1 /b254 /r253 /c240 /p2 gg0182.anm
+Used 7 sprites, with a total of 56 characters, in 1.0 seconds
+Used 7 sprites, with a total of 35 characters, in 1.0 seconds
+Used 6 sprites, with a total of 27 characters, in 0.3 seconds
+Used 5 sprites, with a total of 22 characters, in 0.0 seconds
+Used 3 sprites, with a total of 26 characters, in 0.0 seconds
+Used 10 sprites, with a total of 41 characters, in 1.0 seconds
+call spr gg0183 %1 %2
+chop /t1 /b254 /r253 /c240 /p2 gg0183.anm
+Used 6 sprites, with a total of 43 characters, in 1.0 seconds
+Used 14 sprites, with a total of 48 characters, in 1.0 seconds
+Used 12 sprites, with a total of 55 characters, in 1.0 seconds
+Used 13 sprites, with a total of 54 characters, in 1.0 seconds
+Used 11 sprites, with a total of 46 characters, in 1.0 seconds
+call spr gg0184 %1 %2
+chop /t1 /b254 /r253 /c240 /p2 gg0184.anm
+Used 9 sprites, with a total of 43 characters, in 1.0 seconds
+Used 11 sprites, with a total of 46 characters, in 1.0 seconds
+call spr gg0185 %1 %2
+chop /t1 /b254 /r253 /c240 /p2 gg0185.anm
+Used 10 sprites, with a total of 55 characters, in 1.0 seconds
+Used 10 sprites, with a total of 48 characters, in 1.0 seconds
+call spr gg0186 %1 %2
+chop /t1 /b254 /r253 /c240 /p2 gg0186.anm
+Used 9 sprites, with a total of 47 characters, in 1.0 seconds
+Used 6 sprites, with a total of 28 characters, in 0.2 seconds
+call spr gg0187 %1 %2
+chop /t1 /b254 /r253 /c240 /p2 gg0187.anm
+Used 9 sprites, with a total of 47 characters, in 1.0 seconds
+Used 7 sprites, with a total of 41 characters, in 1.0 seconds
+Used 9 sprites, with a total of 49 characters, in 1.0 seconds
+Used 14 sprites, with a total of 58 characters, in 1.0 seconds
+Used 16 sprites, with a total of 70 characters, in 1.0 seconds
+Used 10 sprites, with a total of 50 characters, in 1.0 seconds
+Used 6 sprites, with a total of 36 characters, in 1.0 seconds
+Used 6 sprites, with a total of 35 characters, in 1.0 seconds
+Used 7 sprites, with a total of 37 characters, in 1.0 seconds
+Used 8 sprites, with a total of 44 characters, in 1.0 seconds
+call spr gg0188 %1 %2
+chop /t1 /b254 /r253 /c240 /p2 gg0188.anm
+Used 5 sprites, with a total of 24 characters, in 0.0 seconds
+Used 6 sprites, with a total of 25 characters, in 0.3 seconds
+Used 6 sprites, with a total of 29 characters, in 0.4 seconds
+Used 5 sprites, with a total of 32 characters, in 0.1 seconds
+Used 5 sprites, with a total of 31 characters, in 0.1 seconds
+Used 5 sprites, with a total of 31 characters, in 0.1 seconds
+Used 7 sprites, with a total of 28 characters, in 1.0 seconds
+Used 5 sprites, with a total of 21 characters, in 0.1 seconds
+call spr gg0189 %1 %2
+chop /t1 /b254 /r253 /c240 /p2 gg0189.anm
+Used 9 sprites, with a total of 42 characters, in 1.0 seconds
+Used 5 sprites, with a total of 29 characters, in 0.2 seconds
+Used 6 sprites, with a total of 20 characters, in 0.1 seconds
+Used 5 sprites, with a total of 22 characters, in 0.0 seconds
+Used 5 sprites, with a total of 35 characters, in 0.7 seconds
+call spr gg0190 %1 %2
+chop /t1 /b254 /r253 /c240 /p2 gg0190.anm
+Used 7 sprites, with a total of 40 characters, in 1.0 seconds
+Used 8 sprites, with a total of 43 characters, in 1.0 seconds
+Used 9 sprites, with a total of 43 characters, in 1.0 seconds
+Used 7 sprites, with a total of 37 characters, in 1.0 seconds
+call spr gg0191 %1 %2
+chop /t1 /b254 /r253 /c240 /p2 gg0191.anm
+Used 8 sprites, with a total of 41 characters, in 1.0 seconds
+Used 8 sprites, with a total of 41 characters, in 1.0 seconds
+Used 8 sprites, with a total of 41 characters, in 1.0 seconds
+Used 9 sprites, with a total of 41 characters, in 1.0 seconds
+rem ** COLLECT the animations **
+call col gg0101 
+collect gg0101.col
+call col gg0102 
+collect gg0102.col
+call col gg0103a
+collect gg0103a.col
+call col gg0103b
+collect gg0103b.col
+call col gg0103c
+collect gg0103c.col
+call col gg0104 
+collect gg0104.col
+call col gg0105 
+collect gg0105.col
+call col gg0106 
+collect gg0106.col
+call col gg0107 
+collect gg0107.col
+call col gg0108 
+collect gg0108.col
+call col gg0109 
+collect gg0109.col
+call col gg0110 
+collect gg0110.col
+call col gg0111 
+collect gg0111.col
+call col gg0115 
+collect gg0115.col
+call col gg0116 
+collect gg0116.col
+call col gg0117 
+collect gg0117.col
+call col gg0118 
+collect gg0118.col
+call col gg0119 
+collect gg0119.col
+call col gg0120 
+collect gg0120.col
+call col gg0121 
+collect gg0121.col
+call col gg0122 
+collect gg0122.col
+call col gg0123 
+collect gg0123.col
+call col gg0124 
+collect gg0124.col
+call col gg0125 
+collect gg0125.col
+call col gg0126 
+collect gg0126.col
+call col gg0127 
+collect gg0127.col
+call col gg0128 
+collect gg0128.col
+call col gg0129 
+collect gg0129.col
+call col gg0130 
+collect gg0130.col
+call col gg0131 
+collect gg0131.col
+call col gg0132 
+collect gg0132.col
+call col gg0133 
+collect gg0133.col
+call col gg0134 
+collect gg0134.col
+call col gg0150 
+collect gg0150.col
+call col gg0151 
+collect gg0151.col
+call col gg0152 
+collect gg0152.col
+call col gg0154 
+collect gg0154.col
+call col gg0155 
+collect gg0155.col
+call col gg0177 
+collect gg0177.col
+call col gg0182 
+collect gg0182.col
+call col gg0183 
+collect gg0183.col
+call col gg0184 
+collect gg0184.col
+call col gg0185 
+collect gg0185.col
+call col gg0186 
+collect gg0186.col
+call col gg0187 
+collect gg0187.col
+call col gg0188 
+collect gg0188.col
+call col gg0189 
+collect gg0189.col
+call col gg0190 
+collect gg0190.col
+call col gg0191 
+collect gg0191.col
+call modany2
+
+.ANY FILE FORMATTER V1.00CPS
+
+Sequence # (2 letter prefix+seq # (gg01))? gg01
+Working ... gg0101.any --> gg0101.ant
+Working ... gg0102.any --> gg0102.ant
+Working ... gg0104.any --> gg0104.ant
+Working ... gg0105.any --> gg0105.ant
+Working ... gg0106.any --> gg0106.ant
+Working ... gg0107.any --> gg0107.ant
+Working ... gg0108.any --> gg0108.ant
+Working ... gg0109.any --> gg0109.ant
+Working ... gg0110.any --> gg0110.ant
+Working ... gg0111.any --> gg0111.ant
+Working ... gg0115.any --> gg0115.ant
+Working ... gg0116.any --> gg0116.ant
+Working ... gg0117.any --> gg0117.ant
+Working ... gg0118.any --> gg0118.ant
+Working ... gg0119.any --> gg0119.ant
+Working ... gg0120.any --> gg0120.ant
+Working ... gg0121.any --> gg0121.ant
+Working ... gg0122.any --> gg0122.ant
+Working ... gg0123.any --> gg0123.ant
+Working ... gg0124.any --> gg0124.ant
+Working ... gg0125.any --> gg0125.ant
+Working ... gg0126.any --> gg0126.ant
+Working ... gg0127.any --> gg0127.ant
+Working ... gg0128.any --> gg0128.ant
+Working ... gg0129.any --> gg0129.ant
+Working ... gg0130.any --> gg0130.ant
+Working ... gg0131.any --> gg0131.ant
+Working ... gg0132.any --> gg0132.ant
+Working ... gg0133.any --> gg0133.ant
+Working ... gg0134.any --> gg0134.ant
+Working ... gg0150.any --> gg0150.ant
+Working ... gg0151.any --> gg0151.ant
+Working ... gg0152.any --> gg0152.ant
+Working ... gg0154.any --> gg0154.ant
+Working ... gg0155.any --> gg0155.ant
+Working ... gg0177.any --> gg0177.ant
+Working ... gg0182.any --> gg0182.ant
+Working ... gg0183.any --> gg0183.ant
+Working ... gg0184.any --> gg0184.ant
+Working ... gg0185.any --> gg0185.ant
+Working ... gg0186.any --> gg0186.ant
+Working ... gg0187.any --> gg0187.ant
+Working ... gg0188.any --> gg0188.ant
+Working ... gg0189.any --> gg0189.ant
+Working ... gg0190.any --> gg0190.ant
+Working ... gg0191.any --> gg0191.ant
+
+OK! All done.

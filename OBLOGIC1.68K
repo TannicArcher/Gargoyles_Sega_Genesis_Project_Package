@@ -1,0 +1,5704 @@
+; บ OBLOGIC1.68K : OBJECT LOGIC CONTROL ROUTINES ...			   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ This file contains the CONTROL LOGIC routines for			   บ
+; บ the following Objects ;						   บ
+; บ 									   บ
+; บ GOLIATH								   บ
+; บ HEALTH METER							   บ
+; บ EXPLOSIONS 1&2							   บ
+; บ SOFTWARE FIRE							   บ
+; บ 									   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ GOLIATH LOGIC							   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ All Goliaths control logic ...					   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+GolMaxNRG		equ	256
+GolMaxLives		equ	10
+
+			if	system=ntsc
+GolRunSPD		equ	4	
+GolIdleCMP		equ	$140
+GolClimbWallSpeed	equ	2
+GolClimbCeilingSpeed	equ	2
+GolJumpBackCmp		equ	1		;must be 1, 3, 7, 15 ...
+GolGlideDownSpeed	equ	2
+GolLookUpDST		equ	$38
+GolLookDownDST		equ	$58
+GolGrav1		equ	3
+GolUpVelocity		equ	5
+GolLookCMP		equ	$20
+GolMaxFallSPD		equ	$8
+			elseif	system=pal
+GolRunSPD		equ	5	
+GolIdleCMP		equ	$120
+GolClimbWallSpeed	equ	3
+GolClimbCeilingSpeed	equ	3
+GolJumpBackCmp		equ	1		;must be 1, 3, 7, 15 ...
+GolGlideDownSpeed	equ	3
+GolLookUpDST		equ	$38
+GolLookDownDST		equ	$58
+GolGrav1		equ	2
+GolUpVelocity		equ	7
+GolLookCMP		equ	$20
+GolMaxFallSPD		equ	$9
+			endif
+			
+
+		StRESET
+		StDEF	GolTestSTATE
+		StDEF	GolGroundZeroSTATE
+		StDEF	GolRunSTATE		
+		StDEF	GolRunAttackSTATE		
+		StDEF	GolRunAttackWallSTATE		
+		StDEF	GolRunAttackWallFallSTATE		
+		StDEF	GolRunAttackWallLandSTATE		
+		StDEF	GolRunAttackThruSTATE		
+		StDEF	GolRunTurnSTATE		
+		StDEF	GolStopSTATE		
+		StDEF	GolJumpSTATE	
+		StDEF	GolJumpFlapSTATE	
+		StDEF	GolJumpAttackSTATE	
+		StDEF	GolFallSTATE		
+		StDEF	GolFallLandSTATE	
+		StDEF	GolCrouchSTATE		
+		StDEF	GolCrouchKickSTATE		
+		StDEF	GolGroundJabSTATE	
+		StDEF	GolGroundClawSTATE	
+		StDEF	GolGroundSlashSTATE	
+		StDEF	GolGroundGrabSTATE	
+		StDEF	GolGroundGrabReverseSTATE	
+		StDEF	GolGroundThrowSTATE	
+		StDEF	GolGroundSlamSTATE	
+		StDEF	GolGroundIdleSTATE	
+		StDEF	GolGroundSmallHitSTATE	
+		StDEF	GolGroundBigHitSTATE	
+		StDEF	GolGround2WallTransSTATE
+		StDEF	GolJump2WallTranSTATE	
+		StDEF	GolJump2CeilTranSTATE	
+		StDEF	GolWall2CeilTranSTATE	
+		StDEF	GolCeil2WallUpTranSTATE	
+		StDEF	GolCeil2WallDownTranSTATE	
+		StDEF	GolWallClimbFallSTATE	
+		StDEF	GolWallClimbSTATE	
+		StDEF	GolWallCrawl2CeilSTATE	
+		StDEF	GolWallSlideDownStopSTATE
+		StDEF	GolWallClimbClawSTATE	
+		StDEF	GolWallClimbHitSTATE	
+		StDEF	GolCeilClimbSTATE	
+		StDEF	GolCeilClimbShieldSTATE	
+		StDEF	GolCeilClimbShldOutSTATE
+		StDEF	GolCeilClimbTurnSTATE	
+		StDEF	GolCeilClimbHitSTATE	
+		StDEF	GolCeilClimbHitFallSTATE	
+		StDEF	GolAirHitSTATE		
+		StDEF	GolAirHitLandSTATE		
+		StDEF	GolGenericDeadSTATE	
+		StDEF	GolDeathYesContSTATE	
+		StDEF	GolDeathNoContSTATE	
+		StDEF	GolCeilClimbFallSTATE	
+		StDEF	GolOffBalanceSTATE	
+		StDEF	GolLookUpSTATE		
+		StDEF	GolAirTurnSTATE		
+		StDEF	GolWall2GroundTranSTATE	
+		StDEF	GolHangSwingSTATE	
+		StDEF	GolHangSwingReleaseSTATE	
+		StDEF	GolWallClimbZeroSTATE	
+		StDEF	GolWallIdle2ClimbSTATE	
+		StDEF	GolWallClimb2IdleSTATE
+		StDEF	GolCeilClimbZeroSTATE	
+		StDEF	GolGenericHitSTATE	
+		StDEF	GolFaceHugSTATE	
+		StDEF	GolStunSTATE	
+		StDEF	GolVentSTATE	
+		StDEF	GolThrownSTATE	
+		StDEF	GolThrownFallSTATE	
+		StDEF	GolMVBossSTATE	
+		StDEF	GolFinishElevSTATE  
+		StDEF	GolDemonaStartSTATE
+  
+		StDEF	GolPotBumpSTATE  
+			
+		StDEF	GolInGrinderSTATE	
+		StDEF	GolOnOPPSTATE	
+		StDEF	GolJumpToWeightSTATE	
+		StDEF	GolLandOnWeightSTATE	
+		StDEF	GolOnWeightSideSTATE	
+		StDEF	GolClimbWeightSTATE	
+		StDEF	GolDownCouldronSTATE	
+		StDEF	GolBottomCouldronSTATE	
+		StDEF	GolUpSideCouldronSTATE	
+		StDEF	GolCouldronClawSTATE	
+		
+		StDEF	GolOnTracksSTATE	
+		StDEF	GolContinueSTATE	
+		StDEF	GolCrashPauseSTATE	
+
+
+Goliath_Logic		cmp.w	#GolFinishElevSTATE,OB_State(a0)
+			beq	.111  
+			cmp.w	#GolGenericDeadSTATE,OB_State(a0)
+			beq	.111
+			tst.b	PlayerDeadFLG
+			beq.s	.aaa
+			bpl.s	.bbb
+    			rts
+.bbb			bsr	GolSetGenericDead
+			bra	.111
+			
+.aaa			btst.b	#ob_setup,OB_Flag2(a0)			;initial setups
+			bne	.1
+			bset.b	#ob_setup,OB_Flag2(a0)
+			move.l	#GolSetGenericHit,OB_HitRoutine(a0)
+			bsr	InitSaveSafePos
+			cmp.w	#Level11,levnum
+			bne.s	.a1
+			bsr	GolSetEdgeFall
+			move.w	#3,OB_Var4(a0)
+			bra	.ov
+.a1			cmp.w	#Level24,levnum
+			bne.s	.a2
+			bsr	GolSetMVBossStart
+			bra	.ov
+.a2			cmp.w	#Level34,levnum
+			bne.s	.a3
+			bsr	GolSetEdgeFall
+			bra	.ov
+.a3			cmp.w	#Level77,levnum
+			bne.s	.a4
+			bsr	GolSetDemonaStart
+			bra	.ov
+.a4			cmp.w	#Level51,levnum
+			bne.s	.a5
+			bsr	GolSetSubwayStart
+			bra	.ov
+.a5			cmp.w	#Level14,levnum
+			bne.s	.a6
+			bsr	GolSetEdgeFall
+			bra	.ov
+.a6			cmp.w	#Level31,levnum
+			bne.s	.a7
+			bsr	GolSetEdgeFall
+			bra	.ov
+.a7			cmp.w	#Level21,levnum
+			bne.s	.a8
+			bsr	GolSetEdgeFall
+			bra	.ov
+.a8			
+			
+
+.skpss			bsr	GolSetGroundZero			;ground zero state
+			bra	.ov
+
+.1			tst.w	TrackObjectNumber
+			bpl.s	.skp1
+			bsr	ObjectOffBottom
+			blt	SetPlayerDead
+			clr.l	Plr_X_Spd_L				;clr speed vars
+			clr.l	Plr_Y_Spd_U
+
+.skp1			if	debug
+			st.b	ThreeFingerFLG
+			endif
+			tst.b	ThreeFingerFLG
+			beq.s	.2
+			bsr	HandleDEBUG
+			bmi.s	.ov
+			
+.2			jsr	GetUnderALL				;get detection info under player
+			bsr	GoliathSpecials				;handle special detection/mechanics etc.
+			bsr	GoliathInvincible			;handle invincibility
+			bsr	GoliathSuperStrength			;handle super strength	
+			bsr	HandleBeingHit				;Generic handle hit rout
+			
+			tst.b	StopThePlayer
+			bne.s	.ov
+			
+.111			moveq	#0,d1					;get state var as index into ...
+			move.w	OB_State(a0),d1
+			jsr	GoliathLogicTable(pc,d1.w)		;jump table
+
+.ov			move.w	OB_Xpos(a0),Plr_XPos			;save xy pos
+			move.w	OB_Ypos(a0),Plr_YPos
+			move.b	OB_Flag1(a0),Plr_Flag1
+			move.b	OB_Flag2(a0),Plr_Flag2
+			bra	ClrHitStuff
+
+GoliathLogicTable	bra	GolTestLOGIC				
+			bra	GolGroundZeroLOGIC	
+			bra	GolRunLOGIC		
+			bra	GolRunAttackLOGIC		
+			bra	GolRunAttackWallLOGIC		
+			bra	GolRunAttkWallFallLOGIC		
+			bra	GolRunAttkWallLandLOGIC		
+			bra	GolRunAttackThruLOGIC		
+			bra	GolRunTurnLOGIC		
+			bra	GolStopLOGIC		
+			bra	GolJumpLOGIC	
+			bra	GolJumpFlapLOGIC	
+			bra	GolJumpAttackLOGIC	
+			bra	GolFallLOGIC		
+			bra	GolFallLandLOGIC	
+	    		bra	GolCrouchLOGIC		
+	    		bra	GolCrouchKickLOGIC		
+	    		bra	GolGroundJabLOGIC	
+	    		bra	GolGroundClawLOGIC	
+	    		bra	GolGroundSlashLOGIC	
+			bra	GolGroundGrabLOGIC	
+			bra	GolGroundGrabReverseLOGIC
+			bra	GolGroundThrowLOGIC	
+			bra	GolGroundSlamLOGIC	
+			bra	GolGroundIdleLOGIC	
+			bra	GolGroundSmallHitLOGIC	
+			bra	GolGroundBigHitLOGIC	
+			bra	GolGround2WallTransLOGIC
+			bra	GolJump2WallTranLOGIC	
+			bra	GolJump2CeilTranLOGIC	
+			bra	GolWall2CeilTranLOGIC	
+			bra	GolCeil2WallUpTranLOGIC
+			bra	GolCeil2WallDownTranLOGIC
+			bra	GolWallClimbFallLOGIC	
+			bra	GolWallClimbLOGIC	
+			bra	GolWallCrawl2CeilLOGIC	
+			bra	GolWallSldDownStopLOGIC
+			bra	GolWallClimbClawLOGIC	
+			bra	GolWallClimbHitLOGIC	
+			bra	GolCeilClimbLOGIC	
+			bra	GolCeilClimbShieldLOGIC	
+			bra	GolCeilClimbShldOutLOGIC	
+			bra	GolCeilClimbTurnLOGIC	
+			bra	GolCeilClimbHitLOGIC	
+			bra	GolCeilClmbHitFallLOGIC
+			bra	GolAirHitLOGIC		
+			bra	GolAirHitLandLOGIC		
+			bra	GolGenericDeadLOGIC	
+			bra	GolDeathYesContLOGIC	
+			bra	GolDeathNoContLOGIC	
+			bra	GolCeilClimbFallLOGIC	
+			bra	GolOffBalanceLOGIC	
+			bra	GolLookUpLOGIC		
+			bra	GolAirTurnLOGIC		
+			bra	GolWall2GroundTranLOGIC
+			bra	GolHangSwingLOGIC	
+			bra	GolHangSwingReleaseLOGIC	
+			bra	GolWallClimbZeroLOGIC	
+			bra	GolWallIdle2ClimbLOGIC
+			bra	GolWallClimb2IdleLOGIC
+			bra	GolCeilClimbZeroLOGIC	
+			bra	GolGenericHitLOGIC
+			bra	GolFaceHugLOGIC
+			bra	GolStunLOGIC
+			bra	GolVentLOGIC
+			bra	GolThrownLOGIC
+			bra	GolThrownFallLOGIC
+			bra	GolMVBossStartLOGIC
+			bra	GolFinishElevLOGIC
+			bra	GolDemonaStartLOGIC
+			
+			bra	GolPotBumpLOGIC
+
+			bra	GolInGrinderLOGIC
+			bra	GolOnOPPLOGIC
+			bra	GolJumpToWeightLOGIC
+			bra	GolLandOnWeightLOGIC
+			bra	GolOnWeightSideLOGIC
+			bra	GolClimbWeightLOGIC
+			bra	GolDownCouldronLOGIC
+			bra	GolBottomCouldronLOGIC
+			bra	GolUpSideCouldronLOGIC
+			bra	GolCouldronClawLOGIC
+
+			bra	GolOnTracksLOGIC
+			bra	GolContinueLOGIC
+			bra	GolCrashPauseLOGIC
+
+
+
+
+;; ********************************************************************************** ;;
+
+
+HandleKnockOffTrough	tst.b	GolSpriteCarryDLY
+			bne.s	.x
+			move.l	DetectedWeightOB,a1
+			btst.b	#ob_carry,OB_Flag3(a1)
+			beq.s	.x
+			cmp.w	#Trough_OB,OB_Type(a1)
+			bne.s	.x
+;			beq.s	.ok
+;			cmp.w	#BigCouldron_OB,OB_Type(a1)
+;			bne.s	.x
+.ok			move.b	Under,d2
+			jsr	TestLevelWalls
+			bpl.s	.x
+			or.b	UnderTOP,d2
+			or.b	UnderBOT,d2
+			bpl.s	.x
+			btst.b	#ob_xflp,OB_Flag1(a0)
+			bne.s	.r
+.l			bset.b	#ob_hitside,OB_Flag1(a0)
+  			bra	.a
+.r			bclr.b	#ob_hitside,OB_Flag1(a0)
+.a			bclr.b	#ob_carry,OB_Flag3(a1)
+			move.w	#3,OB_Var1(a0)
+  			bsr	ClrBlocks
+			bra	GolSetAirHit2
+.x			rts
+
+
+
+;; ********************************************************************************** ;;
+;; ********************************************************************************** ;;
+
+
+GolTestLOGIC		rts
+
+
+;; ********************************************************************************** ;;
+;; ********************************************************************************** ;;
+;; ********************************************************************************** ;;
+
+; - PASSIVE ZERO LOGIC -----------------------------------------------------
+
+GolSetGroundZero	move.w	#GolGroundZeroSTATE,OB_State(a0)
+			bsr	ClrSomeStuff
+			bsr	ClrHitStuff
+			bsr	GolSetGroundMODE_CLR			;ground mode
+			clr.b	OB_Var7(a0)
+			lea	GolGroundZeroANM,a1			;set anim
+			bsr	SetNewAnim
+			bra	ForceNewAnim
+			
+			
+GolGroundZeroLOGIC	tst.b	BossDefeatedFLG
+			bne	.x	
+
+			bclr.b	#ob_beinghit,OB_Flag1(a0)	;clr being hit
+			
+			move.l	DetectedWeightOB,a1
+			btst.b	#ob_carry,OB_Flag3(a1)
+			bne	.ok
+			tst.b	IsGolOnWeightFLG
+			bne	GolSetFallOffObject
+				
+			move.l	UnderLEFTFEET_c,a1		;test for off balance on edges
+			bsr	PullContourUnder
+			bne.s	.a
+			jsr	GetUnderLEFTGROUND
+			bsr	PullContourUnder
+			bne.s	.a
+			move.l	UnderLEFTBOT_c,a1
+			bsr	PullContourUnder
+			beq	GolSetOffBalanceL
+
+.a			move.l	UnderRIGHTFEET_c,a1
+			bsr	PullContourUnder
+			bne.s	.b
+			jsr	GetUnderRIGHTGROUND
+			bsr	PullContourUnder
+			bne.s	.b
+			move.l	UnderRIGHTBOT_c,a1
+			bsr	PullContourUnder
+			beq	GolSetOffBalanceR
+
+.b			tst.b	joy1					;tick for idle animation
+			bne.s	.ok	    				;cancelled by controller<>0
+			clr.w	GolPreJumpFLG	
+			clr.b	GolPreGrabFLG	
+			addq.w	#1,GolIdleCNT
+			cmp.w	#GolIdleCMP,GolIdleCNT
+			beq	GolSetGroundIdle
+.x			rts
+
+.ok			bsr	ClrBlocks
+			
+			tst.b	GolPreJumpFLG				;do we have a prejump?
+			bne	GolSetJump
+			bsr	tst_d_button_a				;jump button?
+			bne	GolSetJump
+
+			tst.b	GolPreClawFLG				;do we have a prejump?
+			bne	GolSetGroundClaw
+			bsr	tst_d_button_b				;attack button?
+			bne	GolSetGroundClaw
+			
+			tst.b	GolPreGrabFLG				;do we have a prejump?
+			bne	GolSetGroundGrab
+			bsr	tst_d_button_c				;grab button?
+			bne	GolSetGroundGrab
+			
+			btst.b	#left,joy1				;left?
+			bne	GolSetRunLeft
+			btst.b	#right,joy1   				;right?
+			bne	GolSetRunRight
+			btst.b	#up,joy1				;up?
+			bne	GolSetLookUp
+			btst.b	#down,joy1				;down?
+			bne	GolSetCrouch
+
+
+; - RUN LOGIC --------------------------------------------------------------
+
+GSRLRX			rts
+
+GolSetRunLeft		btst.b	#ob_blockleft,OB_Flag4(a0)		;player blocked to the left?
+			bne.s	GSRLRX					;take no action
+			st.b	walking_left				;set walking flags
+			clr.b	walking_right
+			bra.s	GolSetRun				;set up run
+GolSetRunRight		btst.b	#ob_blockright,OB_Flag4(a0)		;player blocked to the left?
+			bne.s	GSRLRX					;take no action
+			clr.b	walking_left				;set walking flags
+			st.b	walking_right
+GolSetRun		move.w	#GolRunSTATE,OB_State(a0)		;set up run state
+			lea	GolRunANM,a1				;anim
+			bsr	SetNewAnim
+			bsr	ForceNewAnim
+			bsr	ClrHitStuff
+			clr.b	GolRunCNT				;clr counters
+			st.b	GolRunFLG				;set flags
+			bclr.b	#ob_xflp,OB_Flag1(a0)			;set flip bit dependent on walking dir		
+			tst.b	walking_left
+			beq.s	GolRunLOGIC
+			bset.b	#ob_xflp,OB_Flag1(a0)
+			bra	GolSetGroundMODE_CLR
+
+
+GolRunLOGIC		jsr	tst_d_button_a				;run jump?
+			bne	GolSetJump
+			
+			cmp.b	#$c,GolRunCNT
+			bge.s	.1a
+			addq.b	#1,GolRunCNT
+			jsr	tst_d_button_b				;attack button?
+			bne	GolSetGroundJab
+			bra	.2a
+.1a			jsr	tst_d_button_b				;run attack?
+			bne	GolSetRunAttack
+
+.2a			tst.b	GolWaterSlideFLG			;don't do run logic if on water slide
+			bne	GSRLRX
+
+			tst.b	walking_right				;which dir are we walking?
+			bne.s	.rte
+
+.lft			move.b	UnderLEFTTOP,d2				;check for walls
+			jsr	TestLevelWalls	
+			bmi	GolSetStop     				;stop at walls
+;			cmp.w	#Level21,levnum
+;			blt.s	.l1
+;			cmp.w	#Level24,levnum
+;			bgt.s	.l1
+;			move.b	UnderLEFT,d2
+;			bra	.l2
+.l1			move.b	UnderLEFTBOT,d2
+.l2			jsr	TestLevelWalls	
+			bmi	GolSetStop    		
+			btst.b	#left,joy1				;stop if controller no longer pushed in dir
+			beq	GolSetStop
+			bsr	SaveSafePos
+			bsr	GetGolXSpeed				;get plr x speed
+			bsr	MoveGolLeft				;move it
+			move.l	DetectedWeightOB,a1
+			btst.b	#ob_carry,OB_Flag3(a1)
+			beq	HandleGolContours
+.x			rts
+			
+.rte			move.b	UnderRIGHTTOP,d2				;check for walls
+			jsr	TestLevelWalls
+			bmi	GolSetStop				;stop at walls
+;			cmp.w	#Level21,levnum
+;			blt.s	.r1
+;			cmp.w	#Level24,levnum
+;			bgt.s	.r1
+;			move.b	UnderRIGHT,d2
+;			bra	.r2
+.r1			move.b	UnderRIGHTBOT,d2
+.r2			jsr	TestLevelWalls
+			bmi	GolSetStop
+			btst.b	#right,joy1				;stop if controller no longer pushed in dir
+			beq	GolSetStop
+			bsr	SaveSafePos
+			bsr	GetGolXSpeed				;get plr x speed
+			bsr	MoveGolRight				;move it
+			move.l	DetectedWeightOB,a1
+			btst.b	#ob_carry,OB_Flag3(a1)
+			bne.s	.x
+.yr			bra	HandleGolContours			;handle the contours
+
+
+; - RUN ATTACK LOGIC -----------------------------------------------------------
+
+GolSetRunAttack		move.w	#GolRunAttackSTATE,OB_State(a0)		;set run attack state
+			move.b	#GolRunAttackPOWER,OB_HitPower(a0)
+			SFX	22
+			lea	GolRunAttackANM,a1			;anim
+			bsr	SetNewAnim
+			bsr	GolSetAirMODE_CLR			;set air mode
+			bsr	GolSetAttackMODE			;set attack mode
+			clr.w	OB_Var1(a0)
+			move.w	#3,OB_Var2(a0)
+			move.w	#$0600,OB_Xspd(a0)			;setup mover vars
+			clr.w	OB_Yspd(a0)		
+			clr.w	OB_Xacc(a0)		
+			clr.w	OB_Yacc(a0)
+			btst.b	#ob_xflp,OB_Flag1(a0)
+			bne.s	.1
+			move.b	#%00110100,OB_MoveFlags(a0)			
+  			bra	.2
+.1			move.b	#%00110101,OB_MoveFlags(a0)			
+.2			bra	SetBigAttack
+
+GolRunAttackLOGIC	btst.b	#ob_hitting,OB_Flag1(a0)		;test if player hit another sprite object
+			bne	GolSetRunAttackWall
+			bsr	GolRunAttackXMove
+			bmi	GolSetRunAttackWall
+
+.1			tst.b	OB_Var1(a0)				;up
+			bne.s	.2
+			bsr	UpParabola
+			bpl.s	.x
+			st.b	OB_Var1(a0)
+
+.2			bsr	DownParabola				;down
+			bsr	TestLand
+			bmi	GolSetRunAttackThru			;roll when land
+.x			rts
+
+
+; - RUN ATTACK HIT WALL ----------------------------------------------------
+
+GolSetRunAttackWall	cmp.w	#GolRunAttackThruSTATE,OB_State(a0)		;set run attack state
+			beq	GolSetRunAttkWallLand			
+			move.w	#GolRunAttackWallSTATE,OB_State(a0)		;set run attack state
+			lea	GolRunAttackWallANM,a1				;anim
+			bsr	SetNewAnim
+			bra	ForceNewAnim
+
+GolRunAttackWallLOGIC	jsr	GolBumpedByWall
+			bsr	HandleBumpStuff
+			
+			tst.l	OB_AnSequence(a0)
+			beq.s	GolSetRunAttkWallFall
+			
+ 			bsr	DecayXSpd
+			bsr	DownParabola				;down
+			bsr	TestLand
+			bmi	GolSetRunAttkWallLand
+			rts
+
+
+; - RUN ATTACK FALL FROM HIT WALL -------------------------------------------
+
+GolSetRunAttkWallFall	cmp.w	#GolRunAttackThruSTATE,OB_State(a0)		;set run attack state
+			beq	GolSetRunAttkWallLand			
+			move.w	#GolRunAttackWallFallSTATE,OB_State(a0)		;set run attack state
+			lea	GolFallANM,a1				
+			bsr	SetNewAnim
+			bsr	ForceNewAnim
+
+GolRunAttkWallFallLOGIC	jsr	GolJumpOnWall				;jump to vertical wall?			
+			bmi	GolSetJump2Wall
+			jsr	GolBumpedByWall
+			bsr	HandleBumpStuff
+
+			bsr	DecayXSpd				;slow s speed	
+			bsr	GolRunAttackXMove			;move in x
+			bsr	DownParabola				;speedup moving down
+ 			bsr	TestLand				
+			bmi	GolSetRunAttkWallLand			
+			rts
+
+
+; - RUN ATTACK LAND FROM FALL FROM HIT WALL -------------------------------
+
+GolSetRunAttkWallLand	move.w	#GolRunAttackWallLandSTATE,OB_State(a0)		;set run attack state
+			lea	GolRunAttackWallLandANM,a1				;anim
+			bsr	SetNewAnim
+			bra	ForceNewAnim
+
+GolRunAttkWallLandLOGIC	tst.l	OB_AnSequence(a0)
+			beq	GolSetGroundZero
+			rts
+
+
+; - RUN ATTACK THRU WALL/ENEMY ------------------------------------------------
+
+GolSetRunAttackThru	SFX	59
+			move.w	#$500,OB_Xspd(a0)
+			move.w	#GolRunAttackThruSTATE,OB_State(a0)		;set run attack state
+			lea	GolRunAttackThruANM,a1				;anim
+			bsr	SetNewAnim
+			bra	ForceNewAnim
+
+GolRunAttackThruLOGIC	tst.l	OB_AnSequence(a0)
+			beq	GolSetGroundZero
+			bsr	GolRunAttackXMove
+			bmi	GolSetRunAttackWall
+			bsr	HandleContours
+			jsr	GetUnderFEET
+			bsr	PullContourUnder
+			beq	GolSetRunAttkWallFall
+			rts
+
+
+GolRunAttackXMove	btst.b	#ob_movxdir,OB_MoveFlags(a0)		;move player in xmove dir
+			beq.s	.rte
+.lft			move.b	UnderLEFT,d2
+			jsr	TestLevelWalls
+			bmi	FlagYESn
+			move.b	UnderLEFTBOT,d2
+			jsr	TestLevelWalls
+			bmi	FlagYESn
+			move.b	Under,d2
+			jsr	TestLevelWalls
+			bmi	FlagYESn
+			move.b	UnderBOT,d2
+			jsr	TestLevelWalls
+			bmi	FlagYESn
+			move.w	OB_Xspd(a0),d1
+			lsr.w	#8,d1
+			bsr	MoveGolLeft_NF
+			bra	FlagNOn
+
+.rte			move.b	UnderRIGHT,d2
+			jsr	TestLevelWalls
+			bmi	FlagYESn
+			move.b	UnderRIGHTBOT,d2
+			jsr	TestLevelWalls
+			bmi	FlagYESn
+			move.b	Under,d2
+			jsr	TestLevelWalls
+			bmi	FlagYESn
+			move.b	UnderBOT,d2
+			jsr	TestLevelWalls
+			bmi	FlagYESn
+			move.w	OB_Xspd(a0),d1
+			lsr.w	#8,d1
+			bsr	MoveGolRight_NF
+			bra	FlagNOn
+
+
+; - RUN/SPRINT TURN LOGIC --------------------------------------------------
+
+GolSetRunTurnL		st.b	walking_left				;set walking dir
+			clr.b	walking_right
+			bra	GolSetRunTurn
+GolSetRunTurnR		clr.b	walking_left
+			st.b	walking_right
+GolSetRunTurn		move.w	#GolRunTurnSTATE,OB_State(a0)		;set turn state
+			bsr	GolSetGroundMODE_CLR			;ground mode
+			lea	GolRunTurnANM,a1			;anim
+			bsr	SetNewAnim
+			bsr	ForceNewAnim
+			
+GolRunTurnLOGIC		bsr	TestPreJump
+
+			tst.l	OB_AnSequence(a0)			;wait for anim to finish
+			beq	GolSetRun				;set run
+.x			rts
+
+
+; - STOP LOGIC -------------------------------------------------------------
+
+			
+GolSetStop		clr.b	GolRunCNT				;clr vars
+			move.w	#GolStopSTATE,OB_State(a0)		;set stop state
+			move.b	#4,GolWaitTick				;set counter to allow for controller detection
+
+GolStopLOGIC		bsr	TestPreJump
+			bsr	TestPreClaw
+			bsr	TestPreGrab
+			
+			tst.b	GolWaitTick				;no process until counter=0
+			beq.s	.1
+			subq.b	#1,GolWaitTick
+			bne.s	.x
+			
+			tst.b	walking_left				;set turn direction depending on current dir
+			beq.s	.tr					;and new controller dir
+			btst.b	#right,joy1
+			bne.s	GolSetRunTurnR
+.tr			tst.b	walking_right
+			beq.s	.o1
+			btst.b	#left,joy1
+			bne	GolSetRunTurnL
+.o1			lea	GolStopANM,a1				;set anim
+			bsr	SetNewAnim
+
+.1			tst.l	OB_AnSequence(a0)			;wait for anim to finish
+			beq	GolSetGroundZero			;set ground zero
+.x			rts
+
+
+; - STANDING JUMP LOGIC ----------------------------------------------------
+
+; GolJumpType ;
+;
+;	0 = Standing jump
+;	1 = Running jump
+;	-1 = Fall off edges
+;	-2 = Fall off walls
+;	-3 = Fall off ceiling
+			
+GolSetJump		move.b	#3,OB_Var1(a0)				;setup vars
+			clr.b	GolPreJumpFLG
+			move.w	#GolUpVelocity,OB_Var2(a0)
+			clr.b	OB_Var1a(a0)
+			clr.b	OB_Var1a(a0)
+			clr.b	OB_Var8(a0)
+			clr.b	OB_EventVar1(a0)
+			clr.b	GolFlappedFLG
+			move.b	#8,GolSpriteCarryDLY
+			move.l	DetectedWeightOB,a1
+			bclr.b	#ob_carry,OB_Flag3(a1)
+			clr.b	IsGolOnWeightFLG
+			clr.b	PlrFallOnWeightFLG
+			clr.b	PlrJumpOnWeightFLG
+			bsr	GolSetAirMODE_CLR			;air mode
+			move.b	#8,OB_Var3(a0)
+
+			tst.b	GolRunFLG				;which jump type?
+			beq.s	.standjump
+.runjump		move.b	#1,GolJumpType				;running jump
+			lea	GolRunJumpANM,a1			;anim
+			bra	.set
+.standjump		clr.b	GolJumpType				;standing jump
+			lea	GolStandJumpANM,a1			;anim
+.set			move.w	#GolJumpSTATE,OB_State(a0)		;state
+			bsr	SetNewAnim			
+ 			st.b	GolJumpFLG
+			move.b	#$a,JOWDelay
+
+GolJumpLOGIC		jsr	GolJumpOnWall				;jump to vertical wall?			
+			bmi	GolSetJump2Wall2
+			jsr	GolJumpToHangSwing			;jump to hang/swing? 
+			bmi	GolSetHangSwing
+			jsr	GolJumpOnCeiling			;jump to ceiling?
+			bmi	GolSetJump2CeilTrans
+			btst	#7,d2					;stop at any other solid
+			bne	GolSetFall
+			jsr	HandleJumpOnWeight
+			bmi	GolSetJumpToWeight
+
+			tst.b	OB_EventVar1(a0)			;don't do anything until anim script flags ok
+			beq.s	.x
+			bsr	GolJumpFallXMove			;do x movement
+			bsr	GolTestJumpFlap				;jump flap?
+			bmi	GolSetJumpFlap
+			bsr	GolTestAirClaw
+			bmi.s	.x
+
+			tst.b	OB_Var3(a0)
+			beq.s	.ok
+   			subq.b	#1,OB_Var3(a0)
+			bne.s	.5
+.ok			jsr	GetUnderFEET
+			bsr	PullContourUnder
+			bne	GolSetFall
+
+.5			addq.b	#1,OB_Var1a(a0)				;do variable height jumping
+			cmp.b	#GolGrav1,OB_Var1a(a0)			;depending on length of jump button
+			blt.s	.2					;depression
+			clr.b	OB_Var1a(a0)
+			tst.b	OB_Var1(a0)
+			beq.s	.3
+			subq.b	#1,OB_Var1(a0)
+			jsr	tst_button_a				;keep checking jump button
+			bne.s	.2
+			clr.b	OB_Var1(a0)				;flag button released
+.3			subq.w	#1,OB_Var2(a0)				;decrease upward velocity				
+			beq	GolSetFall  				;set fall if up vel=0
+.2			move.w	OB_Var2(a0),d1				;get speed
+			move.w	d1,OB_Yspd(a0)
+			bra	MoveGolUp				;move up
+.x			rts
+
+
+; - JUMP FLAP LOGIC --------------------------------------------------------
+
+JumpFlapPara		dc.b	5,6,5,5,4,5,4,4,3,4,3,3,2,3,2,2,1,2,1,1,0,1,0,0,-1
+			even
+
+GolSetJumpFlap		move.w	#GolJumpFlapSTATE,OB_State(a0)		;jump flag state
+			SFX	18
+			move.b	#4,JOWDelay
+			clr.w	OB_Var1(a0)				;clr vars
+			clr.b	OB_EventVar4(a0)
+			clr.b	LedgeFallingFLG
+			clr.b	GolSpriteCarryDLY
+			st.b	GolFlappedFLG
+			lea	GolJumpFlapANM,a1			;anim
+			bsr	SetNewAnim
+			bra	ForceNewAnim
+
+GolJumpFlapLOGIC	jsr	GolJumpOnWall2				;jump to wall?
+			bmi	GolSetJump2Wall2
+			jsr	GolJumpOnCeiling			;jump to ceiling?
+			bmi	GolSetJmpFlp2CeilTrans
+			btst	#7,d2					;stop at any other solid
+			bne	GolSetJumpFall
+			jsr	HandleJumpOnWeight
+			bmi	GolSetJumpToWeight
+			
+			bsr	GolJumpFallXMove
+		
+			tst.b	OB_EventVar4(a0)
+			beq.s	.2
+			lea	JumpFlapPara,a1				;get jump flap parabola data
+			moveq	#0,d1
+			move.b	OB_Var1a(a0),d1				
+			move.b	0(a1,d1.w),d1				
+			bmi	GolSetJumpFall				;end of data set air zero
+			ext.w	d1    					;speed
+			bsr	MoveGolUp				;move up
+			addq.b	#1,OB_Var1a(a0)				;bump index
+.2			rts
+
+GolTestJumpFlap		tst.b	GolFlappedFLG
+			bne	FlagNOn
+			jsr	tst_d_button_a				;jump flap?
+			beq	FlagNOn
+			bra	FlagYESn
+
+
+; - JUMP ATTACK LOGIC --------------------------------------------------------
+
+GolSetJumpAttack	move.w	#GolJumpAttackSTATE,OB_State(a0)	;jump attack state
+			move.b	#GolJumpAttackPOWER,OB_HitPower(a0)
+			bsr	SetBigAttack
+			clr.b	OB_Var1(a0)
+			lea	GolJumpAttackANM,a1			;anim
+			bsr	SetNewAnim
+			bsr	GolSetAttackMODE_CLR			;set attack mode
+			SFX	19
+
+GolJumpAttackLOGIC	btst.b	#ob_hitting,OB_Flag1(a0)
+			beq.s	.a
+			tst.b	OB_Var1(a0)
+			bne.s	.a
+			move.w	#$10,d1
+			move.w	#0,d2
+			bsr	SetSparks2
+			st.b	OB_Var1(a0)
+			
+.a			jsr	GolJumpOnWall				;jump to vertical wall?			
+			bmi	GolSetJump2Wall2
+			jsr	GolBumpedByWall
+			jsr	HandleFallOnWeight
+			bmi	GSLa
+			jsr	HandleJumpOnWeight
+			bmi	GolSetJumpToWeight
+			
+			bsr	GolJumpFallXMove			;x movement
+			
+			move.w	OB_Yspd(a0),d1
+			cmp.w	#GolMaxFallSPD+2,d1			;maintain fast y velocity
+			beq.s	.1
+			addq.b	#1,OB_Var2a(a0)
+			and.b	#1,OB_Var2a(a0)
+			bne.s	.1
+			addq.w	#1,OB_Yspd(a0)
+
+.1			bsr	MoveGolDown				;move
+			bra	GolTestLand				;test for landing
+
+
+; - FALL LOGIC -------------------------------------------------------------
+
+ThermalBob		dc.w	-1,-2,-3,-2,-1,0,1,2,3,2,1,0,$80
+
+GolSetJumpFall		clr.b	GolJumpType
+			bra	GolSetFall
+
+GolSetHangSwingFall	move.b	#-5,GolJumpType				;fall from hang swing
+			move.b	OB_Flag1(a0),d2
+			and.b	#_ob_xflp,d2
+			move.b	d2,GolLastXFlp
+			bra	GolSetFall
+
+GolSetCeilFall		move.b	#-3,GolJumpType				;fall off ceiling
+			bra	GolSetFall
+	      		
+GolSetWallJumpFall	move.b	#-2,GolJumpType				;jump to fall off wall
+			lea	GolFall2ANM,a1				;anim	
+			bsr	SetNewAnim
+			bsr	ForceNewAnim
+			bra	GSF2			
+
+GolSetWallCrawlFall	move.b	#-4,GolJumpType				;crawl to fall off wall
+			bra	GolSetFall
+
+GolSetOPFall		move.b	#-6,GolJumpType				;crawl to fall off wall
+			bra	GolSetFall
+
+GolSetFallOffObject	bsr	CSS1
+			move.b	#-6,GolJumpType				;crawl to fall off wall
+			clr.b	GolFlappedFLG
+			bra	GolSetFall
+
+GolSetEdgeFall		st.b	GolJumpType				;fall off edge
+
+GolSetFall		cmp.l	#ANM_GolAirSlash,OB_AnSequence(a0)
+			beq.s	GSF2
+			lea	GolFallANM,a1				;anim	
+			bsr	SetNewAnim
+			bsr	ForceNewAnim
+GSF2			clr.b	GolJumpFLG
+ 			st.b	GolFallFLG
+			move.w	#GolFallSTATE,OB_State(a0)		;regular fall state
+GSF1			bsr	GolDontMove
+			clr.w	OB_Yspd(a0)				;set yspd=0			
+			clr.w	OB_Yacc(a0)
+			clr.w	OB_Xacc(a0)
+			clr.w	OB_Var3(a0)
+;			move.b	#16,GolSpriteCarryDLY
+			move.b	#10,GolBumpDLY
+			clr.b	GolSpriteCarryDLY
+			clr.b	IsGolOnWeightFLG
+			clr.b	PlrFallOnWeightFLG
+			clr.b	PlrJumpOnWeightFLG
+			move.w	#2,OB_Var4(a0)				;set drift velocity
+			bsr	BeenHit
+			beq.s	.1
+			addq.w	#3,OB_Var4(a0)				;increase drift velocity
+.1			cmp.b	#-2,GolJumpType				;falling from wall?
+			bne.s	.2	
+			eor.b	#_ob_xflp,OB_Flag1(a0)			;toggle flip	
+.2			move.b	#4,OB_Var1(a0)				;universal delay
+
+			clr.b	NoFollowFLG				;allow scroll follow
+			clr.w	OB_Var2(a0)
+			bsr	GolTestAirClaw
+			bra	GolSetAirMODE_CLR			;set air mode
+			
+GolFallLOGIC		bsr	GolTestAirClaw
+			jsr	GolJumpOnWall2				;jump to wall?
+			bmi	GolSetJump2Wall2
+			jsr	GolJumpToHangSwing			;jump to hang/swing?
+			bmi	GolSetHangSwing
+			bsr	GolTestJumpFlap
+			bmi	GolSetJumpFlap
+			jsr	GolBumpedByWall
+			
+			jsr	HandleFallOnWeight
+			bmi	GSLa
+			jsr	HandleJumpOnWeight
+			bmi	GolSetJumpToWeight
+
+.aa			tst.w	OB_Var4(a0)				;do some drift when falling
+			beq	.4
+
+			addq.b	#1,OB_Var2(a0)
+			and.b	#$f,OB_Var2(a0)
+			bne.s	.5
+			subq.w	#1,OB_Var4(a0)
+.5			move.w	OB_Var4(a0),d1
+			
+			tst.b	GolJumpType				;skip drift if regular fall
+			bpl	.4
+			cmp.b	#-3,GolJumpType				;skip drift if fall off ceiling
+			beq	.4
+			cmp.b	#-4,GolJumpType				;skip drift if fall off wall
+			beq.s	.4
+.ar1			btst.b	#ob_movlftrte,OB_Flag5(a0)
+			bne.s	.l
+.r			btst.b	#right,joy1
+			bne.s	.4
+			jsr	GolTestRightSide
+			bmi.s	.4
+			bsr	MoveGolRight_NF_Smooth
+			bra	.4
+.l			btst.b	#left,joy1
+			bne.s	.4
+			jsr	GolTestLeftSide
+			bmi.s	.4
+			bsr	MoveGolLeft_NF_Smooth
+
+.4			bsr	GolJumpFallXMove			;x movement
+.4a			jsr	tst_button_c				;jump attack on decent
+			bne	GolSetJumpAttack
+			bsr	GolAccelerateDown
+			bra	GolTestLand				;test for landing
+.x			rts
+
+
+GolTestAirClaw		tst.b	OB_Var8(a0)
+			beq.s	.y1
+			tst.l	OB_AnSequence(a0)
+			bne	FlagNOn
+			bsr	GolSetAirMODE_CLR			;set air mode
+			lea	GolFall2ANM,a1
+			jsr	SetNewAnim	
+			jsr	ForceNewAnim	
+			clr.b	OB_Var8(a0)
+			bra	FlagNOn
+.y1			jsr	tst_d_button_b
+			beq	FlagNOn
+			bsr	GolSetAttackMODE_CLR			;set attack mode
+			move.b	#GolAirClawPOWER,OB_HitPower(a0)
+			bsr	SetSmallAttack
+			SFX	115
+			lea	GolAirSlashANM,a1
+			jsr	SetNewAnim	
+			jsr	ForceNewAnim	
+			st.b	OB_Var8(a0)
+			bra	FlagYESn
+
+			
+; - LAND FROM A FALL LOGIC -------------------------------------------------
+
+GolSetLand		SFX	103
+
+			move.b	joy1,d1 				;no land if left/right pressed on dpad
+			and.b	#%00001100,d1
+			bne	GolSetRun
+			
+			btst.b	#down,joy1
+			bne	GolSetCrouch
+
+			jsr	GetUnderLEFTFEET
+			bsr	PullContourUnder
+			bne.s	.a
+			jsr	GetUnderLEFTGROUND
+			bsr	PullContourUnder
+			bne.s	.a
+			jsr	GetUnderLEFTBOT
+			bsr	PullContourUnder
+			beq	GolSetOffBalanceL
+
+.a			jsr	GetUnderRIGHTFEET
+			bsr	PullContourUnder
+			bne.s	GSLa
+			jsr	GetUnderRIGHTGROUND
+			bsr	PullContourUnder
+			bne.s	GSLa
+			jsr	GetUnderRIGHTBOT
+			bsr	PullContourUnder
+			beq	GolSetOffBalanceR
+			
+GSLa			move.w	#GolFallLandSTATE,OB_State(a0)
+			bsr	ClrBlocks
+			lea	GolLandANM,a1
+			bsr	SetNewAnim
+			bsr	ForceNewAnim
+			clr.b	GolPreJumpFLG
+			bsr	GolSetGroundMODE_CLR
+			
+GolFallLandLOGIC	bsr	TestPreJump
+			bsr	TestPreClaw
+			bsr	TestPreGrab
+			tst.l	OB_AnSequence(a0)
+			bne.s	.x
+			bra	GolSetGroundZero
+.x			rts
+
+;			TFL31
+GolTestLand		jsr	GetUnderFEET
+			jsr	TestLevelFloors
+			bmi.s	.1
+			bsr	SetHeight
+			bmi	GolSetLand
+			
+.1			rts
+
+;			jsr	GetXInBlock
+;			cmp.w	#4,d7
+;			bgt.s	.1
+;			jsr	GetUnderLEFTFEET
+;			jsr	TestLevelFloors
+;			bmi.s	.1
+;			bsr	SetHeight
+;			bmi	GolSetLand
+;			
+;			jsr	GetXInBlock
+;			cmp.w	#4,d7
+;			blt.s	.1
+;			jsr	GetUnderRIGHTFEET
+;			jsr	TestLevelFloors
+;			bmi.s	.1
+;			bsr	SetHeight
+;			bmi	GolSetLand
+;.1			rts
+
+
+; - CROUCH/SHIELD/LOOK DOWN LOGIC ------------------------------------------
+
+GolSetCrouch2		move.w	#GolCrouchSTATE,OB_State(a0)
+			bsr	GolSetGroundMODE_CLR
+			bset.b	#blokmode,OB_MasterMode(a0)
+			lea	GolCrouchQuickANM,a1
+			bsr	SetNewAnim
+			bra	ForceNewAnim
+
+GolSetCrouch		move.w	#GolCrouchSTATE,OB_State(a0)
+			lea	GolCrouchANM,a1
+			bsr	SetNewAnim
+			move.w	#2,OB_Var1(a0)
+			clr.b	OB_Var2(a0)
+			clr.b	OB_Var3(a0)
+			clr.b	OB_Var5(a0)
+			move.b	#GolLookCMP,OB_Var3a(a0)
+			bra	GolSetGroundMODE_CLR
+			
+GolCrouchLOGIC		btst.b	#ob_beinghit,OB_Flag1(a0)
+			beq.s	.2
+			move.w	#$18,d1
+			move.w	#-$20,d2
+			bsr	SetSparks2
+			bra	.GolSetStand
+
+.2			move.l	DetectedWeightOB,a1
+			btst.b	#ob_carry,OB_Flag3(a1)
+			bne	.ss
+			tst.b	IsGolOnWeightFLG
+			bne	GolSetFallOffObject
+				
+.ss			jsr	tst_d_button_b
+			bne	GolSetCrouchKick
+
+			move.l	DetectedWeightOB,a1
+			btst.b	#ob_carry,OB_Flag3(a1)
+			bne.s	.1a
+			tst.b	OB_Var3a(a0)
+			beq.s	.1a
+			subq.b	#1,OB_Var3a(a0)
+			bne.s	.1a
+			bsr	SetLookDownPoint
+
+.1a			tst.b	OB_Var3(a0)
+			bne.s	.GolStand
+			btst.b	#down,joy1
+			bne.s	.x
+.GolSetStand		bsr	ClrLookDown
+			lea	GolStandCrouchANM,a1
+			bsr	SetNewAnim
+			st.b	OB_Var3(a0)
+.GolStand		tst.l	OB_AnSequence(a0)
+			beq	GolSetGroundZero	
+.x			rts
+
+
+; - KICK FROM CROUCH/SHIELD/LOOK DOWN LOGIC ------------------------
+
+GolSetCrouchKick	move.w	#GolCrouchKickSTATE,OB_State(a0)
+			SFX	21
+			move.b	#GolLookCMP,OB_Var3a(a0)
+			lea	GolCrouchKickANM,a1
+			bsr	SetNewAnim
+			bsr	ForceNewAnim
+			move.b	#GolCrouchKickHitPOWER,OB_HitPower(a0)
+			bsr	SetMediumAttack
+			bra	GolSetAttackMODE_CLR			;set attack mode
+			
+GolCrouchKickLOGIC	tst.l	OB_AnSequence(a0)
+			beq	GolSetCrouch2
+			bra	GolFlipBit
+
+
+; - GROUND JAB LOGIC ------------------------------------------------------
+
+GolSetGroundJab		move.w	#GolGroundJabSTATE,OB_State(a0)
+			SFX	113
+			move.b	#GolGroundJabPOWER,OB_HitPower(a0)
+			clr.w	OB_Var1(a0)
+			lea	GolGroundJabANM,a1
+			bsr	SetNewAnim
+			bsr	ForceNewAnim
+			bsr	GolSetAttackMODE_CLR
+			bra	SetMediumAttack
+
+GolGroundJabLOGIC	jsr	tst_d_button_b
+			beq.s	.1
+			st.b	OB_Var1a(a0)
+.1			bsr	GolSparkBit
+			bsr	GolFlipBit
+			
+			tst.l	OB_AnSequence(a0)
+			bne.s	.x
+			tst.b	OB_Var1a(a0)
+			bne	GolSetGroundSlash
+			bra	GolSetGroundZero
+.x			rts
+
+
+; - GROUND CLAW LOGIC ------------------------------------------------------
+
+GolSetGroundClaw	move.w	#GolGroundClawSTATE,OB_State(a0)
+			SFX	21
+			move.b	#GolGroundClawPOWER,OB_HitPower(a0)
+			clr.b	GolPreClawFLG
+			clr.w	OB_Var1(a0)
+			lea	GolGroundClawANM,a1
+			bsr	SetNewAnim
+			bsr	ForceNewAnim
+			bsr	GolSetAttackMODE_CLR
+			bra	SetSmallAttack
+
+GolGroundClawLOGIC	jsr	tst_d_button_b
+			beq.s	.1
+			st.b	OB_Var1a(a0)
+.1			bsr	GolSparkBit
+			bsr	GolFlipBit
+			
+			tst.l	OB_AnSequence(a0)
+			bne.s	.x
+			tst.b	OB_Var1a(a0)
+			bne	GolSetGroundJab
+			bra	GolSetGroundZero
+.x			rts
+
+
+GolFlipBit		btst.b	#left,joy1
+			bne.s	.l
+			btst.b	#right,joy1
+			beq.s	.x
+.r			bclr.b	#ob_xflp,OB_Flag1(a0)
+			rts
+.l			bset.b	#ob_xflp,OB_Flag1(a0)
+.x			rts
+
+			
+GolSparkBit		tst.b	OB_Var1(a0)
+			bne.s	.a
+			btst.b	#ob_hitting,OB_Flag1(a0)
+			beq.s	.a
+			move.w	#$28,d1
+			move.w	#-$30,d2
+			bsr	SetSparks2
+			st.b	OB_Var1(a0)
+.a			rts
+
+; - GROUND SLASH LOGIC ------------------------------------------------------
+
+GolSetGroundSlash	move.w	#GolGroundSlashSTATE,OB_State(a0)
+			SFX	22
+			move.b	#GolGroundSlashPOWER,OB_HitPower(a0)
+			lea	GolGroundSlashANM,a1
+			bsr	SetNewAnim
+			bsr	ForceNewAnim
+			bsr	GolSetAttackMODE_CLR
+			bra	SetSmallAttack
+
+GolGroundSlashLOGIC	tst.l	OB_AnSequence(a0)
+			beq	GolSetGroundZero
+			bra	GolFlipBit
+
+
+; - GROUND GRAB LOGIC ------------------------------------------------------
+
+GolSetGroundGrab	move.w	#GolGroundGrabSTATE,OB_State(a0)
+			clr.b	GolPreGrabFLG
+			clr.b	GolThrowReleaseFLG
+			clr.b	GolSlamFLG
+			clr.w	OB_EventVar1(a0)
+			clr.b	OB_EventVar3(a0)
+			lea	GolGroundGrabANM,a1
+			bsr	SetNewAnim
+			bsr	GolSetGrabMODE_CLR
+			bra	SetBigAttack
+
+GolGroundGrabLOGIC	tst.b	OB_EventVar3(a0)
+			beq.s	.1
+			cmp.b	#1,OB_EventVar3(a0)
+			beq.s	.ok
+   			sub.b	#1,OB_EventVar3(a0)
+			bra	.2
+.ok			tst.b	RapBotThrownFLG
+			beq	GolSetGrabReverse
+
+.2			bsr	GolSetGrabXY
+
+.1			tst.l	OB_AnSequence(a0)
+			bne.s	.x
+			SFX	22
+			jsr	tst_button_c
+			beq	GolSetGroundThrow
+			bra	GolSetGroundSlam
+.x			rts
+
+
+GolSetGrabReverse	move.w	#GolGroundGrabReverseSTATE,OB_State(a0)
+			lea	GolGroundGrabReverseANM,a1
+			bsr	SetNewAnim
+			bsr	ForceNewAnim
+			tst.b	GoliathProjectileFLG
+			beq.s	.x
+			jsr	SetupFireballHead
+			bpl.s	.x
+			sub.w	#$c,OB_Ypos(a1)
+			move.w	#$40,OB_Yacc(a1)
+			move.w	#$300,OB_Yspd(a1)
+			move.w	#$500,OB_Var2(a1)
+			btst.b	#ob_xflp,OB_Flag1(a0)
+			bne.s	.1a
+			move.b	#%00111110,OB_MoveFlags(a1)
+			add.w	#$10,OB_Xpos(a1)
+			rts
+.1a			move.b	#%00111111,OB_MoveFlags(a1)
+			sub.w	#$10,OB_Xpos(a1)
+.x			rts
+
+GolGroundGrabReverseLOGIC
+			tst.l	OB_AnSequence(a0)
+			beq	GolSetGroundZero
+			rts
+
+
+
+GolSetGrabXY		moveq	#0,d1
+			move.b	OB_EventVar1(a0),d1
+			ext.w	d1
+			move.w	OB_Xpos(a0),d2
+			btst.b	#ob_xflp,OB_Flag1(a0)
+			beq.s	.1a
+			sub.w	d1,d2
+   			bra	.2a
+.1a			add.w	d1,d2
+.2a			move.w	d2,GolThrowXPos
+			move.w	OB_Ypos(a0),d2
+			move.b	OB_EventVar2(a0),d1
+			ext.w	d1
+			bpl.s	.1
+			neg.w	d1
+			sub.w	d1,d2	
+			bra	.2
+.1			add.w	d1,d2
+.2			move.w	d2,GolThrowYPos
+  			rts
+			
+; - GROUND THROW LOGIC -----------------------------------------------------
+
+GolSetGroundThrow	move.w	#GolGroundThrowSTATE,OB_State(a0)
+			clr.b	RapBotThrownFLG
+			clr.b	OB_EventVar3(a0)
+			lea	GolGroundThrowANM,a1
+			bsr	SetNewAnim
+			bsr	ForceNewAnim
+			bsr	GolSetGrabMODE_CLR
+
+GolGroundThrowLOGIC	tst.b	OB_EventVar3(a0)
+			beq.s	.1
+			st.b	GolThrowReleaseFLG
+.1			bsr	GolSetGrabXY
+			tst.l	OB_AnSequence(a0)
+			beq	GolSetGroundZero
+.x			rts
+
+; - GROUND BODY SLAM LOGIC -------------------------------------------------
+
+GolSetGroundSlam	move.w	#GolGroundSlamSTATE,OB_State(a0)
+			clr.b	RapBotThrownFLG
+			clr.b	GolSlamOutFLG
+			clr.b	OB_EventVar3(a0)
+			lea	GolGroundSlamANM,a1
+			bsr	SetNewAnim
+			bsr	ForceNewAnim
+			bsr	GolSetGrabMODE_CLR
+			
+GolGroundSlamLOGIC	tst.b	OB_EventVar3(a0)
+			beq.s	.1
+			clr.b	OB_EventVar3(a0)
+			st.b	GolSlamFLG
+.1			bsr	GolSetGrabXY
+			tst.b	GolSlamOutFLG
+			beq.s	.2
+			cmp.b	#16,OB_AnCmp(a0)
+			bne.s	.2
+			bsr	ForceNextAnimFrame
+			clr.b	GolSlamOutFLG
+.2			tst.l	OB_AnSequence(a0)
+			beq	GolSetGroundZero
+			rts
+
+
+; - GROUND IDLE LOGIC ------------------------------------------------------
+
+GolSetGroundIdle	move.w	#GolGroundIdleSTATE,OB_State(a0)
+			cmp.w	#Level51,levnum
+			beq.s	.1
+			addq.b	#1,GolIdle2CNT
+			cmp.b	#4,GolIdle2CNT
+			bne.s	.1
+  			clr.b	GolIdle2CNT
+			SFX	119
+			lea	GolGroundIdle1ANM,a1
+			bra	.2			
+.1			lea	GolGroundIdle2ANM,a1
+.2			bsr	SetNewAnim
+			bsr	GolSetGroundMODE_CLR
+
+GolGroundIdleLOGIC	jsr	tst_d_button_a				;jump button?
+			bne	GolSetJump
+			jsr	tst_d_button_b				;attack button?
+			bne	GolSetGroundClaw
+			jsr	tst_d_button_c				;grab button?
+			bne	GolSetGroundGrab
+			
+			tst.l	OB_AnSequence(a0)
+			beq	GolSetGroundZero
+			tst.b	joy1
+			bne	GolSetGroundZero
+			rts
+
+
+; - GROUND NORMAL HIT LOGIC ------------------------------------------------
+
+GolSetGroundSmallHit	lea	GolGroundSmallHitANM,a1
+			bsr	SetNewAnim
+			bsr	ForceNewAnim
+			
+GSSH2			move.w	#GolGroundSmallHitSTATE,OB_State(a0)
+			;btst.b	#ob_hitside,OB_Flag1(a0)
+			;bne.s	.l
+			;btst.b	#ob_xflp,OB_Flag1(a0)
+			;bne.s	.2
+			;bset.b	#ob_xflp,OB_Flag1(a0)
+			;bra	.2
+.l			;btst.b	#ob_xflp,OB_Flag1(a0)
+			;beq.s	.2
+			;bclr.b	#ob_xflp,OB_Flag1(a0)
+.2			move.w	#$3,OB_Var1(a0)
+			bra	GolSetHitMODE_CLR
+			
+GolGroundSmallHitLOGIC	bsr	TestPreJump
+			bsr	TestPreClaw
+			bsr	TestPreGrab
+			
+			tst.l	OB_AnSequence(a0)
+			beq	GolSetGroundZero
+			bsr	HitSlideObject
+			bra	HandleGolContours
+
+
+; - GROUND BIG HIT LOGIC ---------------------------------------------------
+
+GolSetGroundBigHit	move.w	#GolGroundBigHitSTATE,OB_State(a0)
+			lea	GolGroundBigHitANM,a1
+			bsr	SetNewAnim			
+			bsr	GolSetHitMODE_CLR
+			move.w	#$0800,OB_Xspd(a0)
+			clr.w	OB_Yspd(a0)		
+			move.w	#$0030,OB_Xacc(a0)		
+			clr.w	OB_Yacc(a0)
+			btst.b	#ob_hitside,OB_Flag1(a0)
+			bne.s	.l
+.r			move.b	#%00110100,OB_MoveFlags(a0)			
+  			bra	.2
+.l			move.b	#%00110101,OB_MoveFlags(a0)			
+.2			rts
+
+GolGroundBigHitLOGIC	bsr	TestPreJump
+			bsr	TestPreClaw
+			bsr	TestPreGrab
+			
+			tst.w	OB_Xspd(a0)
+			beq	GolSetGroundZero
+			
+			move.l	OB_Interact(a0),a1			;object inflicting pain on goliath
+			btst.b	#ob_movxdir,OB_MoveFlags(a0)
+			beq.s	.rte
+.lft			st.b	walking_left
+			clr.b	walking_right
+			cmp.w	#GateCrusher_OB,OB_Type(a1)
+			beq	MoveGolLeft_DETECT2
+			cmp.w	#Gate_OB,OB_Type(a1)
+			beq	MoveGolLeft_DETECT2
+			bsr	MoveGolLeft_DETECT
+			bmi.s	.a
+.x			rts
+.rte			clr.b	walking_left
+			st.b	walking_right
+			cmp.w	#GateCrusher_OB,OB_Type(a1)
+			beq	MoveGolRight_DETECT2
+			cmp.w	#Gate_OB,OB_Type(a1)
+			beq	MoveGolRight_DETECT2
+			bsr	MoveGolRight_DETECT
+			bpl.s	.x
+.a			cmp.w	#$0700,OB_Xspd(a0)
+			ble	GolSetGroundZero
+			bra	GolSetGroundSmallHit
+
+
+; - GROUND ONTO WALL TRANSITION LOGIC ----------------------------------------
+
+GolSetGround2Wall	bsr	GolPosOnWall
+			move.w	#GolGround2WallTransSTATE,OB_State(a0)
+			lea	GolGrnd2WallTransANM,a1
+			bsr	SetNewAnim
+			bsr	GolSetWallMODE_CLR
+
+GolGround2WallTransLOGIC
+			tst.l	OB_AnSequence(a0)
+			bne.s	.x
+			btst.b	#up,joy1
+			beq.s	.1
+			move.w	#24,d1
+			bsr	MoveGolUp_Smooth
+.2			lea	GolWallClimbANM,a1
+			bsr	SetNewAnim
+			bsr	ForceNewAnim
+			move.w	#GolWallClimbSTATE,OB_State(a0)
+			st.b	walking_up
+			clr.b	walking_down
+			bra	GolWallClimbLOGIC
+.1			bra	GSWC2I2
+.x			rts
+
+GolPosOnWall		and.w	#$fff0,OB_Xpos(a0)				;pos on wall
+			btst.b	#ob_xflp,OB_Flag1(a0)
+			beq.s	.1
+  			add.w	#$0f,OB_Xpos(a0)
+.1			rts			
+
+; - JUMP ONTO WALL TRANSITION LOGIC ----------------------------------------
+
+GolSetJump2Wall2	bsr	GolPosOnWall
+			moveq	#$10,d1
+			bsr	MoveGolDown_Smooth
+			bra	GSJ2W2
+GolSetJump2Wall		bsr	GolPosOnWall
+GSJ2W2			SFX	38
+			clr.b	GolFallFLG	
+			
+			move.l	DetectedWeightOB,a1
+			bclr.b	#ob_carry,OB_Flag3(a1)
+			move.b	#16,GolSpriteCarryDLY
+			clr.b	GolSpriteCarryDLY
+			clr.b	IsGolOnWeightFLG
+			clr.b	PlrFallOnWeightFLG
+			clr.b	PlrJumpOnWeightFLG
+			
+			move.w	#GolJump2WallTranSTATE,OB_State(a0)
+			lea	GolJmpFlp2WallTransANM,a1
+			bsr	SetNewAnim
+			bsr	ForceNewAnim
+			bsr	GolSetWallMODE_CLR
+			
+GolJump2WallTranLOGIC	tst.l	OB_AnSequence(a0)
+			beq	GolSetWallClimbZero
+			rts
+
+
+; - JUMP ONTO CEILING TRANSITION LOGIC -------------------------------------
+
+GolSetJump2CeilTrans	cmp.b	#SB_GrabSwing,d2		;is this block a climbable
+			beq	GolSetHangSwing
+			
+GolSetJmpFlp2CeilTrans	move.w	#GolJump2CeilTranSTATE,OB_State(a0)
+			clr.b	GolFallFLG	
+			move.b	#$18,OB_HitWait(a0)
+			and.w	#$fff0,OB_Ypos(a0)
+			add.w	#$24,OB_Ypos(a0)
+			lea	GolJump2CeilTransANM,a1
+			bsr	SetNewAnim
+			bsr	ForceNewAnim
+			bsr	GolSetCeilMODE_CLR
+
+GolJump2CeilTranLOGIC	tst.l	OB_AnSequence(a0)
+			bne.s	.x
+			moveq	#8,d1
+			bsr	MoveGolUp_Smooth
+			eor.b	#-1,walking_left
+			eor.b	#-1,walking_right
+			move.w	#$20,d1
+			bsr	MoveGolLeftRightFLP3
+			move.w	#$10,d1
+			bsr	MoveGolUp_Smooth
+			bra	GolSetCeilClimbZero
+.x			rts
+
+
+; - CLIMB WALL TO CEILING TRANSITION LOGIC ---------------------------------
+
+GolSetWall2CeilTrans	move.w	#GolWall2CeilTranSTATE,OB_State(a0)
+			and.w	#$fff0,OB_Ypos(a0)
+			add.w	#$10,OB_Ypos(a0)	
+			lea	GolWall2CeilTransANM,a1
+			bsr	SetNewAnim
+			bsr	GolSetCeilMODE_CLR
+			btst.b	#ob_xflp,OB_Flag1(a0)
+			beq.s	.1
+			clr.b	walking_left
+			st.b	walking_right
+			rts
+.1			st.b	walking_left
+			clr.b	walking_right
+			rts
+
+GolWall2CeilTranLOGIC	tst.l	OB_AnSequence(a0)
+			bne.s	.x
+			bsr	FlipGolWalkingDir
+			move.w	#$14,d1
+			bsr	MoveGolUp_Smooth
+			move.w	#$10,d1
+			bsr	MoveGolLeftRightFLP
+			bra	GolSetCeilClimbZero
+.x			rts
+
+
+; - FALL OFF WALL LOGIC ----------------------------------------------------
+
+WallFallPara		dc.b	4,5,4,4,3,4,3,3,2,3,2,2,1,2,1,1,0,1,0,0,-1
+			even
+
+GolSetWall2Fall		move.w	#GolWallClimbFallSTATE,OB_State(a0)
+			clr.b	OB_EventVar1(a0)		;don't do anything until anim script flags ok
+			lea	GolWallClimbFallANM,a1		;set falling off ceiling
+			bsr	SetNewAnim
+			bsr	GolSetAirMODE_CLR
+			clr.w	OB_Var1(a0)
+			rts
+
+GolWallClimbFallLOGIC	tst.b	OB_EventVar1(a0)		;don't do anything until anim script flags ok
+			beq.s	.x
+
+			jsr	GolJumpOnCeiling			;jump to ceiling?
+			bmi	GolSetJump2CeilTrans
+			btst	#7,d2					;stop at any other solid
+			bne	GolSetFall
+			bsr	GolTestJumpFlap				;jump flap?
+			bmi	GolSetJumpFlap
+			
+			lea	WallFallPara,a1
+			moveq	#0,d1
+			move.b	OB_Var1a(a0),d1
+			move.b	0(a1,d1.w),d1
+			bmi	GolSetWallJumpFall
+			ext.w	d1
+			bsr	MoveGolUp
+			addq.b	#1,OB_Var1a(a0)
+
+			btst.b	#ob_xflp,OB_Flag1(a0)
+			bne.s	.rte
+.lft			jsr	GolTestLeftSide				;move left etc
+			bmi.s	.x
+			moveq	#2,d1
+			st.b	walking_left
+			clr.b	walking_right
+			bra	MoveGolLeft_NF
+.rte			jsr	GolTestRightSide			;move right etc
+			bmi.s	.x
+			moveq	#2,d1
+			clr.b	walking_left
+			st.b	walking_right
+			bra	MoveGolRight_NF
+.x			rts
+
+; - CLIMB WALL LOGIC -------------------------------------------------------
+
+GolSetWallClimbZero	move.w	#GolWallClimbZeroSTATE,OB_State(a0)
+			bsr	GolSetWallMODE_CLR
+			lea	GolWallClimbZeroANM,a1
+			bsr	SetNewAnim
+			bra	ForceNewAnim
+			
+GolWallClimbZeroLOGIC	clr.b	GolSlideDownSPD
+			clr.b	GolSlideDownCNT
+			clr.b	OB_Var3(a0)
+			
+			jsr	tst_d_button_a		;jump off wall
+			bne	GolSetWall2Fall
+			jsr	tst_d_button_b
+			bne	GolSetWallClimbClaw
+			btst.b	#up,joy1
+			bne.s	.up
+			btst.b	#down,joy1
+			bne.s	.down
+.x			rts
+
+.up			jsr	GetXYpos
+			sub.w	#$50,d2
+			jsr	GetUnderAddrs
+			jsr	GetSpecial
+			cmp.b	#SB_Ceiling,d2			;is this block a ceiling
+			beq.s	.x				;stop transition to climb
+			move.b	UnderHEAD,d2			;check for ceiling stop/transition 
+			move.l	UnderHEAD_c,a1
+			cmp.b	#SB_Ceiling,d2			;stop at non climbalbe ceiling
+			beq.s	.x
+			tst.b	0(a1)				;stop at a contour	
+			bne.s	.x
+			st.b	walking_up
+			clr.b	walking_down
+			move.w	#GolWallIdle2ClimbSTATE,OB_State(a0)
+			lea	GolWallIdle2ClimbANM,a1
+			bra	.an
+.down			clr.b	walking_up
+			st.b	walking_down
+			move.w	#GolWallClimbSTATE,OB_State(a0)
+			lea	GolWallSlideDownANM,a1
+.an			bsr	SetNewAnim
+			bra	ForceNewAnim
+
+
+GolSetWallClimb2Idle	move.w	#24,d1
+			bsr	MoveGolDown_Smooth
+GSWC2I2			move.w	#GolWallClimb2IdleSTATE,OB_State(a0)
+			lea	GolWallClimb2IdleANM,a1
+			bsr	SetNewAnim
+			bra	ForceNewAnim
+
+GolWallClimb2IdleLOGIC	jsr	tst_d_button_a		;jump off wall
+			bne	GolSetWall2Fall
+			tst.l	OB_AnSequence(a0)
+			beq	GolSetWallClimbZero
+			rts
+
+
+GolWallIdle2ClimbLOGIC	jsr	tst_d_button_a		;jump off wall
+			beq.s	.2
+			move.w	#16,d1
+			bsr	MoveGolUp_Smooth
+			bra	GolSetWall2Fall
+
+.2			tst.l	OB_AnSequence(a0)
+			beq.s	.1
+			rts
+.1			move.w	#24,d1
+			bsr	MoveGolUp_Smooth
+			lea	GolWallClimbANM,a1
+			bsr	SetNewAnim
+			bsr	ForceNewAnim
+			move.w	#GolWallClimbSTATE,OB_State(a0)
+	
+GolWallClimbLOGIC	jsr	tst_d_button_a
+			bne	GolSetWall2Fall
+
+			tst.b	walking_up
+			bne.s	.up
+			tst.b	walking_down
+			bne.s	.down
+			rts
+
+.up			btst.b	#up,joy1
+			beq	GolSetWallClimb2Idle
+			move.b	UnderTOP,d2
+			cmp.b	#SB_CeilingClimb,d2		;is this block a ceiling
+			bne.s	.1aa
+			add.w	#$10,OB_Ypos(a0)
+			and.w	#$fff0,OB_Ypos(a0)
+			bra	GolSetWall2CeilTrans		;wall to ceiling transition
+			
+.1aa			move.b	UnderHEAD,d2			;check for ceiling stop/transition 
+			move.l	UnderHEAD_c,a1
+			cmp.b	#SB_CeilingClimb,d2		;is this block a ceiling
+			beq	GolSetWall2CeilTrans		;wall to ceiling transition
+			cmp.b	#SB_Ceiling,d2			;is this block a ceiling
+			beq	GolSetWallClimbZero		;wall to ceiling transition
+			tst.b	0(a1)				;stop at a contour	
+			bne	GolSetWallClimbZero
+			bsr	GolClimbOffWallU		;check for climbable 
+			bmi	GolSetWall2GroundTrans		;trans to floor
+			moveq	#GolClimbWallSpeed,d1		;else move up
+			bra	MoveGolUp
+
+.down			btst.b	#down,joy1
+			beq	GolSetWallSlideDownStop
+			move.l	UnderFEET_c,a1
+			tst.b	0(a1)
+			beq.s	.cd
+			bsr	SetHeight
+			bra	GolSetGroundZero
+.cd			bsr	GolClimbOffWallD
+			bpl	GolSetWallCrawlFall
+			
+			cmp.b	#4,GolSlideDownSPD
+			ble.s	.a
+			tst.b	OB_Var3(a0)
+			bne.s	.a
+			st.b	OB_Var3(a0)
+			movem.l	a0/d0,-(sp)
+			SPAWN_HI	Sparks_MAX_Size
+			move.w	#Sparks_OB,OB_Type(a0)
+			bset.b	#ob_tidy,OB_Flag5(a0)
+			clr.b	OB_Var4(a0)
+			movem.l	(sp)+,d0/a0
+
+.a			addq.b	#1,GolSlideDownCNT
+			and.b	#7,GolSlideDownCNT
+			bne.s	.1
+			addq.b	#1,GolSlideDownSPD
+			cmp.b	#6,GolSlideDownSPD
+			ble.s	.1
+			move.b	#6,GolSlideDownSPD
+    
+.1			moveq	#0,d1
+			move.b	GolSlideDownSPD,d1
+			bra	MoveGolDown
+
+
+GolClimbOffWallU	btst.b	#ob_xflp,OB_Flag1(a0)
+			beq.s	.r
+			move.b	UnderLEFTTOP,d2
+			bne.s	.1
+.2			addq.w	#8,OB_Ypos(a0)
+			bra	FlagYESn
+.1			cmp.b	#SB_Climb2StandLR,d2
+			beq	FlagYESn
+			cmp.b	#SB_ClimbL2StandL,d2
+			beq	FlagYESn
+			bra	FlagNOn
+.r			move.b	UnderRIGHTTOP,d2
+			beq.s	.2
+			cmp.b	#SB_Climb2StandLR,d2
+			beq	FlagYESn
+			cmp.b	#SB_ClimbR2StandR,d2
+			beq	FlagYESn
+			bra	FlagNOn
+
+GolClimbOffWallD	btst.b	#ob_xflp,OB_Flag1(a0)
+			beq.s	.r
+			move.b	UnderLEFTBOT,d2
+			cmp.b	#SB_ClimbL,d2
+			beq	FlagYESn
+			bra	.a
+.r			move.b	UnderRIGHTBOT,d2
+			cmp.b	#SB_ClimbR,d2
+			beq	FlagYESn
+.a			cmp.b	#SB_Climb,d2
+			beq	FlagYESn
+			bra	FlagNOn
+
+
+; - CLIMB WALL SLIDE DOWN TO CEILING TRANSITION ---------------------------------------
+
+GolSetWallCrawl2Ceil	move.w	#GolWallCrawl2CeilSTATE,OB_State(a0)
+			and.w	#$fff0,OB_Xpos(a0)
+			and.w	#$fff0,OB_Ypos(a0)
+			btst.b	#ob_xflp,OB_Flag1(a0)
+			beq.s	.r
+.l			sub.w	#$c,OB_Xpos(a0)
+			bra	.lr
+.r			add.w	#$c,OB_Xpos(a0)
+.lr			add.w	#$10,OB_Ypos(a0)
+			lea	GolJump2CeilTransANM,a1
+			bsr	SetNewAnim
+			bra	ForceNewAnim
+
+GolWallCrawl2CeilLOGIC	tst.l	OB_AnSequence(a0)
+			bne.s	.x
+			btst.b	#ob_xflp,OB_Flag1(a0)
+			beq.s	.r
+.l			sub.w	#$24,OB_Xpos(a0)
+			bra	.lr
+.r			add.w	#$24,OB_Xpos(a0)
+.lr			sub.w	#$14,OB_Ypos(a0)
+			eor.b	#_ob_xflp,OB_Flag1(a0)
+			bra	GolSetCeilClimbZero
+.x			rts
+
+; - CLIMB WALL SLIDE DOWN STOP LOGIC --------------------------------------------------
+
+GolSetWallSlideDownStop	move.w	#GolWallSlideDownStopSTATE,OB_State(a0)
+			clr.b	OB_Var3(a0)
+			lea	GolWallSldDownStopANM,a1
+			bsr	SetNewAnim
+			
+GolWallSldDownStopLOGIC	tst.l	OB_AnSequence(a0)
+			beq	GolSetWallClimbZero
+			rts
+	
+
+; - CLIMB WALL CLAW LOGIC --------------------------------------------------
+
+GolSetWallClimbClaw	move.w	#GolWallClimbClawSTATE,OB_State(a0)
+			move.b	#GolWallClimbClawPOWER,OB_HitPower(a0)
+			clr.b	OB_EventVar1(a0)
+			bsr	SetSmallAttack
+			lea	GolWallClimbClawANM,a1
+			bsr	SetNewAnim
+			bsr	GolSetAttackMODE_CLR
+
+GolWallClimbClawLOGIC	tst.b	OB_EventVar1(a0)
+			beq.s	.1
+			clr.b	OB_EventVar1(a0)
+			SFX	113
+.1			tst.l	OB_AnSequence(a0)
+			beq	GolSetWallClimbZero
+			rts
+
+
+; - CLIMB WALL TAKE A HIT LOGIC --------------------------------------------
+
+GolSetWallHit		btst	#ob_hit_big,d2				;what sort of hit did plr recieve?
+			beq.s	.1a
+			btst.b	#ob_xflp,OB_Flag1(a0)
+			bne.s	.r
+.l			bset.b	#ob_hitside,OB_Flag1(a0)
+  			bra	GolSetAirHit
+.r			bclr.b	#ob_hitside,OB_Flag1(a0)
+  			bra	GolSetAirHit
+						
+.1a			move.w	#GolWallClimbHitSTATE,OB_State(a0)
+			clr.b	NoFollowFLG
+			move.b	d2,OB_Var1(a0)
+			btst	#ob_hit_small,d2				;what sort of hit did plr recieve?
+			beq.s	.1
+			lea	GolWallClimbHitSANM,a1
+			bra	.2
+.1			lea	GolWallClimbHitBANM,a1
+.2			bsr	SetNewAnim			
+			bsr	GolSetHitMODE_CLR
+
+GolWallClimbHitLOGIC	tst.l	OB_AnSequence(a0)
+			bne.s	.x
+			move.b	OB_Var1(a0),d2
+      			btst	#ob_hit_med,d2				;what sort of hit did plr recieve?
+			bne	GolSetWallCrawlFall
+      			bra	GolSetWallClimbZero
+.x			rts
+
+
+; - CLIMB CEILING LOGIC ----------------------------------------------------
+
+GolSetCeilClimbZero	move.w	#GolCeilClimbZeroSTATE,OB_State(a0)
+			clr.b	GolLookUpFLG
+			clr.b	GolLookDownFLG
+			move.b	#GolLookCMP,OB_Var1a(a0)
+			bsr	GolSetCeilMODE_CLR
+			bsr	ClrHitStuff
+			lea	GolCeilClimbZeroANM,a1
+			bsr	SetNewAnim
+			bsr	ForceNewAnim
+			bra	FlipGolWalkingDir
+
+GolCeilClimbZeroLOGIC	jsr	tst_d_button_a			;if jump pressed
+			bne	GolSetCeilClimbFall		;make fall
+			tst.b	MutVikHammerSidesFLG		;mutant viking
+			bne	GolSetCeilClimbFall
+			
+			btst.b	#up,d_joy1
+			bne	GolSetCeilClimbShield
+			btst.b	#down,joy1
+			beq.s	.1a
+			tst.b	OB_Var1a(a0)
+			beq.s	.aaa;2a
+			subq.b	#1,OB_Var1a(a0)
+			bne.s	.aaa;2a
+			bra	SetLookDownPoint
+;.2a			rts
+.1a			bsr	ClrLookDown
+			move.b	#GolLookCMP,OB_Var1a(a0)
+     
+.aaa			btst.b	#left,joy1
+			bne.s	.left
+			btst.b	#right,joy1
+			bne.s	.right
+			rts
+.left			st.b	walking_left
+			tst.b	walking_right
+			bne	GolSetCeilClimbTurnL
+			clr.b	walking_right
+			bra	.1
+.right			st.b	walking_right
+			tst.b	walking_left
+			bne	GolSetCeilClimbTurnR
+			clr.b	walking_left
+.1			move.w	#GolCeilClimbSTATE,OB_State(a0)
+			lea	GolCeilClimbANM,a1
+			bsr	SetNewAnim
+			bsr	ForceNewAnim
+			bsr	GolSetCeilMODE_CLR
+
+
+GolCeilClimbLOGIC	jsr	tst_d_button_a			;if jump pressed
+			bne	GolSetCeilClimbFall		;make fall
+			tst.b	MutVikHammerSidesFLG		;mutant viking
+			bne	GolSetCeilClimbFall
+			
+			tst.b	walking_left
+			bne.s	.left
+			tst.b	walking_right
+			bne.s	.right
+			rts
+
+.left			btst.b	#left,joy1
+			beq	GolSetCeilClimbZero
+			move.b	UnderLEFT,d2			;check for cieling end
+			cmp.b	#SB_ClimbL,d2			;is this crawl left 2 wall right
+			beq	GolSetCeil2WallDownTrans
+			btst	#7,d2
+			bne	GolSetCeilClimbZero
+			move.b	UnderTOP,d2			;check for cieling transitions
+			cmp.b	#SB_ClimbR,d2			;is this crawl left 2 wall right
+			beq	GolSetCeil2WallUpTrans
+			cmp.b	#SB_CeilingClimb,d2	
+			bne	GolSetCeilClimbZero
+			moveq	#GolClimbCeilingSpeed,d1	
+			bra	MoveGolLeft
+
+.right			btst.b	#right,joy1
+			beq	GolSetCeilClimbZero
+			move.b	UnderRIGHT,d2			;check for cieling end
+			cmp.b	#SB_ClimbR,d2			;is this crawl left 2 wall right
+			beq	GolSetCeil2WallDownTrans
+			btst	#7,d2
+			bne	GolSetCeilClimbZero
+			move.b	UnderTOP,d2			;check for cieling transitions
+			cmp.b	#SB_ClimbL,d2			;is this crawl left 2 wall right
+			beq	GolSetCeil2WallUpTrans
+			cmp.b	#SB_CeilingClimb,d2		;is this crawl left 2 wall right
+			bne	GolSetCeilClimbZero
+			moveq	#GolClimbCeilingSpeed,d1	
+			bra	MoveGolRight
+
+
+; - CLIMB CEILING SHIELD LOGIC -----------------------------------------------
+
+GolSetCeilClimbShield	move.w	#GolCeilClimbShieldSTATE,OB_State(a0)
+			move.b	#GolLookCMP,OB_Var1a(a0)
+			lea	GolCeilClimbShieldANM,a1
+			bsr	SetNewAnim
+			bsr	GolSetBlockMODE_CLR
+
+GolCeilClimbShieldLOGIC	tst.b	MutVikHammerSidesFLG		;mutant viking
+			bne	GolSetCeilClimbFall
+			
+			tst.b	OB_Var1a(a0)
+			beq.s	.1
+			subq.b	#1,OB_Var1a(a0)
+			bne.s	.1
+			bsr	SetLookUpPoint
+
+.1			tst.l	OB_AnSequence(a0)
+			bne.s	.x
+			btst.b	#up,joy1
+			beq	GolSetCeilClimbShldOut
+.x			rts
+
+
+GolSetCeilClimbShldOut	move.w	#GolCeilClimbShldOutSTATE,OB_State(a0)
+			bsr	ClrLookUp
+			lea	GolCeilClimbShldOutANM,a1
+			bsr	SetNewAnim
+			bsr	GolSetBlockMODE_CLR
+
+GolCeilClimbShldOutLOGIC
+			tst.l	OB_AnSequence(a0)
+			beq	GolSetCeilClimbZero
+			rts
+
+
+; - CLIMB CEILING TURN LOGIC -----------------------------------------------
+
+GolSetCeilClimbTurnL	clr.b	walking_right
+			bra	GolSetCeilClimbTurn
+GolSetCeilClimbTurnR	clr.b	walking_left
+
+GolSetCeilClimbTurn	move.w	#GolCeilClimbTurnSTATE,OB_State(a0)
+			lea	GolCeilClimbTurnANM,a1
+			bsr	SetNewAnim
+			bsr	GolSetCeilMODE_CLR
+
+GolCeilClimbTurnLOGIC	tst.l	OB_AnSequence(a0)
+			bne.s	.x
+			move.w	#$10,d1					;adjust for dodgy reg points
+			btst.b	#ob_xflp,OB_Flag1(a0)
+			beq.s	.1
+			bsr	MoveGolRight_NF_Smooth
+			bra	GolSetCeilClimbZero
+.1			bsr	MoveGolLeft_NF_Smooth
+			bra	GolSetCeilClimbZero
+.x			rts
+
+
+; - CLIMB CEILING TAKE A HIT LOGIC -----------------------------------------
+
+GolSetCeilHit		clr.b	OB_Var1(a0)
+			clr.b	NoFollowFLG
+			bsr	ClrLookUp
+			tst.b	IsGolOnWeightFLG
+			bne.s	.2
+			btst	#ob_hit_big,d2
+			beq.s	.1
+.2			st.b	OB_Var1(a0)
+.1			bsr	GolSetHitMODE_CLR
+			clr.b	OB_EventVar1(a0)
+			move.w	#GolCeilClimbHitSTATE,OB_State(a0)
+			lea	GolCeilClimbHitANM,a1
+			bsr	SetNewAnim			
+
+GolCeilClimbHitLOGIC	tst.b	OB_EventVar1(a0)
+			beq.s	.x
+			tst.b	OB_Var1(a0)
+			beq.s	.1
+  			moveq	#$10,d1
+			bsr	MoveGolDown_Smooth
+			bra	GolSetCeilClimbHitFall
+.1			tst.l	OB_AnSequence(a0)
+			beq	GolSetCeilClimbZero
+.x			rts
+
+
+; --------------------------------------------------------------------------
+
+GolSetCeilClimbHitFall	move.w	#GolCeilClimbHitFallSTATE,OB_State(a0)
+			clr.b	OB_Var2a(a0)
+			clr.w	OB_Yspd(a0)
+			clr.b	IsGolOnWeightFLG
+			move.b	#$a,OB_Var3(a0)
+			lea	GolCeilClimbHitFallANM,a1		;set falling off ceiling
+			bsr	SetNewAnim
+			bra	ForceNewAnim
+
+GolCeilClmbHitFallLOGIC	tst.l	OB_AnSequence(a0)
+			bne.s	.1
+
+			tst.b	OB_Var3(a0)
+			beq.s	.y1
+			subq.b	#1,OB_Var3(a0)
+			bra.s	.2
+.y1			bsr	GolTestJumpFlap
+			bmi	GolSetJumpFlap
+			
+.2			jsr	tst_button_b				;jump attack on decent
+			bne	GolSetJumpAttack
+			bsr	GolJumpFallXMove			;x movement
+						
+.1			bsr	GolAccelerateDown
+			bra	GolTestLand				;test for landing
+.x			rts
+
+
+; - CLIMB CEILING TO WALL GOING UP TRANSITION LOGIC ------------------------
+
+GolSetCeil2WallUpTrans	move.w	#GolCeil2WallUpTranSTATE,OB_State(a0)
+			st.b	NoFollowFLG
+			lea	GolCeil2WallUpTransANM,a1
+			bsr	SetNewAnim
+			bsr	GolSetWallMODE_CLR
+			move.w	#$10,d1
+			btst.b	#ob_xflp,OB_Flag1(a0)
+			beq.s	.1
+ 			bsr	MoveGolRight_NF_Smooth
+			bra	.2
+.1			bsr	MoveGolLeft_NF_Smooth
+.2			
+
+GolCeil2WallUpTranLOGIC	tst.l	OB_AnSequence(a0)
+			bne.s	.x
+			move.w	#$20,d1
+			bsr	MoveGolUp_Smooth
+			move.w	#$20,d1
+			eor.b	#_ob_xflp,OB_Flag1(a0)
+			btst.b	#ob_xflp,OB_Flag1(a0)
+			beq.s	.1
+ 			bsr	MoveGolRight_NF_Smooth
+			bra	.2
+.1			bsr	MoveGolLeft_NF_Smooth
+.2			bsr	GolPosOnWall
+			clr.b	NoFollowFLG
+			bra	GolSetWallClimbZero
+.x			rts
+
+
+; - CLIMB CEILING TO WALL GOING DOWN TRANSITION LOGIC ------------------------
+
+GolSetCeil2WallDownTrans
+			st.b	NoFollowFLG
+			move.w	#GolCeil2WallDownTranSTATE,OB_State(a0)
+			lea	GolCeil2WallDownTransANM,a1
+			bsr	SetNewAnim
+			bsr	GolSetWallMODE_CLR
+
+GolCeil2WallDownTranLOGIC
+			tst.l	OB_AnSequence(a0)
+			bne.s	.x
+			bsr	GolPosOnWall
+			clr.b	NoFollowFLG
+			bra	GolSetWallClimbZero
+.x			rts
+
+
+; - AIRIAL TAKE A HIT LOGIC ------------------------------------------------
+
+GolSetAirHit		move.w	#6,OB_Var1(a0)
+GolSetAirHit2		move.w	#GolAirHitSTATE,OB_State(a0)
+			clr.b	GolFlappedFLG
+			clr.b	NoFollowFLG
+			clr.b	WallFlameActiveFLG
+			lea	GolAirHitANM,a1
+			bsr	SetNewAnim			
+			bsr	ForceNewAnim			
+			bsr	GolDontMove
+			bsr	GolSetHitMODE_CLR
+			clr.w	OB_Var2(a0)
+			clr.w	OB_Yspd(a0)
+			clr.w	OB_Yacc(a0)
+			clr.w	OB_Xspd(a0)
+			clr.w	OB_Xacc(a0)
+			move.b	#16,GolSpriteCarryDLY
+			clr.b	IsGolOnWeightFLG
+			clr.b	PlrFallOnWeightFLG
+			clr.b	PlrJumpOnWeightFLG
+			st.b	OB_Var3(a0)
+			btst.b	#ob_hitside,OB_Flag1(a0)
+			beq.s	GolAirHitLOGIC
+			clr.b	OB_Var3(a0)
+
+GolAirHitLOGIC		bsr	GolTestJumpFlap
+			bmi	GolSetJumpFlap
+			jsr	GolBumpedByWall
+			bsr	HandleBumpStuff
+;			jsr	HandleFallOnWeight
+;			bmi	GSLa
+			bsr	GolAccelerateDown
+			move.l	UnderFEET_c,a1
+			bsr	SetHeight
+			bmi	GolSetLand	;AirHitLand
+			
+			tst.w	OB_Var1(a0)
+			beq.s	.x
+			
+			addq.b	#1,OB_Var2(a0)
+			and.b	#3,OB_Var2(a0)
+			bne.s	.b
+			subq.w	#1,OB_Var1(a0)
+
+.b			tst.b	OB_Var3(a0)
+			bne.s	.rte
+
+.lft			move.b	UnderLEFT,d2
+			jsr	TestLevelWalls
+			bmi.s	.x
+			move.b	UnderLEFTBOT,d2
+			jsr	TestLevelWalls
+			bmi.s	.x
+			move.b	UnderLEFTFEET,d2
+			jsr	TestLevelWalls
+			bmi.s	.x
+;			move.b	Under,d2
+;			jsr	TestLevelWalls
+;			bmi.s	.x
+;			move.b	UnderBOT,d2
+;			jsr	TestLevelWalls
+;			bmi.s	.x
+			bsr	SetWalkingLeft
+			move.w	OB_Var1(a0),d1
+			bra	MoveGolLeft_NF
+
+.x			rts
+
+.rte			move.b	UnderRIGHT,d2
+			jsr	TestLevelWalls
+			bmi.s	.x
+			move.b	UnderRIGHTBOT,d2
+			jsr	TestLevelWalls
+			bmi.s	.x
+			move.b	UnderRIGHTFEET,d2
+			jsr	TestLevelWalls
+			bmi.s	.x
+;			move.b	Under,d2
+;			jsr	TestLevelWalls
+;			bmi.s	.x
+;			move.b	UnderBOT,d2
+;			jsr	TestLevelWalls
+;			bmi.s	.x
+			bsr	SetWalkingRight
+			move.w	OB_Var1(a0),d1
+			bra	MoveGolRight_NF
+			
+
+HandleBumpStuff		tst.b	BumpLeftFLG
+			beq.s	.1
+			subq.b	#1,BumpLeftFLG
+			clr.b	walking_left
+			st.b	walking_right
+			moveq	#4,d1
+			bra	MoveGolLeft_NF_Smooth
+.1			tst.b	BumpRightFLG
+			beq.s	.2
+			subq.b	#1,BumpRightFLG
+			st.b	walking_left
+			clr.b	walking_right
+			moveq	#4,d1
+			bra	MoveGolRight_NF_Smooth
+.2			rts
+
+
+GolSetAirHitLand	move.w	#GolAirHitLandSTATE,OB_State(a0)
+			lea	GolAirHitLandANM,a1
+			bsr	SetNewAnim			
+				
+GolAirHitLandLOGIC	bsr	TestPreJump
+			bsr	TestPreClaw
+			bsr	TestPreGrab
+			
+			move.l	UnderFEET_c,a1
+			bsr	SetHeight
+			
+			tst.l	OB_AnSequence(a0)
+			beq	GolSetGroundZero
+			bsr	SkidGol
+			bra	HandleGolContours
+
+SkidGol			tst.w	OB_Var1(a0)
+			beq.s	.x
+			tst.b	OB_Var3(a0)
+			bne.s	.rte
+.lft			jsr	GolTestLeftSide
+			bmi.s	.b
+			move.w	OB_Var1(a0),d1
+			bsr	SetWalkingLeft
+			bsr	MoveGolLeft_NF
+			bra	.b
+.rte			jsr	GolTestRightSide
+			bmi.s	.b
+			move.w	OB_Var1(a0),d1
+			bsr	SetWalkingRight
+			bsr	MoveGolRight_NF
+			
+.b			addq.b	#1,OB_Var2(a0)
+			and.b	#3,OB_Var2(a0)
+			bne.s	.x
+			subq.w	#1,OB_Var1(a0)
+.x			rts
+
+; - DIE WITH A CONTINUE LOGIC ----------------------------------------------
+
+GolDeathYesContLOGIC	rts
+
+
+; - DIE WITHOUT A CONTINUE LOGIC -------------------------------------------
+
+GolDeathNoContLOGIC	rts
+
+
+; - FALL OFF THE CEILING LOGIC ---------------------------------------------
+
+GolSetCeilClimbFall	clr.b	OB_EventVar1(a0)		;don't do anything until anim script flags ok
+GSCCF2			move.w	#GolCeilClimbFallSTATE,OB_State(a0)
+			clr.b	MutVikHammerSidesFLG
+			lea	GolCeilClimbFallANM,a1		;set falling off ceiling
+			bsr	SetNewAnim
+			bsr	ForceNewAnim
+			bsr	GolSetAirMODE_CLR
+
+GolCeilClimbFallLOGIC	tst.b	OB_EventVar1(a0)
+			bne	GolSetCeilFall
+.x			rts
+
+
+; - OFF BALANCE LOGIC ------------------------------------------------------
+
+GolSetOffBalanceL	bset.b	#ob_xflp,OB_Flag1(a0)
+			bra	GSOB2
+GolSetOffBalanceR	bclr.b	#ob_xflp,OB_Flag1(a0)
+
+GSOB2			btst.b	#ob_beinghit,OB_Flag1(a0)		;big hit knocked player over edge?
+			bne	GolSetEdgeFall				;don't do off balance
+			
+			move.b	#$10,OB_Var1(a0)
+			and.w	#$fff0,OB_Xpos(a0)
+			btst.b	#ob_xflp,OB_Flag1(a0)
+			bne.s	.2
+			add.w	#$10,OB_Xpos(a0)
+.2			move.w	#GolOffBalanceSTATE,OB_State(a0)
+			bsr	GolSetGroundMODE_CLR
+			lea	GolOffBalanceANM,a1
+			bra	SetNewAnim
+			bra	ForceNewAnim
+			
+GolOffBalanceLOGIC	move.l	DetectedWeightOB,a1
+			btst.b	#ob_carry,OB_Flag3(a1)
+			bne	GolSetGroundZero
+			
+			jsr	tst_d_button_a
+			beq.s	.2
+			btst.b	#ob_xflp,OB_Flag1(a0)
+			bne	GolSetJump
+			move.w	#8,d1
+			bsr	MoveGolLeft_Smooth
+			bra	GolSetJump
+			
+.2			btst.b	#ob_xflp,OB_Flag1(a0)
+			beq.s	.rte
+
+.lft			btst.b	#left,joy1
+			bne	GolSetEdgeFall
+			btst.b	#right,joy1
+			beq.s	.x
+			move.w	#$18,d1
+			bsr	MoveGolRight_Smooth
+			bra	GolSetGroundZero
+
+.rte			btst.b	#right,joy1
+			bne	GolSetEdgeFall
+			btst.b	#left,joy1
+			beq.s	.x
+			move.w	#$18,d1
+			bsr	MoveGolLeft_Smooth
+			bra	GolSetGroundZero
+.x			rts
+
+
+; - LOOK UP LOGIC ----------------------------------------------------------
+
+GolSetLookUp		jsr	GolGetOnWall
+			bmi	GolSetGround2Wall
+			
+			move.w	#GolLookUpSTATE,OB_State(a0)
+			lea	GolLookUpANM,a1
+			bsr	SetNewAnim
+			clr.b	OB_Var1(a0)
+			move.b	#GolLookCMP,OB_Var1a(a0)
+			bsr	GolSetGroundMODE_CLR
+			
+GolLookUpLOGIC		jsr	tst_d_button_a				;jump button?
+			beq.s	.1
+			bsr	ClrLookUp
+			bra	GolSetJump
+.1			jsr	tst_d_button_b				;attack button?
+			beq.s	.2
+			bsr	ClrLookUp
+			bra	GolSetGroundClaw
+.2			jsr	tst_d_button_c				;grab button?
+			beq.s	.3
+			bsr	ClrLookUp
+			bra	GolSetGroundGrab
+			
+.3			move.l	DetectedWeightOB,a1
+			btst.b	#ob_carry,OB_Flag3(a1)
+			bne.s	.1a
+			tst.b	OB_Var1a(a0)
+			beq.s	.1a
+			subq.b	#1,OB_Var1a(a0)
+			bne.s	.1a
+			bsr	SetLookUpPoint
+
+.1a			tst.b	OB_Var1(a0)
+			bne.s	.GolStand
+			btst.b	#up,joy1
+			bne.s	.x
+.GolSetStand		bsr	ClrLookUp
+			lea	GolStandLookUpANM,a1
+			bsr	SetNewAnim
+			st.b	OB_Var1(a0)
+.GolStand		tst.l	OB_AnSequence(a0)
+			beq	GolSetGroundZero	
+.x			rts
+			
+			
+
+; - AIRIAL TURN LOGIC ------------------------------------------------------
+
+GolAirTurnLOGIC		bsr	GolSetAirMODE_CLR
+			rts		
+
+
+; - WALL CLIMB TO GROUND TRANSITION LOGIC ----------------------------------
+
+GolSetWall2GroundTrans	st.b	NoFollowFLG
+			and.w	#$fff0,OB_Ypos(a0)		;setup start pos		
+			add.w	#$20,OB_Ypos(a0)
+			move.w	#GolWall2GroundTranSTATE,OB_State(a0)
+			lea	GolWall2GroundTransANM,a1
+			bsr	SetNewAnim
+			bsr	GolSetGroundMODE_CLR
+
+GolWall2GroundTranLOGIC	tst.l	OB_AnSequence(a0)
+			bne.s	.x
+			moveq	#$50,d1				;final position after animation
+			bsr	MoveGolUp_Smooth
+			moveq	#$20,d1
+			bsr	MoveGolLeftRightFLP
+			jsr	GetUnderFEET
+			bsr	SetHeight
+			clr.b	NoFollowFLG
+			bra	GolSetGroundZero
+.x			rts
+
+
+; - GRAB/HANG/SWING/FLIP LOGIC ---------------------------------------------
+
+GolSetHangSwing		move.w	#GolHangSwingSTATE,OB_State(a0)
+			bsr	SnapXY
+			clr.b	GolFlappedFLG
+			add.w	#$20,OB_Ypos(a0)
+			btst.b	#ob_xflp,OB_Flag1(a0)
+			beq.s	.1
+			sub.w	#8,OB_Xpos(a0)
+			bra	.2
+.1			add.w	#$18,OB_Xpos(a0)
+.2			clr.b	OB_EventVar1(a0)
+			SFX	113
+			lea	GolHangSwingANM,a1
+			bsr	SetNewAnim
+			bsr	ForceNewAnim
+			bsr	GolSetAirMODE_CLR
+
+GolHangSwingLOGIC	tst.l	OB_AnSequence(a0)
+			beq.s	.set
+			rts
+
+.set			move.w	#$200,OB_Xspd(a0)
+			move.w	#$500,OB_Yspd(a0)
+			move.w	#0,OB_Xacc(a0)		
+			move.w	#$30,OB_Yacc(a0)		
+			btst.b	#ob_xflp,OB_Flag1(a0)
+			bne.s	.1
+			move.b	#%00001110,OB_MoveFlags(a0)			
+  			bra	.o1
+.1			move.b	#%00001111,OB_MoveFlags(a0)			
+
+.o1			move.b	#$8,OB_Var4(a0)
+			move.w	#GolHangSwingReleaseSTATE,OB_State(a0)
+			bsr	GolSetAirMODE_CLR
+			lea	GolHangSwingReleaseANM,a1
+			bsr	SetNewAnim
+			bsr	ForceNewAnim
+
+
+GolHangSwingReleaseLOGIC
+			tst.b	OB_Var4(a0)
+			beq.s	.aa1
+    			subq.b	#1,OB_Var4(a0)
+			bra	.a2
+.aa1			tst.b	GolFlappedFLG
+			bne.s	.a2
+			jsr	tst_d_button_a				;jump flap?
+			beq.s	.a2
+			sub.w	#$18,OB_Ypos(a0)
+			btst.b	#ob_xflp,OB_Flag1(a0)
+			beq.s	.r3
+.l3			sub.w	#$20,OB_Xpos(a0)
+			bra	GolSetJumpFlap
+.r3			add.w	#$20,OB_Xpos(a0)
+			bra	GolSetJumpFlap
+
+.a2			btst.b	#ob_xflp,OB_Flag1(a0)
+			beq.s	.r
+.l			jsr	GolTestLeftSide
+			bmi.s	.stop
+			bra	.n1
+.r			jsr	GolTestRightSide
+			bpl.s	.n1
+.stop			clr.w	OB_Xspd(a0)
+			clr.w	OB_Xacc(a0)
+			
+.n1			jsr	GetXYpos
+			sub.w	#$50,d2
+			btst.b	#ob_xflp,OB_Flag1(a0)
+			beq.s	.r2
+.l2			sub.w	#$30,d1
+			bra	.n3
+.r2			add.w	#$30,d1
+.n3			jsr	GetUnderAddrs
+			jsr	GetSpecial
+			tst.b	d2
+			bpl.s	.n2
+			sub.w	#8,OB_Ypos(a0)
+			btst.b	#ob_xflp,OB_Flag1(a0)
+			beq.s	.r1
+.l1			sub.w	#$20,OB_Xpos(a0)
+			bra	GolSetHangSwingFall
+.r1			add.w	#$20,OB_Xpos(a0)
+			bra	GolSetHangSwingFall
+
+.n2			tst.w	OB_Yspd(a0)
+			bne.s	.x
+			bsr	GolHangSwingCorrectXY
+			bra	GolSetHangSwingFall
+.x 			rts
+
+GolHangSwingCorrectXY	move.w	#$18,d1
+			bsr	MoveGolUp_Smooth
+			move.w	#$20,d1
+			bra	MoveGolLeftRightFLP
+			
+
+; - GENERIC HIT DECODER LOGIC ----------------------------------------------
+
+GolTestBigHit		move.b	OB_MasterMode(a0),d1			;get plrs master mode 
+			bset.b	#ob_hit_big,OB_Flag6(a0)			;flag big hit
+			bra	GSHbig
+GolTestSmallHit		move.b	OB_MasterMode(a0),d1			;get plrs master mode 
+			bset.b	#ob_hit_small,OB_Flag6(a0)			;flag small hit
+			bra	GSHsmall
+
+
+GolSetGenericHit	tst.w	GolInvincibleFLG
+			bne.s	.ignore
+			move.b	OB_MasterMode(a0),d1			;get plrs master mode 
+			btst	#hitmode,d1
+			bne.s	.ignore
+			btst	#blokmode,d1				;blocking?	
+			beq.s	.a1
+			btst.b	#ob_xflp,OB_Flag1(a0)
+			beq.s	.r
+.l			btst.b	#ob_hitside,OB_Flag1(a0)
+			bne	.o1
+			rts						;yes: handle blocking
+.r			btst.b	#ob_hitside,OB_Flag1(a0)
+			beq	.o1
+			rts						;yes: handle blocking
+			
+.ignore			bsr	ClrHitStuff
+			rts
+			
+.a1			move.l	OB_Interact(a0),a1			;object inflicting pain on goliath
+			cmp.w	#GateCrusher_OB,OB_Type(a1)
+			beq.s	.yg
+			cmp.w	#Gate_OB,OB_Type(a1)
+			bne.s	.o2
+.yg			btst.b	#ob_xflp,OB_Flag1(a1)
+			beq.s	.raa
+			bclr.b	#ob_hitside,OB_Flag1(a0)		;force left
+			bra	.o1
+.raa			bset.b	#ob_hitside,OB_Flag1(a0)		;force left
+			bra	.o1						
+.o2			cmp.w	#Icon_OB,OB_Type(a1)
+			beq.s	.ignore
+			cmp.w	#BreakLight_OB,OB_Type(a1)
+			beq.s	.ignore
+			cmp.w	#RaptorBot_OB,OB_Type(a1)
+			bne.s	.o1
+			cmp.w	#RapBotSnakeAttackSTATE,OB_State(a1)
+			beq.s	.o1
+			cmp.w	#RapBotDefendSTATE,OB_State(a1)
+			beq.s	.o1
+			cmp.w	#RapBotFaceHugSTATE,OB_State(a1)
+			bne.s	.o1
+			btst	#grndmode,d1
+			beq.s	.o1
+			bra	GolSetFaceHug				;yes: plr gets face hugged
+
+.o1			move.b	OB_Flag6(a0),d2
+			and.b	#%11000111,OB_Flag6(a0)
+			
+			jsr	Randy
+			and.b	#3,d6
+			beq.s	.s1
+			cmp.b	#1,d6
+			beq.s	.s2
+			move.l	#90,sfx_poll
+			bra	.ss
+.s1			move.l	#92,sfx_poll
+			bra	.ss			
+.s2			move.l	#91,sfx_poll
+.ss			jsr	SetSFX
+			
+			cmp.w	#GolGroundThrowSTATE,OB_State(a0)
+			bne.s	.aw1
+			st.b	GolThrowReleaseFLG
+.aw1			cmp.w	#GolDemonaStartSTATE,OB_State(a0)
+			beq	.ignore
+			cmp.w	#GolOffBalanceSTATE,OB_State(a0)
+			bne.s	.o1a
+.bh			or.b	#_ob_hit_big,d2
+			bra	GSHbig
+
+.o1a			btst	#ob_hit_big,d2				;what sort of hit did plr recieve?
+			bne.s	GSHbig					;big
+      			btst	#ob_hit_med,d2				;what sort of hit did plr recieve?
+			bne.s	GSHsmall
+      			btst	#ob_hit_small,d2			;or
+			bne.s	GSHsmall				;small	
+.x			rts
+
+GSHbig			btst	#grndmode,d1	  			;the plr is
+			bne	GolSetGroundBigHit
+			btst	#wallmode,d1
+			bne	GolSetWallHit
+			btst	#ceilmode,d1
+			bne	GolSetCeilHit
+			btst	#airmode,d1
+			bne	GolSetAirHit
+			rts
+
+GSHsmall		btst	#grndmode,d1				;the plr is
+			bne	GolSetGroundSmallHit
+			btst	#wallmode,d1
+			bne	GolSetWallHit
+			btst	#ceilmode,d1
+			bne	GolSetCeilHit
+			btst	#airmode,d1
+			bne	GolSetAirHit
+
+GolGenericHitLOGIC	rts
+
+
+; - Goliath gets Face Hugged -----------------------------------------------
+
+ShakeOffValue		equ	$10
+
+GolSetFaceHug		cmp.w	#GolWall2GroundTranSTATE,OB_State(a0)
+			bne.s	.n1
+			moveq	#$50,d1				;final position after animation
+			bsr	MoveGolUp_Smooth
+			moveq	#$20,d1
+			bsr	MoveGolLeftRightFLP
+			clr.b	NoFollowFLG
+			
+.n1			move.w	#GolFaceHugSTATE,OB_State(a0)
+
+			btst.b	#ob_hitside,OB_Flag1(a0)
+			bne.s	.a
+			bset.b	#ob_xflp,OB_Flag1(a0)
+			bra	.b
+.a			bclr.b	#ob_xflp,OB_Flag1(a0)
+			
+.b			clr.b	GolThrowFLG				;plr flags throw off
+			move.w	OB_Xpos(a0),d1
+			btst.b	#ob_xflp,OB_Flag1(a0)
+			beq.s	.1
+  			sub.w	#$a,d1
+			bra	.2
+.1			add.w	#$a,d1
+.2			move.w	d1,GolThrowXPos
+			move.w	OB_Ypos(a0),d1
+			sub.w	#$4,d1
+			move.w	d1,GolThrowYPos
+			bsr	ClrHitStuff
+			lea	GolFaceHugANM,a1
+			bsr	SetNewAnim
+			clr.b	OB_Var1(a0)
+
+GolFaceHugLOGIC		move.b	d_joy1,d1
+			bne.s	.1
+.x			rts
+.1			addq.b	#1,OB_Var1(a0)
+			cmp.b	#ShakeOffValue,OB_Var1(a0)
+			bne.s	.x
+			st.b	GolThrowFLG
+			bra	GolSetGroundClaw
+
+     
+	
+; - Goliath Stunned logic --------------------------------------------------
+
+GolSetStun		move.w	#GolStunSTATE,OB_State(a0)
+			move.w	d1,OB_Var1(a0)
+			lea	GolGroundZeroANM,a1
+			bsr	SetNewAnim
+			bra	ForceNewAnim
+
+GolStunLOGIC		subq.w	#1,OB_Var1(a0)
+			beq	GolSetGroundZero
+			rts
+
+
+; - Goliath in steam vent --------------------------------------------------
+
+GolSetVent		cmp.w	#GolVentSTATE,OB_State(a0)
+			beq.s	.x
+			clr.b	GolFlappedFLG
+			move.w	#GolVentSTATE,OB_State(a0)
+			cmp.l	#GF2,OB_AnSequence(a0)
+			beq.s	.x
+			lea	GolFallANM,a1
+			bsr	SetNewAnim
+			bra	ForceNewAnim
+.x			rts
+
+GolVentLOGIC		tst.b	VentFLG
+			bne.s	.1
+			tst.b	VentADD
+			bne.s	.1
+			jsr	Randy
+			and.b	#3,d6
+			add.b	#2,d6
+			move.b	d6,VentDLY	
+			clr.b	GolJumpType
+			bra	GSF2
+			
+.1			jsr	GolJumpToHangSwing			;jump to hang/swing?
+			bmi	GolSetHangSwing
+			bsr	GolTestJumpFlap
+			bmi	GolSetJumpFlap
+			bsr	GolJumpFallXMove
+			jsr	GolJumpOnCeiling			;jump to ceiling?
+			bmi	GolSetJump2CeilTrans
+			btst	#7,d2					;stop at any other solid
+			bne.s	.x
+			moveq	#0,d1
+			move.b	VentADD,d1
+			bra	MoveGolUp_Smooth
+.x			clr.b	VentADD
+			rts 
+
+; - Goliath thrown --------------------------------------------------
+
+GolSetThrown		cmp.w	#GolThrownSTATE,OB_State(a0)
+			beq.s	.x
+			clr.b	GolFlappedFLG
+			clr.b	SteamVentFLG
+			move.w	#GolThrownSTATE,OB_State(a0)
+			move.w	GolThrownVelX,OB_Var1(a0)
+			move.w	GolThrownVelY,OB_Var2(a0)
+			clr.w	GolThrownVelX
+			clr.w	GolThrownVelY
+			lea	GolFallANM,a1
+			bsr	SetNewAnim
+			bra	ForceNewAnim
+.x			rts
+
+
+GolThrownLOGIC		jsr	GolJumpToHangSwing			;jump to hang/swing?
+			bmi	GolSetHangSwing
+			jsr	GolJumpOnCeiling			;jump to ceiling?
+			bmi	GolSetJump2CeilTrans
+			btst	#7,d2					;stop at any other solid
+			bne	GolSetFall
+			
+			move.w	OB_Var1(a0),d1
+			beq.s	.u
+			bpl.s	.r
+ 			neg.w	d1
+.l			jsr	GolTestLeftSide
+			bmi.s	.lr
+			bsr	MoveGolLeft_NF_Smooth
+			bra	.lr
+.r			jsr	GolTestRightSide
+			bmi.s	.lr
+			bsr	MoveGolRight_NF_Smooth
+			bra	.lr			
+
+.u			bsr	GolTestJumpFlap
+			bmi	GolSetJumpFlap
+			bsr	GolJumpFallXMove
+			
+.lr			tst.w	OB_Var2(a0)
+			beq	GolSetThrownFall
+			addq.b	#1,OB_Var3(a0)
+			and.b	#3,OB_Var3(a0)
+			bne.s	.1
+			subq.w	#1,OB_Var2(a0)
+			
+.1			move.w	OB_Var2(a0),d1
+			bra	MoveGolUp_Smooth
+			
+
+; - Goliath thrown fall ----------------------------------------------
+
+GolSetThrownFall	move.w	#GolThrownFallSTATE,OB_State(a0)		;regular fall state
+			lea	GolFallANM,a1				;anim	
+			bsr	SetNewAnim
+			bsr	ForceNewAnim
+			clr.b	GolJumpFLG
+ 			st.b	GolFallFLG
+			bsr	GolDontMove
+			clr.w	OB_Yspd(a0)				;set yspd=0			
+			clr.w	OB_Yacc(a0)
+			clr.w	OB_Xacc(a0)
+			clr.w	OB_Var3(a0)
+			clr.b	NoFollowFLG				;allow scroll follow
+			clr.w	OB_Var2(a0)
+			bra	GolSetAirMODE_CLR			;set air mode
+			
+GolThrownFallLOGIC	jsr	GolJumpOnWall				;jump to wall?
+			bmi	GolSetJump2Wall2
+			jsr	GolJumpToHangSwing			;jump to hang/swing?
+			bmi	GolSetHangSwing
+			jsr	GolBumpedByWall
+			
+			jsr	HandleFallOnWeight
+			bmi	GSLa
+			jsr	HandleJumpOnWeight
+			bmi	GolSetJumpToWeight
+			
+			move.w	OB_Var1(a0),d1
+			beq.s	.u
+			bpl.s	.r
+ 			neg.w	d1
+.l			jsr	GolTestLeftSide
+			bmi.s	.lr
+			bsr	MoveGolLeft_NF_Smooth
+			bra	.lr
+.r			jsr	GolTestRightSide
+			bmi.s	.lr
+			bsr	MoveGolRight_NF_Smooth
+			bra	.lr			
+
+.u			jsr	tst_button_c				;jump attack on decent
+			bne	GolSetJumpAttack
+			bsr	GolTestJumpFlap
+			bmi	GolSetJumpFlap
+			bsr	GolJumpFallXMove
+			
+.lr			bsr	GolAccelerateDown
+			bra	GolTestLand				;test for landing
+			
+			
+; - Goliath Level2.4 start -------------------------------------------
+
+GolSetMVBossStart	move.w	#GolMVBossSTATE,OB_State(a0)
+			bclr.b	#ob_xflp,OB_Flag1(a0)
+			move.w	#$1e0,OB_Var1(a0)
+			lea	GolGroundZeroANM,a1
+			bsr	SetNewAnim			
+			bra	GolSetHitMODE_CLR
+
+GolMVBossStartLOGIC	subq.w	#1,OB_Var1(a0)
+			beq	GolSetGroundZero
+			rts
+
+
+; - Goliath Level7.7 (final boss room) start -----------------------
+
+DemonaBossMaxNRG	equ	$200
+
+GolSetDemonaStart	move.w	#GolDemonaStartSTATE,OB_State(a0)
+			move.b	#_DB_SetJumpOn,OB_Var1(a0)
+			st.b	NoFollowFLG
+			jsr	SpawnDemona
+			jsr	SpawnEyeOfOdin
+			st.b	PlayingBOSS
+			move.l	a1,Boss_Database			;boss' database
+			move.w	#ForgeBOSS_NRG,OB_Nrg(a1)
+			move.w	OB_Nrg(a1),d1
+			move.w	d1,BossEnergy
+			lsr.w	#5,d1
+			move.w	d1,BossPercentile
+			st.b	BossFirstPass
+			move.w	#EyeOfOdinDemona1STATE,OB_State(a1)
+			sub.w	#$58,OB_Xpos(a1)
+			sub.w	#$70,OB_Ypos(a1)
+			lea	GolGroundZeroANM,a1
+			bsr	SetNewAnim			
+			bra	ForceNewAnim
+			
+GolDemonaStartLOGIC	moveq	#0,d1
+			move.b	OB_Var1(a0),d1
+			asl.b	#2,d1
+			jmp	DemonaBossStart(pc,d1.w)
+.x			rts
+			
+_DB_SetJumpOn		equ	0
+_DB_JumpOn		equ	1
+_DB_Land		equ	2
+_DB_Wait1		equ	3
+_DB_Fall		equ	4
+_DB_Wait2		equ	5
+_DB_Wait3		equ	6
+
+DemonaBossStart		bra	DB_SetJumpOn
+			bra	DB_JumpOn
+			bra	DB_Land
+			bra	DB_Wait1
+			bra	DB_Fall
+			bra	DB_Wait2
+			bra	DB_Wait3
+
+
+DB_SetJumpOn		tst.b	faded_flg
+			beq.s	.x
+			clr.w	OB_Xspd(a0)
+			clr.w	OB_Xacc(a0)
+			move.w	#$0880,OB_Yspd(a0)
+			move.w	#$0040,OB_Yacc(a0)
+			move.b	#%00111110,OB_MoveFlags(a0)
+			move.b	#_DB_JumpOn,OB_Var1(a0)
+			bset.b	#ob_xflp,OB_Flag1(a0)
+			SFX	55
+			lea	GolStandJumpANM,a1
+			bsr	SetNewAnim			
+			bra	ForceNewAnim
+.x			rts
+
+DB_JumpOn		bsr	MoveGolUpDown
+			
+			btst.b	#ob_movydir,OB_MoveFlags(a0)
+			bne.s	.1
+			bsr	TestLand
+			bne.s	DB_SetLand
+.1			tst.w	OB_Yspd(a0)
+			bne.s	.x
+			bclr.b	#ob_movyacc,OB_MoveFlags(a0)
+			bclr.b	#ob_movydir,OB_MoveFlags(a0)
+.x			rts
+
+
+DB_SetLand		move.b	#_DB_Land,OB_Var1(a0)
+			lea	GolLandANM,a1
+			bsr	SetNewAnim			
+			bra	ForceNewAnim
+DB_Land			tst.l	OB_AnSequence(a0)
+			beq.s	.1
+			rts
+.1			lea	GolGroundZeroANM,a1
+			bsr	SetNewAnim			
+			bsr	ForceNewAnim
+			move.b	#_DB_Wait1,OB_Var1(a0)
+
+DB_Wait1		tst.b	NoFollowFLG
+			bne.s	.x
+			subq.b	#1,OB_Var2(a0)
+			beq	GolSetGroundZero
+.x			rts
+
+DB_Fall			moveq	#4,d1
+			bsr	MoveGolDown_Smooth
+			bsr	TestLand
+			bmi.s	.1
+			rts
+.1			move.b	#_DB_Wait2,OB_Var1(a0)
+			lea	GolGroundZeroANM,a1			;set his anim
+			jsr	SetNewAnim			
+			jmp	ForceNewAnim
+
+
+DB_Wait2		tst.b	DemonaFLG1			;wait for control to be given back to plr
+			beq	GolSetGroundZero		;plr has control
+.x			rts
+
+DB_Wait3		tst.b	DemonaFLG1			;wait for control to be given back to plr
+			beq	GolSetGroundZero		;plr has control
+.x			rts
+
+
+; - Goliath Level5 (subway) start ---------------------------------------
+
+GolSetSubwayStart	bra	GolSetEdgeFall
+			
+
+; - Goliath jumps to weight (Level1) --------------------------------------
+
+GolSetJumpToWeight	clr.b	GolFallFLG	
+			move.w	#GolJumpToWeightSTATE,OB_State(a0)
+			move.l	DetectedWeightOB,a1
+			cmp.w	#BigCouldron_OB,OB_Type(a1)
+			bne.s	.weight
+
+.bigcouldron		move.w	OB_Ypos(a1),OB_Ypos(a0)		;pos plr on big couldron
+			move.w	OB_Xpos(a1),d1
+			move.w	d1,d2
+			sub.w	OB_Xpos(a0),d2
+			bpl.s	.r1
+.l1			add.w	#$30,d1
+			bset.b	#ob_xflp,OB_Flag1(a0)
+			bra	.lr1
+.r1			sub.w	#$30,d1
+			bclr.b	#ob_xflp,OB_Flag1(a0)
+.lr1			move.w	d1,OB_Xpos(a0)
+			SFX	104
+			bra	.do
+
+.weight			move.w	OB_Ypos(a1),d1			;pos plr on weight
+			add.w	#$60,d1
+			move.w	d1,OB_Ypos(a0)
+			move.w	OB_Xpos(a1),d1
+			move.w	d1,d2
+			sub.w	OB_Xpos(a0),d2
+			bpl.s	.r
+.l			add.w	#$2c,d1
+			bset.b	#ob_xflp,OB_Flag1(a0)
+			bra	.lr
+.r			sub.w	#$28,d1
+			bclr.b	#ob_xflp,OB_Flag1(a0)
+.lr			move.w	d1,OB_Xpos(a0)
+			
+.do			lea	GolJmpFlp2WallTransANM,a1
+			bsr	SetNewAnim
+			bsr	ForceNewAnim
+			bra	GolSetWallMODE_CLR
+
+GolJumpToWeightLOGIC	tst.l	OB_AnSequence(a0)
+			beq.s	GolSetOnWeightSide
+			rts
+
+
+; - Goliath lands on weight (Level1) --------------------------------------
+
+GolSetLandOnWeight	rts
+
+GolLandOnWeightLOGIC	rts
+
+
+; - Goliath attached to weight side (Level1) -----------------------------------
+
+GolSetOnWeightSide	move.w	#GolOnWeightSideSTATE,OB_State(a0)
+			bsr	GolSetWallMODE_CLR
+			clr.b	NoFollowFLG
+			move.b	#$c,OB_Var2(a0)
+			lea	GolWallClimbZeroANM,a1
+			bsr	SetNewAnim
+			bra	ForceNewAnim
+
+GolOnWeightSideLOGIC	move.l	DetectedWeightOB,a1
+			cmp.w	#BigCouldron_OB,OB_Type(a1)
+			bne	.weight
+
+.bigcouldron		bsr	CouldronSidesDetect
+			bmi.s	.x
+
+.bc1			tst.b	OB_Var2(a0)
+			beq.s	.y1
+			subq.b	#1,OB_Var2(a0)
+			rts
+.y1			btst.b	#up,joy1
+			bne.s	.1
+			btst.b	#down,joy1
+			bne	GolSetDownCouldron
+			jsr	tst_d_button_b				;attack button?
+			bne	GolSetCouldronClaw
+			jsr	tst_d_button_a
+			bne.s	.1a
+.x			rts
+.1a			move.l	DetectedWeightOB,a1
+			bclr.b	#ob_carry,OB_Flag3(a1)
+			bra	GolSetWall2Fall
+
+.weight			btst.b	#up,joy1
+			bne	GolSetClimbWeight
+			btst.b	#down,joy1
+			bne.s	.1
+			jsr	tst_d_button_a
+			bne.s	.1
+			rts
+.1			move.l	DetectedWeightOB,a1
+			bclr.b	#ob_carry,OB_Flag3(a1)
+			bra	GolSetWall2Fall
+
+
+CouldronSidesDetect	tst.b	OB_Var1a(a1)
+			beq.s	.right
+			cmp.b	#1,OB_Var1a(a1)
+			beq.s	.left
+			cmp.b	#2,OB_Var1a(a1)
+			beq	.down
+			cmp.b	#3,OB_Var1a(a1)
+			beq	.up
+			bra	FlagNOn
+
+.right			btst.b	#ob_xflp,OB_Flag1(a0)			;couldron going right
+			beq.s	.oppr
+			move.b	UnderRIGHT,d2				;player is on right of couldron
+			bpl	FlagNOn
+.offleft		bset.b	#ob_hitside,OB_Flag1(a0)		;its hitting a wall	
+  			move.l	DetectedWeightOB,a1			;so knock player off to the LEFT
+			bclr.b	#ob_carry,OB_Flag3(a1)
+			move.w	#3,OB_Var1(a0)
+			move.b	#8,GolBumpDLY
+			bsr	GolSetAirHit2
+			bra	FlagYESn
+.oppr			move.b	UnderLEFT,d2				
+			bmi.s	.offright
+			move.b	Under,d2				
+			bpl	FlagNOn
+ 			bra.s	.offleft
+	
+.left			btst.b	#ob_xflp,OB_Flag1(a0)			;couldron going left
+			bne.s	.oppl
+			move.b	UnderLEFT,d2				;player is on left of couldron
+			bpl	FlagNOn
+.offright		bclr.b	#ob_hitside,OB_Flag1(a0)		;its hitting a wall	
+  			move.l	DetectedWeightOB,a1			;so knock player off to the RIGHT
+			bclr.b	#ob_carry,OB_Flag3(a1)
+			move.w	#3,OB_Var1(a0)
+			move.b	#8,GolBumpDLY
+			bsr	GolSetAirHit2
+			bra	FlagYESn
+.oppl			move.b	UnderRIGHT,d2				
+			bmi.s	.offleft
+			move.b	Under,d2				
+			bpl	FlagNOn
+ 			bra.s	.offright
+
+.up			btst.b	#ob_xflp,OB_Flag1(a0)			;couldron going right
+			beq.s	.onleft_up
+.onright_up		move.b	Under,d2				;player is on right of couldron
+			bmi	.offleft
+			bra	.u1
+.onleft_up		move.b	Under,d2				;player is on right of couldron
+			bmi.s	.offright
+.u1			move.b	UnderTOP,d2				
+			bpl	FlagNOn
+			move.l	DetectedWeightOB,a1			;so knock player off to the RIGHT
+			bclr.b	#ob_carry,OB_Flag3(a1)
+			bsr	GolSetPotBump
+			bra	FlagYESn
+
+.down			btst.b	#ob_xflp,OB_Flag1(a0)			;couldron going right
+			beq.s	.onleft_dn
+.onright_dn		move.b	Under,d2				;player is on right of couldron
+			bmi	.offleft
+			bra	.d1
+.onleft_dn		move.b	UnderLEFT,d2				;player is on right of couldron
+			bmi	.offright
+.d1			move.b	UnderFEET,d2				
+			bpl	FlagNOn
+			move.l	DetectedWeightOB,a1			;so knock player off to the RIGHT
+			bclr.b	#ob_carry,OB_Flag3(a1)
+			clr.b	NoFollowFLG
+			bsr	GolSetJumpFall
+			bra	FlagYESn
+
+
+; - Goliath Claws off side of couldron -------------------------------------
+
+GolSetCouldronClaw	move.w	#GolCouldronClawSTATE,OB_State(a0)
+			clr.b	OB_EventVar1(a0)
+			lea	GolWallClimbClawANM,a1
+			bsr	SetNewAnim
+			bra	ForceNewAnim
+
+GolCouldronClawLOGIC	tst.b	OB_EventVar1(a0)
+			beq.s	.1
+			clr.b	OB_EventVar1(a0)
+			SFX	113
+.1			tst.l	OB_AnSequence(a0)
+			beq	GolSetOnWeightSide
+			rts
+
+
+; - Goliath falls off subway onto tracks (Level5) ------------------------------
+
+GolSetOnTracks		move.w	#GolOnTracksSTATE,OB_State(a0)
+			st.b	NoFollowFLG
+			clr.w	OB_Var1(a0)
+			lea	GolOnTracksANM,a1
+			bra	SetNewAnim
+
+GolOnTracksLOGIC	move.w	map_x_p,d1
+			sub.w	#$30,d1
+			cmp.w	OB_Xpos(a0),d1
+			blt.s	.2
+			subq.b	#1,lives
+			bmi	SetPlayerGameOver
+			clr.b	StopThePlayer
+			st.b	PlayerDeadFLG
+			st.b	DeathFadeReleaseFLG
+			rts
+
+.2			addq.b	#1,OB_Var1(a0)	
+			and.b	#1,OB_Var1(a0)
+			bne.s	.1
+			addq.b	#1,OB_Var1a(a0)
+
+.1			moveq	#0,d1
+			move.b	OB_Var1a(a0),d1
+			jmp	MoveGolLeft_Smooth
+
+
+; - Goliath Crash Pause logic --------------------------------------------------
+
+GolSetCrashPause	move.w	OB_State(a0),OB_LastState(a0)
+			move.w	#GolCrashPauseSTATE,OB_State(a0)
+		  	rts
+;			jmp	SetupScreenShakeRand
+
+GolCrashPauseLOGIC	subq.b	#1,CrashPauseFLG
+			bne.s	.x
+  			move.w	OB_LastState(a0),OB_State(a0)
+.x			rts
+
+
+; - Goliath bups head on pot ----------------------------------------
+
+GolSetPotBump		move.w	#GolPotBumpSTATE,OB_State(a0)
+			clr.b	GolJumpFLG
+ 			st.b	GolFallFLG
+			bsr	GolDontMove
+			clr.w	OB_Yspd(a0)				;set yspd=0			
+			clr.w	OB_Yacc(a0)
+			clr.w	OB_Xacc(a0)
+			clr.w	OB_Var3(a0)
+			clr.b	IsGolOnWeightFLG
+			clr.b	PlrFallOnWeightFLG
+			clr.b	PlrJumpOnWeightFLG
+			clr.b	NoFollowFLG				;allow scroll follow
+			clr.w	OB_Var2(a0)
+			bsr	GolSetAirMODE_CLR			;set air mode
+			lea	GolFallANM,a1
+			bsr	SetNewAnim
+			bra	ForceNewAnim
+
+GolPotBumpLOGIC		bsr	GolTestAirClaw
+			jsr	GolJumpOnWall				;jump to wall?
+			bmi	GolSetJump2Wall2
+			jsr	GolJumpToHangSwing			;jump to hang/swing?
+			bmi	GolSetHangSwing
+			bsr	GolTestJumpFlap
+			bmi	GolSetJumpFlap
+			jsr	GolBumpedByWall
+			jsr	tst_button_c				;jump attack on decent
+			bne	GolSetJumpAttack
+			bsr	GolJumpFallXMove			;x movement
+			bsr	GolAccelerateDown
+			bra	GolTestLand				;test for landing
+
+
+; - Goliath continue screen -----------------------------------------
+
+GolContinueLOGIC	tst.b	OB_Var1(a0)
+			beq.s	.fall
+			cmp.b	#1,OB_Var1(a0)
+			beq.s	.land
+			cmp.b	#2,OB_Var1(a0)
+			beq	.sel
+			cmp.b	#3,OB_Var1(a0)
+			beq	.run
+			cmp.b	#4,OB_Var1(a0)
+			beq	.smash
+			cmp.b	#5,OB_Var1(a0)
+			beq	.fin
+			cmp.b	#6,OB_Var1(a0)
+			beq	.wait
+			rts
+
+.fall			addq.b	#1,OB_Var1a(a0)
+			and.b	#3,OB_Var1a(a0)
+			bne.s	.1
+			addq.b	#1,OB_Var2(a0)
+			
+.1			moveq	#0,d1
+  			move.b	OB_Var2(a0),d1
+			bsr	MoveGolDown_Smooth
+			
+			cmp.w	#$e0,OB_Ypos(a0)
+			blt.s	.x
+  			move.w	#$e0,OB_Ypos(a0)
+			addq.b	#1,OB_Var1(a0)
+			lea	GolLandANM,a1
+			jsr	SetNewAnim
+			jmp	ForceNewAnim
+
+.x			rts
+
+.land			tst.l	OB_AnSequence(a0)
+			bne.s	.x
+			addq.b	#1,OB_Var1(a0)
+			move.b	#$50,OB_Var2(a0)
+			lea	GolGroundZeroANM,a1
+			jsr	SetNewAnim
+			jmp	ForceNewAnim
+
+.sel			tst.b	OB_Var2(a0)
+			bne.s	.s1
+			tst.l	OB_AnSequence(a0)
+			bne.s	.s2
+			move.b	#$80,OB_Var2(a0)
+			lea	GolGroundZeroANM,a1
+			jsr	SetNewAnim
+			jmp	ForceNewAnim
+.s1			subq.b	#1,OB_Var2(a0)
+			bne.s	.s2
+			lea	GolGroundIdle2ANM,a1
+			jsr	SetNewAnim
+			jmp	ForceNewAnim
+
+.s2			btst.b	#left,d_joy1
+			bne.s	.left
+			btst.b	#right,d_joy1
+			bne.s	.right
+			rts
+
+.left			bset.b	#ob_xflp,OB_Flag1(a0)
+			bra	.lr
+.right			bclr.b	#ob_xflp,OB_Flag1(a0)
+.lr			addq.b	#1,OB_Var1(a0)
+			move.b	#$38/4,OB_Var2(a0)
+			lea	GolRunANM,a1
+			jsr	SetNewAnim
+			jmp	ForceNewAnim
+
+.run			move.w	#GolRunSPD,d1
+			bsr	MoveGolLeftRightFLP3
+			sub.b	#1,OB_Var2(a0)
+			bne	.x
+
+.ssmash			addq.b	#1,OB_Var1(a0)
+			move.b	#$c,OB_Var2(a0)
+			lea	GolRunAttackANM,a1
+			jsr	SetNewAnim
+			jsr	ForceNewAnim
+
+.smash			addq.b	#1,OB_Var2a(a0)	
+			and.b	#3,OB_Var2a(a0)
+			bne.s	.sm1
+			subq.w	#1,OB_Ypos(a0)
+.sm1			move.w	#GolRunSPD,d1
+			bsr	MoveGolLeftRightFLP3
+			subq.b	#1,OB_Var2(a0)
+			beq.s	.sexp
+			cmp.b	#-$20,OB_Var2(a0)
+			beq.s	.sfin
+			rts
+.sexp			btst.b	#ob_xflp,OB_Flag1(a0)
+			beq.s	.sxr
+.sxl			move.w	#$38,d1
+			move.w	#$e8,d2
+			bra	.sx1
+.sxr			move.w	#$120,d1
+			move.w	#$e8,d2
+.sx1			jsr	SetBigAirExplode
+			moveq	#2,d7
+			moveq	#10,d3
+			jmp	SetRandomDebris		
+
+.sfin			addq.b	#1,OB_Var1(a0)
+			move.b	#$40,OB_Var2(a0)
+
+.fin			subq.b	#1,OB_Var2(a0)
+			bne	.x
+			addq.b	#1,OB_Var1(a0)
+			btst.b	#ob_xflp,OB_Flag1(a0)
+			beq.s	.yes
+.no			move.b	#1,GolContinueFLG
+			rts
+.yes			st.b	GolContinueFLG
+
+.wait			rts
+
+; - Goliath attached to weight top (Level1) -----------------------------------
+
+GolSetClimbWeight	move.w	#GolClimbWeightSTATE,OB_State(a0)
+			st.b	NoFollowFLG
+			and.w	#$fff0,OB_Ypos(a0)		;setup start pos		
+			add.w	#$20,OB_Ypos(a0)
+			lea	GolWall2GroundTransANM,a1
+			bsr	SetNewAnim
+			bsr	ForceNewAnim
+			bra	GolSetGroundMODE_CLR
+
+GolClimbWeightLOGIC	tst.l	OB_AnSequence(a0)
+			bne.s	.x
+			moveq	#$50,d1				;final position after animation
+			bsr	MoveGolUp_Smooth
+			moveq	#$20,d1
+			bsr	MoveGolLeftRightFLP
+			clr.b	NoFollowFLG
+			bra	GolSetGroundZero
+.x			rts
+
+
+; - Goliath Slides down side of couldron and attaches to bottom ------------
+
+GolSetDownCouldron	jsr	GetUnderGROUND
+			cmp.b	#SB_Wall,d2
+			beq	GolSetJumpFall
+			move.w	#GolDownCouldronSTATE,OB_State(a0)
+			clr.w	OB_Var1(a0)
+			move.b	#$18,OB_Var2(a0)
+			clr.b	OB_Var2a(a0)
+			lea	GolWallSlideDownANM,a1
+			bsr	SetNewAnim
+			bra	ForceNewAnim
+
+GolDownCouldronLOGIC	tst.b	OB_Var1(a0)
+			beq.s	.down
+			cmp.b	#1,OB_Var1(a0)
+			beq.s	.trans
+
+.x			rts
+
+.down			subq.b	#1,OB_Var2(a0)
+			beq.s	.nxt
+			addq.b	#1,OB_Var1a(a0)
+			and.b	#3,OB_Var1a(a0)
+			bne.s	.do
+			addq.b	#1,OB_Var2a(a0)
+
+.do			moveq	#0,d1
+			move.b	OB_Var2a(a0),d1
+			bra	MoveGolDown_Smooth
+
+.nxt			st.b	NoFollowFLG
+			move.l	DetectedWeightOB,a1
+			move.w	OB_Ypos(a1),d1
+			add.w	#$40,d1
+			move.w	d1,OB_Ypos(a0)
+			move.w	OB_Xpos(a1),d1
+			btst.b	#ob_xflp,OB_Flag1(a0)
+			beq.s	.fr
+.fl			add.w	#$20,d1
+			bra	.ff
+.fr			sub.w	#$20,d1
+.ff			move.w	d1,OB_Xpos(a0)
+			move.b	#1,OB_Var1(a0)
+			lea	GolJump2CeilTransANM,a1
+			bsr	SetNewAnim
+			bra	ForceNewAnim
+
+.trans			tst.l	OB_AnSequence(a0)
+			bne.s	.x
+			move.l	DetectedWeightOB,a1
+			move.w	OB_Ypos(a1),d1
+			add.w	#$26,d1
+			move.w	d1,OB_Ypos(a0)
+			move.w	OB_Xpos(a1),OB_Xpos(a0)
+			eor.b	#_ob_xflp,OB_Flag1(a0)
+			clr.b	NoFollowFLG
+			bra	GolSetBottomCouldron
+
+
+; - Goliath on bottom of couldron ------------------------------------------
+
+GolSetBottomCouldron	move.w	#GolBottomCouldronSTATE,OB_State(a0)
+			st.b	IsGolOnWeightFLG
+			clr.b	NoFollowFLG
+			clr.w	OB_Var1(a0)
+			move.b	#$c,OB_Var2(a0)
+			bsr	GolSetCeilMODE_CLR
+			lea	GolCeilClimbZeroANM,a1
+			bsr	SetNewAnim
+			bra	ForceNewAnim
+
+GolBottomCouldronLOGIC	tst.b	OB_Var1(a0)
+			beq.s	.zero
+			cmp.b	#1,OB_Var1(a0)
+			beq	.turn
+			cmp.b	#2,OB_Var1(a0)
+			beq	.shield
+			cmp.b	#3,OB_Var1(a0)
+			beq	.shieldout
+.x			rts
+
+.zero			bsr	CouldronBottomDetect
+			bmi.s	.x
+			
+.bc1			tst.b	OB_Var2(a0)	
+			beq.s	.y1
+			subq.b	#1,OB_Var2(a0)
+			rts
+.y1			btst.b	#left,joy1
+			bne.s	.left
+			btst.b	#right,joy1
+			bne.s	.right
+			btst.b	#up,joy1
+			bne	.sshield
+			jsr	tst_d_button_a
+			beq.s	.x
+
+.1			move.l	DetectedWeightOB,a1
+			bclr.b	#ob_carry,OB_Flag3(a1)
+			bra	GolSetCeilClimbFall		;make fall
+.up			btst.b	#ob_xflp,OB_Flag1(a0)
+			beq.s	.sturn
+			bra	GolSetUpSideCouldron
+
+.left			btst.b	#ob_xflp,OB_Flag1(a0)
+			beq.s	.sturn
+			bra	GolSetUpSideCouldron
+			jsr	GetUnderLEFTLEFTLEFT
+			tst.b	d2
+			bpl	GolSetUpSideCouldron
+			bclr.b	#ob_hitside,OB_Flag1(a0)		;its hitting a wall	
+  			move.l	DetectedWeightOB,a1			;so knock player off to the RIGHT
+			bclr.b	#ob_carry,OB_Flag3(a1)
+			move.w	#3,OB_Var1(a0)
+			bra	GolSetAirHit2
+
+.right			btst.b	#ob_xflp,OB_Flag1(a0)
+			bne.s	.sturn
+			bra	GolSetUpSideCouldron
+			jsr	GetUnderRIGHTRIGHTRIGHT
+			tst.b	d2
+			bpl	GolSetUpSideCouldron
+			bclr.b	#ob_hitside,OB_Flag1(a0)		;its hitting a wall	
+  			move.l	DetectedWeightOB,a1			;so knock player off to the RIGHT
+			bclr.b	#ob_carry,OB_Flag3(a1)
+			move.w	#3,OB_Var1(a0)
+			bra	GolSetAirHit2
+			
+.sturn			move.b	#1,OB_Var1(a0)
+			lea	GolCeilClimbTurnANM,a1
+			bsr	SetNewAnim
+			bra	ForceNewAnim
+
+.turn			tst.l	OB_AnSequence(a0)
+			bne	.x
+			eor.b	#_ob_xflp,OB_Flag1(a0)
+.reset			clr.w	OB_Var1(a0)
+			bsr	GolSetCeilMODE_CLR
+			lea	GolCeilClimbZeroANM,a1
+			bsr	SetNewAnim
+			bra	ForceNewAnim
+
+.sshield		move.b	#2,OB_Var1(a0)
+			bsr	GolSetBlockMODE_CLR
+			lea	GolCeilClimbShieldANM,a1
+			bsr	SetNewAnim
+			bra	ForceNewAnim
+.shield			bsr	CouldronBottomDetect
+			bmi	.x
+			tst.l	OB_AnSequence(a0)
+			bne	.x
+			btst.b	#up,joy1
+			beq.s	.sshieldout
+			rts
+
+.sshieldout		move.b	#3,OB_Var1(a0)
+			lea	GolCeilClimbShldOutANM,a1
+			bsr	SetNewAnim
+			bra	ForceNewAnim
+.shieldout		tst.l	OB_AnSequence(a0)
+			beq.s	.reset
+			rts
+
+
+CouldronBottomDetect	tst.b	OB_Var1a(a1)
+			beq.s	.right
+			cmp.b	#1,OB_Var1a(a1)
+			beq.s	.left
+			cmp.b	#2,OB_Var1a(a1)
+			beq	.down
+			cmp.b	#3,OB_Var1a(a1)
+			beq	.up
+			bra	FlagNOn
+
+.right			move.b	UnderRIGHT,d2
+			bpl	FlagNOn
+.offleft		bset.b	#ob_hitside,OB_Flag1(a0)		;its hitting a wall	
+  			move.l	DetectedWeightOB,a1			;so knock player off to the LEFT
+			bclr.b	#ob_carry,OB_Flag3(a1)
+			move.w	#3,OB_Var1(a0)
+			bsr	GolSetAirHit2
+			bra	FlagYESn
+	
+.left			move.b	UnderLEFT,d2				;player is on left of couldron
+			bpl	FlagNOn
+.offright		bclr.b	#ob_hitside,OB_Flag1(a0)		;its hitting a wall	
+  			move.l	DetectedWeightOB,a1			;so knock player off to the RIGHT
+			bclr.b	#ob_carry,OB_Flag3(a1)
+			move.w	#3,OB_Var1(a0)
+			bsr	GolSetAirHit2
+			bra	FlagYESn
+
+.up			move.b	UnderTOP,d2				
+			bpl	FlagNOn
+			move.l	DetectedWeightOB,a1			;so knock player off to the RIGHT
+			bclr.b	#ob_carry,OB_Flag3(a1)
+			bsr	GolSetPotBump
+			bra	FlagYESn
+
+.down			move.b	UnderFEET,d2				
+			bpl	FlagNOn
+			move.l	DetectedWeightOB,a1			;so knock player off to the RIGHT
+			bclr.b	#ob_carry,OB_Flag3(a1)
+			bsr	GolSetJumpFall
+			bra	FlagYESn
+
+
+; - Goliath climbs to side from bottom of couldron --------------------------
+
+GolSetUpSideCouldron	move.w	#GolUpSideCouldronSTATE,OB_State(a0)
+			st.b	IsGolOnWeightFLG
+			st.b	NoFollowFLG
+			clr.w	OB_Var1(a0)
+			lea	GolCeil2WallUpTransANM,a1
+			bsr	SetNewAnim
+			bra	ForceNewAnim
+
+GolUpSideCouldronLOGIC	tst.l	OB_AnSequence(a0)
+			bne.s	.x
+			eor.b	#_ob_xflp,OB_Flag1(a0)
+			move.l	DetectedWeightOB,a1
+			move.w	OB_Ypos(a1),OB_Ypos(a0)		;pos plr on big couldron
+			move.w	OB_Xpos(a1),d1
+			btst.b	#ob_xflp,OB_Flag1(a0)
+			beq.s	.r
+.l			add.w	#$30,d1
+			bra	.1
+.r			sub.w	#$30,d1
+.1			move.w	d1,OB_Xpos(a0)
+			clr.b	NoFollowFLG
+			bra	GolSetOnWeightSide
+.x			rts
+
+
+
+; - Goliath Finishes the Elevator boss -------------------------------------
+
+GolFinishElevLOGIC	tst.b	OB_Var1(a0)
+			beq.s	.wait
+			cmp.b	#1,OB_Var1(a0)	
+			beq.s	.walk
+			cmp.b	#2,OB_Var1(a0)	
+			beq	.jump
+			cmp.b	#3,OB_Var1(a0)	
+			beq	.off
+			cmp.b	#4,OB_Var1(a0)	
+			beq	.fin
+			cmp.b	#5,OB_Var1(a0)	
+			beq	.exp
+			cmp.b	#6,OB_Var1(a0)	
+			beq	.fall
+			rts
+
+.wait			tst.l	OB_AnSequence(a0)
+			bne.s	.x1
+			subq.b	#1,OB_Var1a(a0)
+			beq.s	.nxt0
+.x1			rts
+
+.walk			move.w	OB_Var2(a0),d1
+			sub.w	OB_Xpos(a0),d1
+			bpl.s	.r
+			neg.w	d1
+.l			cmp.w	#4,d1
+			ble.s	.nxt1
+			moveq	#GolRunSPD,d1
+			bra	MoveGolLeft_Smooth
+.r			cmp.w	#4,d1
+			ble.s	.nxt1
+			moveq	#GolRunSPD,d1
+			bra	MoveGolRight_Smooth
+			
+.nxt0			lea	GolRunANM,a1
+			jsr	SetNewAnim
+			bra	.nxt
+.nxt1			move.b	#5,OB_Var2(a0)
+			lea	GolStandJumpANM,a1
+			jsr	SetNewAnim
+			and.w	#$fff0,pix_x		
+			bra	.nxt
+.nxt2			move.b	#$10,OB_Var2(a0)
+			clr.b	OB_Var2a(a0)
+			lea	GolFallANM,a1
+			jsr	SetNewAnim
+			bra	.nxt
+.nxt3			move.b	#2,BFX_Var1
+			move.b	#rotshear,BFX_Var3a
+			clr.b	BFX_Var3
+			clr.w	BFX_Var5
+			st.b	BFX_Var6
+			clr.b	BFX_Var6a
+			move.b	#$20,OB_Var2(a0)
+			clr.b	OB_Var2a(a0)
+			move.w	#HorLineScroll!VerCellScroll,d0
+			jsr	SetScroll
+			clr.b	FullScroll_Hor
+			clr.b	FullScroll_Ver
+			move.b	#$1e,yybase_index
+			jsr	LightenPalette
+			bra	.nxt
+.nxt4			move.b	#$a0,OB_Var2(a0)
+			clr.b	OB_Var2a(a0)
+			bra	.nxt
+.nxt5			clr.w	OB_Var3(a0)
+
+.nxt			addq.b	#1,OB_Var1(a0)
+.x			rts
+
+.jump			addq.b	#1,OB_Var2a(a0)
+			and.b	#3,OB_Var2a(a0)
+			bne.s	.j1
+			subq.b	#1,OB_Var2(a0)
+			bmi	.nxt2
+.j1			moveq	#0,d1
+			move.b	OB_Var2(a0),d1
+			bra	MoveGolUp_Smooth
+
+.off			tst.b	OB_Var2a(a0)
+			bne.s	.o1
+			subq.b	#1,OB_Var2(a0)
+			bne.s	.x
+  			st.b	OB_Var2a(a0)
+			
+.o1			addq.b	#1,OB_Var1a(a0)
+			and.b	#3,OB_Var1a(a0)
+			bne.s	.o2
+			addq.b	#1,OB_Var2(a0)
+.o2			moveq	#0,d1
+			move.b	OB_Var2(a0),d1
+			bsr	MoveGolUp_Smooth
+			move.w	map_y_p,d1
+			sub.w	#$20,d1
+			cmp.w	OB_Ypos(a0),d1
+			bgt	.nxt3
+			rts
+		
+.fin			cmp.b	#1,OB_Var2a(a0)
+			beq.s	.aa
+			subq.b	#1,OB_Var2(a0)
+			bne	.x
+			move.b	#1,OB_Var2a(a0)
+			move.b	#rotshear*2,BFX_Var3a
+			eor.b	#1,BFX_Var3 			;direction of shear
+			st.b	BFX_Var6
+			clr.w	OB_Var3(a0)
+			rts
+.aa			tst.b	ElevatorGoneFLG
+			bne	.nxt4
+.xx			rts
+
+.exp			tst.b	ElevatorGoneFLG
+			beq.s	.xxx
+			subq.b	#1,OB_Var2(a0)
+			beq	.nxt5
+			move.b	OB_Var2(a0),d1
+			and.b	#$f,d1
+			bne.s	.xxx
+    			bsr	GetRandomXPOS
+			move.w	d6,TempX
+			move.w	#$124,TempY
+			bsr	SetBigAirExplode2
+			move.w	#$100,TempY
+			bsr	GetRandomXPOS
+			move.w	d6,TempX
+			jsr	SetupFireballHead
+			bpl.s	.ex2
+			move.w	TempX,OB_Xpos(a1)
+			move.w	TempY,OB_Ypos(a1)
+.ex2			bsr	GetRandomXPOS
+			move.w	d6,TempX
+			moveq	#3,d7
+			moveq	#3,d3
+			bra	SetRandomDebris
+.xxx			rts
+
+.fall			addq.b	#1,OB_Var3a(a0)
+			and.b	#7,OB_Var3a(a0)
+			bne.s	.o2aa
+			addq.b	#1,OB_Var3(a0)
+.o2aa			moveq	#0,d1
+			move.b	OB_Var3(a0),d1
+			bsr	MoveGolDown_Smooth
+			bsr	ObjectOffBottom
+			bgt.s	.xxx
+			st.b	NextLevelFLG
+			rts
+			
+; - Goliath in grinder --------------------------------------
+
+GolSetInGrinder		cmp.w	#GolJumpSTATE,OB_State(a0)
+			beq.s	.x
+			move.w	#GolInGrinderSTATE,OB_State(a0)
+			and.w	#$fff0,OB_Xpos(a0)
+			addq.w	#$8,OB_Xpos(a0)
+			move.w	OB_Xpos(a0),OB_WXpos(a0)
+			move.w	OB_Ypos(a0),OB_WYpos(a0)
+			lea	GolGroundZeroANM,a1
+			bsr	SetNewAnim
+			bra	GolSetGroundMODE_CLR
+.x			rts
+
+GetRandomXPOS		jsr	Randy
+			and.w	#$ff,d6
+			add.w	#$a0,d6
+			rts
+	
+GolInGrinderLOGIC	jsr	tst_d_button_a				;jump button?
+			bne	GolSetJump
+			btst.b	#0,second
+			bne.s	.1
+ 			SFX	37
+.1			moveq	#GrinderHitPOWER,d1
+			bsr	GenericHitPlayer
+			bmi	SetPlayerDead
+			move.w	OB_WXpos(a0),d2
+			move.w	OB_WYpos(a0),d3
+			jsr	Randy
+			and.w	#3,d6
+			and.w	#3,d7
+			add.w	d6,d2
+			add.w	d7,d3
+			move.w	d2,OB_Xpos(a0)
+			move.w	d3,OB_Ypos(a0)
+			rts
+
+			
+; - Goliath on orb/platform platform --------------------------------------
+
+GolSetOnOPP		bsr	GolSetGroundZero
+			move.w	#GolOnOPPSTATE,OB_State(a0)
+			clr.w	OB_Var1(a0)
+			lea	GolGroundZeroANM,a1
+			bsr	SetNewAnim
+			bsr	ForceNewAnim
+			bsr	GolSetGroundMODE_CLR
+			bra	FlagNOn
+
+GolOnOPPLOGIC		st.b	IsGolOnWeightFLG
+
+			move.b	Under,d2
+			or.b	UnderBOT,d2
+			bmi	GolSetOPFall
+			
+			moveq	#0,d1
+			move.b	OB_Var1(a0),d1
+			asl.b	#2,d1
+			jmp	OnOPLogicTable(pc,d1.w)
+
+OnOPLogicTable		bra	OPzero
+			bra	OPturn
+			bra	OPcrouch
+			bra	OPcrouchout
+			bra	OPclaw
+			bra	OPgrab
+
+OPsetzero		clr.b	OB_Var1(a0)
+			bsr	GolSetGroundMODE_CLR
+			lea	GolGroundZeroANM,a1
+			bsr	SetNewAnim
+			bsr	ForceNewAnim
+OPzero			jsr	tst_d_button_a				;jump button?
+			bne	GolSetJump
+			jsr	tst_d_button_b				;attack button?
+			bne	OPsetclaw
+			jsr	tst_d_button_c				;grab button?
+			bne	OPsetgrab
+  			btst.b	#left,joy1
+			bne.s	.lft
+			btst.b	#right,joy1
+			bne.s	.rte
+			btst.b	#down,joy1				;down?
+			bne	OPsetcrouch
+			rts
+
+.lft			btst.b	#ob_xflp,OB_Flag1(a0)
+			beq.s	OPsetturn
+.x			rts
+.rte			btst.b	#ob_xflp,OB_Flag1(a0)
+			bne.s	OPsetturn
+			rts
+
+OPsetcrouch		move.b	#2,OB_Var1(a0)
+			lea	GolCrouchANM,a1
+			bsr	SetNewAnim
+			bsr	ForceNewAnim
+OPcrouch		tst.l	OB_AnSequence(a0)
+			beq.s	OPsetcrouchout
+			rts
+
+OPsetcrouchout		move.b	#3,OB_Var1(a0)
+			clr.b	OB_Var2(a0)
+OPcrouchout		tst.b	OB_Var2(a0)
+			bne.s	.wait
+			btst.b	#down,joy1
+			bne.s	.x
+			st.b	OB_Var2(a0)
+			lea	GolStandCrouchANM,a1
+			bsr	SetNewAnim
+			bra	ForceNewAnim
+.wait			tst.l	OB_AnSequence(a0)
+			beq	OPsetzero
+.x			rts
+
+OPsetturn		move.b	#1,OB_Var1(a0)
+			lea	GolRunTurnANM,a1
+			bsr	SetNewAnim
+			bsr	ForceNewAnim
+OPturn			tst.l	OB_AnSequence(a0)
+			bne.s	.x
+			eor.b	#_ob_xflp,OB_Flag1(a0)
+			bra	OPsetzero
+.x			rts			
+
+OPsetclaw		move.b	#4,OB_Var1(a0)
+			move.b	#GolGroundClawPOWER,OB_HitPower(a0)
+			bsr	SetMediumAttack
+			bsr	GolSetAttackMODE_CLR
+			lea	GolGroundClawANM,a1
+			bsr	SetNewAnim
+			bsr	ForceNewAnim
+OPclaw			tst.l	OB_AnSequence(a0)
+			beq	OPsetzero
+			rts	
+
+OPsetgrab		move.b	#5,OB_Var1(a0)
+			move.b	#GolGroundClawPOWER,OB_HitPower(a0)
+			bsr	SetMediumAttack
+			bsr	GolSetAttackMODE_CLR
+			lea	GolOPGrabANM,a1
+			bsr	SetNewAnim
+			bsr	ForceNewAnim
+OPgrab			tst.l	OB_AnSequence(a0)
+			beq	OPsetzero
+			rts	
+
+
+; - Goliath Generic dead handler -------------------------------------------
+
+GolSetGenericDead	move.w	#GolGenericDeadSTATE,OB_State(a0)
+			bset.b	#ob_hiprior,OB_Flag2(a0)
+			clr.w	OB_Var2(a0)
+		 	rts
+			
+GolGenericDeadLOGIC	tst.b	OB_Var2(a0)
+			bne.s	.1
+			tst.b	DeathFadeDoneFLG
+			beq.s	.x
+			st.b	OB_Var2(a0)
+			lea	GolDeathANM,a1
+			jsr	SetNewAnim
+			jsr	ForceNewAnim
+			lea	DeathPal,a4			;set new palettes
+			jmp	SetupPalette
+
+.1			tst.b	OB_EventVar1(a0)
+			beq.s	.2
+			clr.b	OB_EventVar1(a0)
+			KILL	17
+			SFX 	110
+.2			tst.b	OB_EventVar2(a0)
+			beq.s	.3
+			clr.b	OB_EventVar2(a0)
+			SFX 	34
+.3			tst.l	OB_AnSequence(a0)
+			bne.s	.x
+			st.b	DeathFadeReleaseFLG
+.x			rts
+
+
+; - GENERAL GOLIATH SUB-ROUTINES -------------------------------------------
+
+SetPlayerDead		subq.b	#1,lives
+			bmi.s	SetPlayerGameOver
+			clr.b	StopThePlayer
+			
+			tst.w	GolStrongFLG
+			beq.s	.2
+			KILL	71
+			clr.w	GolStrongFLG
+			move.l	#-1,last_music
+
+.2			move.l	Plr_Database,a1			;did plyer die by falling off screen
+			move.w	bot_lim,d1
+			add.w	#(32*8)+$40,d1
+			cmp.w	OB_Ypos(a1),d1
+			bgt.s	.1
+			st.b	PlayerDeadFLG
+			st.b	DeathFadeReleaseFLG
+			rts
+
+.1			SFX	17;119
+			move.b	#1,PlayerDeadFLG
+			rts
+
+SetPlayerGameOver	tst.b	continues
+			beq.s	.1
+  			subq.b	#1,continues
+			st.b	ContinueFLG
+			rts
+.1			st.b	GameOverFLG
+			rts
+
+
+
+PlayerDead		cmp.w	#Level51,levnum
+			beq	PDnorm
+	
+			tst.b	PlayingBOSS
+			beq	PDnorm
+
+PDboss			jsr	dark_fader		;fade
+			jsr	wait_fade
+			move.w	#$2700,sr
+			st.b	working
+			clr.b	service
+			move.w	#GameVBLANK,VBLANKPhase
+			jsr	SetupLevel		;game setups
+			jsr	SetupGoliath		;player
+			move.w	#GolMaxNRG,OB_Nrg(a0)
+			move.w	#GolMaxNRG,PlrEnergy
+			move.w	#3*hz5060,GolInvincibleFLG
+			jsr	TriggerALL
+			jsr	SetupLevelMusic
+			jsr	KillLoopingSFX
+			jsr	BlackPalette
+			clr.b	PalLightCNT
+			lea	GamePalette,a1
+			jsr	lite_fader
+			clr.b	joy1
+			clr.b	d_joy1
+			clr.b	working
+			clr.b	first_pass
+			st.b	service
+			st.b	NewGameFLG
+			lea	TheStack,sp		;set stack pointer
+			move.w	#$2000,sr
+			jmp	MainLoop
+
+PDnorm			jsr	dark_fader		;fade
+			jsr	wait_fade
+			move.w	#$2700,sr
+			st.b	working
+			clr.b	service
+			move.w	#GameVBLANK,VBLANKPhase
+			jsr	InitVRamAlloc
+			jsr	GetDATA
+			bsr	RestSafePos
+			jsr	SetMapLines				;map line table
+			jsr	SetupFloor				;setup floor table in RAM						   
+			jsr	SetupCharsetA				;setup charset A
+			jsr	Clean_DeComRam
+			jsr	SetupScrlB
+			cmp.w	#Level51,levnum				;handle subway inside\outside 
+			bne.s	.oo					;re-starting
+   			tst.b	PlayingPREBOSS
+			beq.s	.1a
+			jsr	SetupMisc
+			bsr	SubwayBossRestart
+			bra	.in
+.1a			tst.b	InsideFLG
+			beq.s	.out
+.in			move.l	#Lev5MapBa,__MapB
+			st.b	InsideFLG
+			bra	.o2
+.out			move.l	#Lev5MapBb,__MapB
+			clr.b	InsideFLG
+.o2			jsr	DownloadScrlB
+.oo			jsr	SetupScrlA				;setup scroll A
+			bsr	InitOBJECTS2
+			jsr	SetupExt				;setup specific to level
+			jsr	DnldBits
+			jsr	SetupPanel
+			if	show_tect
+			bsr	SetupCorners				;debug corners
+			endif
+			move.w	Plr_XPos,__PlrX
+			move.w	Plr_YPos,__PlrY
+			bsr	SetupGoliath				;player
+			move.w	#GolMaxNRG,OB_Nrg(a0)
+			move.w	#GolMaxNRG,PlrEnergy
+			move.w	#3*hz5060,GolInvincibleFLG
+			jsr	TriggerALL
+			jsr	SetupLevelMusic
+			jsr	KillLoopingSFX
+			clr.b	working
+			st.b	service
+			clr.b	joy1
+			clr.b	d_joy1
+			clr.b	NewGameFLG
+			jsr	BlackPalette
+			clr.b	PalLightCNT
+			lea	GamePalette,a1
+			jsr	lite_fader
+			lea	TheStack,sp		;set stack pointer
+			move.w	#$2000,sr
+			jmp	MainLoop
+
+
+SubwayBossRestart	move.w	#$1a06,Plr_XPos
+   			move.w	#$d3,Plr_YPos
+			move.w	#$1973,map_x_p
+			move.w	#$1b,map_y_p
+			move.w	#$267d,pix_x
+			move.w	#$1b,pix_y
+		 	rts
+
+InitSaveSafePos		move.w	OB_Xpos(a0),Plr_XPos			;save xy pos
+			move.w	OB_Ypos(a0),Plr_YPos
+			move.b	OB_Flag1(a0),Plr_Flag1
+			move.b	OB_Flag2(a0),Plr_Flag2
+			bra	ssp2
+SaveSafePos		move.b	UnderFEET,d2 			;don't save if on damageing tiles
+			cmp.b	#SB_HotSpot,d2
+			beq.s	sspx
+			move.l	UnderLEFTFEET_c,a1		;don't save if too close to edge
+			tst.b	7(a1)	
+			beq.s	sspx
+			move.l	UnderFEET_c,a1
+			tst.b	7(a1)	
+			beq.s	sspx
+			move.l	UnderRIGHTFEET_c,a1
+			tst.b	7(a1)	
+			beq.s	sspx
+ssp2			lea	Plr_XPos,a1
+			lea	csavesafe,a2
+			moveq	#(save_end-savesafe)-1,d1
+.l1			move.b	(a1)+,(a2)+
+			dbra	d1,.l1
+sspx			rts
+RestSafePos		lea	Plr_XPos,a1
+			lea	csavesafe,a2
+			moveq	#(save_end-savesafe)-1,d1
+.l1			move.b	(a2)+,(a1)+
+			dbra	d1,.l1
+			rts
+
+
+TestPreJump		jsr	tst_d_button_a
+			beq.s	.x
+			st.b	GolPreJumpFLG
+.x			rts
+TestPreClaw		jsr	tst_d_button_b
+			beq.s	.x
+			st.b	GolPreClawFLG
+.x			rts
+TestPreGrab		jsr	tst_d_button_c
+			beq.s	.x
+			st.b	GolPreGrabFLG
+.x			rts
+
+SetLookUpPoint		move.w	OB_Ypos(a0),d1
+			sub.w	#GolLookUpDST,d1
+			move.w	d1,LookYPOS
+			st.b	GolLookUpFLG
+			clr.b	GolLookDownFLG
+	      		rts
+ClrLookUp		clr.b	GolLookUpFLG
+			;bclr.b	#ob_movupdn,OB_Flag5(a0)	;moving up or down?	
+			rts
+
+SetLookDownPoint	move.w	OB_Ypos(a0),d1
+			add.w	#GolLookDownDST,d1
+			move.w	d1,LookYPOS
+			st.b	GolLookDownFLG
+			clr.b	GolLookUpFLG
+			rts
+ClrLookDown		clr.b	GolLookDownFLG
+			bset.b	#ob_movupdn,OB_Flag5(a0)	;moving up or down?	
+			rts
+
+GolAccelerateDown	addq.b	#1,OB_Var2a(a0)
+			tst.b	LedgeFallingFLG
+			beq.s	.1
+			cmp.b	#GolGrav1*3,OB_Var2a(a0)
+			blt.s	.2
+			bra	.3		
+.1			cmp.b	#GolGrav1,OB_Var2a(a0)
+			blt.s	.2
+.3			clr.b	OB_Var2a(a0)
+			cmp.w	#GolMaxFallSPD,OB_Yspd(a0)		;speed up y velocity with gravity
+			bge.s	.2
+  			addq.w	#1,OB_Yspd(a0)
+.2			move.w	OB_Yspd(a0),d1
+			bra	MGUDa					;move down
+			
+
+GolSetGroundMODE_CLR	clr.b	OB_MasterMode(a0)
+GolSetGroundMODE	bset.b	#grndmode,OB_MasterMode(a0)
+			rts
+GolSetWallMODE_CLR	clr.b	OB_MasterMode(a0)
+GolSetWallMODE		bset.b	#wallmode,OB_MasterMode(a0)
+			clr.b	GolFlappedFLG
+			rts
+GolSetCeilMODE_CLR	clr.b	OB_MasterMode(a0)
+GolSetCeilMODE		bset.b	#ceilmode,OB_MasterMode(a0)
+			clr.b	GolFlappedFLG
+			rts
+GolSetAirMODE_CLR	clr.b	OB_MasterMode(a0)
+GolSetAirMODE		bset.b	#airmode,OB_MasterMode(a0)
+			rts
+GolSetBlockMODE_CLR	and.b	#modeclr2,OB_MasterMode(a0)
+GolSetBlockMODE		bset.b	#blokmode,OB_MasterMode(a0)
+			clr.b	GolFlappedFLG
+			rts
+GolSetAttackMODE_CLR	and.b	#modeclr2,OB_MasterMode(a0)
+GolSetAttackMODE	bset.b	#attkmode,OB_MasterMode(a0)
+			rts
+GolSetGrabMODE_CLR	and.b	#modeclr2,OB_MasterMode(a0)
+GolSetGrabMODE		bset.b	#grabmode,OB_MasterMode(a0)
+			clr.b	GolFlappedFLG
+			rts
+GolSetHitMODE_CLR	and.b	#modeclr2,OB_MasterMode(a0)
+GolSetHitMODE		bset.b	#hitmode,OB_MasterMode(a0)
+			clr.b	GolFlappedFLG
+			rts
+GolHiMODE_CLR		and.b	#modeclr2,OB_MasterMode(a0)
+			rts
+GolLoMODE_CLR		clr.b	OB_MasterMode(a0)
+			rts
+
+ClrBlocks		move.b	OB_Flag4(a0),d1
+			and.b	#$0f,d1
+			move.b	d1,OB_Flag4(a0)
+			
+			bsr	TestBlockRIGHT			
+
+TestBlockLEFT		move.b	UnderLEFT,d2
+			bsr	CT4BlockLeft
+			bmi.s	.x
+			move.b	UnderLEFTBOT,d2
+			bsr	CT4BlockLeft
+			bmi.s	.x
+			move.b	UnderLEFTTOP,d2
+			bra	CT4BlockLeft
+.x			rts
+CT4BlockLeft		jsr	TestLevelWalls
+			bpl	FlagNOn
+			bset.b	#ob_blockleft,OB_Flag4(a0)
+			bclr.b	#ob_blockright,OB_Flag4(a0)
+			bra	FlagYESn
+
+TestBlockRIGHT		move.b	UnderRIGHT,d2
+			bsr	CT4BlockRight
+			bmi.s	.x
+			move.b	UnderRIGHTBOT,d2
+			bsr	CT4BlockRight
+			bmi.s	.x
+			move.b	UnderRIGHTTOP,d2
+			bra	CT4BlockRight
+.x			rts
+CT4BlockRight		jsr	TestLevelWalls
+			bpl	FlagNOn
+			bclr.b	#ob_blockleft,OB_Flag4(a0)
+			bset.b	#ob_blockright,OB_Flag4(a0)
+			bra	FlagYESn
+
+
+GolJumpFallXMove	tst.b	BumpLeftFLG
+			beq.s	.1
+			subq.b	#1,BumpLeftFLG
+			clr.b	walking_left
+			st.b	walking_right
+			moveq	#4,d1
+			bsr	MoveGolLeft_NF_Smooth
+			btst.b	#left,joy1
+			bne.s	gmlnt
+.xx			rts
+.1			tst.b	BumpRightFLG
+			beq.s	.2
+			subq.b	#1,BumpRightFLG
+			st.b	walking_left
+			clr.b	walking_right
+			moveq	#4,d1
+			bsr	MoveGolRight_NF_Smooth
+			btst.b	#right,joy1
+			bne.s	gmrnt
+			rts
+
+.2			btst.b	#left,joy1
+			bne.s	gmlnt
+			btst.b	#right,joy1
+			bne.s	gmrnt
+gmxxx			rts
+
+gmrnt			bclr.b	#ob_xflp,OB_Flag1(a0)
+			clr.w	OB_Xspd(a0)		;fall from 0 spd	
+			jsr	GolTestRightSide
+			bmi.s	gmxxx
+			bsr	GetGolXSpeed
+			clr.b	walking_left
+			st.b	walking_right
+			bra	MoveGolRight;_NF
+gmlnt			bset.b	#ob_xflp,OB_Flag1(a0)
+			clr.w	OB_Xspd(a0)		;fall from 0 spd	
+			jsr	GolTestLeftSide
+			bmi.s	gmxxx
+			bsr	GetGolXSpeed
+			st.b	walking_left
+			clr.b	walking_right
+			bra	MoveGolLeft;_NF
+		
+
+GetGolXSpeed		moveq	#GolRunSPD,d1
+			
+			btst.b	#airmode,OB_MasterMode(a0)
+			beq.s	.1
+			cmp.b	#-5,GolJumpType
+			bne.s	.1
+			move.b	OB_Flag1(a0),d2
+			and.b	#_ob_xflp,d2
+			cmp.b	GolLastXFlp,d2
+			bne.s	.1
+			subq.w	#1,d1
+
+.1
+			rts
+
+GolDontMove		move.b	#%00110000,OB_MoveFlags(a0)
+	   		rts
+
+
+MoveGolLeftRight	move.w	OB_Xspd(a0),d1				;speed
+			lsr.w	#8,d1					;/256
+MGLRa			btst.b	#ob_movxdir,OB_MoveFlags(a0)		;move in which dir?
+			beq	MoveGolRight_NF_Smooth
+.lft			bra	MoveGolLeft_NF_Smooth
+
+MoveGolLeftRightFLP	btst.b	#ob_xflp,OB_Flag1(a0)
+			beq	MoveGolRight_Smooth
+			bra	MoveGolLeft_Smooth
+MoveGolLeftRightFLP2	btst.b	#ob_xflp,OB_Flag1(a0)
+			beq	MoveGolRight
+			bra	MoveGolLeft
+MoveGolLeftRightFLP3	btst.b	#ob_xflp,OB_Flag1(a0)
+			beq	MoveGolRight_NF_Smooth
+			bra	MoveGolLeft_NF_Smooth
+
+MoveGolLeftRightXFLP	btst.b	#ob_xflp,OB_Flag1(a0)
+			bne	MoveGolRight_Smooth
+			bra	MoveGolLeft_Smooth
+MoveGolLeftRightXFLP2	btst.b	#ob_xflp,OB_Flag1(a0)
+			bne	MoveGolRight_NF_Smooth
+			bra	MoveGolLeft_NF_Smooth
+
+MoveGolLeft		;bsr	WaterSlowdown				;standard move left
+			bset.b	#ob_xflp,OB_Flag1(a0)
+			bset.b	#ob_movlftrte,OB_Flag5(a0)
+			sub.w	d1,OB_Xpos(a0)	
+			move.w	d1,Plr_X_Spd_L
+			rts
+MoveGolLeft_NF		;bsr	WaterSlowdown				;move left without flip to
+			bset.b	#ob_movlftrte,OB_Flag5(a0)		;face direction of movement
+			sub.w	d1,OB_Xpos(a0)	
+			move.w	d1,Plr_X_Spd_L
+			rts
+MoveGolLeft_Smooth	;bsr	WaterSlowdown				;standard move left
+			bset.b	#ob_xflp,OB_Flag1(a0)			;without setting plrs x movement speed
+			bset.b	#ob_movlftrte,OB_Flag5(a0)		;effectively smooths the scroll
+			sub.w	d1,OB_Xpos(a0)	
+			rts
+MoveGolLeft_NF_Smooth	;bsr	WaterSlowdown				;move left without flip to	
+			bset.b	#ob_movlftrte,OB_Flag5(a0)		;face direction of movement
+			sub.w	d1,OB_Xpos(a0)				;without setting plrs x movement speed
+			rts						;effectively smooths the scroll
+MoveGolLeft_DETECT	jsr	GolTestLeftSide2
+			bmi.s	MGLDx
+MoveGolLeft_DETECT2	move.w	OB_Xspd(a0),d1
+			lsr.w	#8,d1
+			bsr	MoveGolLeft_NF
+			bsr	HandleGolContours
+			bra	FlagNOn
+MGLDx			rts
+MoveGolLeft_DETECT_NC	jsr	GolTestLeftSide2
+			bmi.s	.x
+			move.w	OB_Xspd(a0),d1
+			lsr.w	#8,d1
+			bsr	MoveGolLeft_NF
+			bra	FlagNOn
+.x			rts
+MoveGolLeft_DETECT_NC3	jsr	GolTestLeftSide3
+			bmi.s	.x
+			move.w	OB_Xspd(a0),d1
+			lsr.w	#8,d1
+			bsr	MoveGolLeft_NF
+			bra	FlagNOn
+.x			rts
+
+MoveGolRight		;bsr	WaterSlowdown				;standard move left
+			bclr.b	#ob_xflp,OB_Flag1(a0)
+			bclr.b	#ob_movlftrte,OB_Flag5(a0)
+			add.w	d1,OB_Xpos(a0)	
+			move.w	d1,Plr_X_Spd_R
+			rts
+MoveGolRight_NF		;bsr	WaterSlowdown				;move left without flip to
+			bclr.b	#ob_movlftrte,OB_Flag5(a0)		;face direction of movement
+			add.w	d1,OB_Xpos(a0)	
+			move.w	d1,Plr_X_Spd_R
+			rts
+MoveGolRight_Smooth	;bsr	WaterSlowdown				;standard move left
+			bclr.b	#ob_xflp,OB_Flag1(a0)			;without setting plrs x movement speed
+			bclr.b	#ob_movlftrte,OB_Flag5(a0)		;effectively smooths the scroll
+			add.w	d1,OB_Xpos(a0)	
+			rts
+MoveGolRight_NF_Smooth	;bsr	WaterSlowdown				;move left without flip to	
+			bclr.b	#ob_movlftrte,OB_Flag5(a0)		;face direction of movement
+			add.w	d1,OB_Xpos(a0)				;without setting plrs x movement speed
+			rts						;effectively smooths the scroll
+MoveGolRight_DETECT	jsr	GolTestRightSide2
+			bmi.s	MGRDx
+MoveGolRight_DETECT2	move.w	OB_Xspd(a0),d1
+			lsr.w	#8,d1
+			bsr	MoveGolRight_NF
+			bsr	HandleGolContours
+			bra	FlagNOn
+MGRDx			rts
+MoveGolRight_DETECT_NC	jsr	GolTestRightSide2
+			bmi.s	.x
+			move.w	OB_Xspd(a0),d1
+			lsr.w	#8,d1
+			bsr	MoveGolRight_NF
+			bra	FlagNOn
+.x			rts
+MoveGolRight_DETECT_NC3	jsr	GolTestRightSide3
+			bmi.s	.x
+			move.w	OB_Xspd(a0),d1
+			lsr.w	#8,d1
+			bsr	MoveGolRight_NF
+			bra	FlagNOn
+.x			rts
+
+MoveGolUpDownFLP	btst.b	#ob_yflp,OB_Flag1(a0)
+			beq.s	MoveGolUp_Smooth
+			bra.s	MoveGolDown_Smooth
+
+MoveGolUpDown		move.w	OB_Yspd(a0),d1				;speed
+			lsr.w	#8,d1					;/256
+MGUDa			btst.b	#ob_movydir,OB_MoveFlags(a0)		;move in which dir?
+			beq.s	.dn
+.up			bra	MoveGolUp
+.dn			bra	MoveGolDown
+
+
+MoveGolUpDown_Smooth	move.w	OB_Yspd(a0),d1				;speed
+			lsr.w	#8,d1					;/256
+MGUDa_Smooth		btst.b	#ob_movydir,OB_MoveFlags(a0)		;move in which dir?
+			beq.s	.dn
+.up			bra	MoveGolUp_Smooth
+.dn			bra	MoveGolDown_Smooth
+
+
+MoveGolUp		;bsr	WaterSlowdown				;standard move up
+			sub.w	d1,OB_Ypos(a0)	
+			move.w	d1,Plr_Y_Spd_U
+			bset.b	#ob_movupdn,OB_Flag5(a0)
+			rts
+MoveGolUp_Smooth	;bsr	WaterSlowdown				;standard move up
+			sub.w	d1,OB_Ypos(a0)				;without setting plrs y movement speed
+			bset.b	#ob_movupdn,OB_Flag5(a0)		;effectively smooths the scroll
+			rts
+
+MoveGolDown		;bsr	WaterSlowdown				;standard move down
+			add.w	d1,OB_Ypos(a0)	
+			move.w	d1,Plr_Y_Spd_D
+			bclr.b	#ob_movupdn,OB_Flag5(a0)
+			rts
+MoveGolDown_Smooth	;bsr	WaterSlowdown				;standard move down
+			add.w	d1,OB_Ypos(a0)				;without setting plrs y movement speed
+			bclr.b	#ob_movupdn,OB_Flag5(a0)		;effectively smooths the scroll
+			rts
+
+FlipGolWalkingDir	tst.b	walking_left
+			bne.s	.1
+			bclr.b	#ob_xflp,OB_Flag1(a0)
+			rts
+.1			bset.b	#ob_xflp,OB_Flag1(a0)
+			rts
+
+WaterSlowdown		tst.b	GolInWaterFLG
+			beq.s	.1
+			lsr.w	#1,d1
+			bne.s	.1
+			moveq	#1,d1
+.1			rts
+
+ClrGoliathVars		lea	Plr_Database,a1
+			move.w	#((EndPlrVars-Plr_Database)/4)-1,d1
+.l1			clr.l	(a1)+
+			dbra	d1,.l1
+			rts
+	
+SetupGoliath		bsr	ClrGoliathVars
+			move.w	#GoliathObjectNumber,d0
+			lea	OBJECT_RAM+(GoliathObjectNumber*128),a0
+			move.l	a0,Plr_Database				;save ao=poiter to player database
+			move.w	d0,Plr_ObjectNumber
+			move.l	#Goliath_MAX_Size,d3			;goliath biggest size requirement
+			bsr	SetupObjectFLY_ROM			;setup goliath as a raw ROM flown object
+			bpl.s	.ohoh
+			move.w	#Goliath_OB,OB_Type(a0)			;setup Goliath specifics for this object
+			move.b	#_ob_nooff,OB_Flag2(a0)
+			bclr.b	#ob_noclip,OB_Flag1(a0)
+			move.w	__PlrX,OB_Xpos(a0)			;set start position on this level
+			move.w	__PlrY,OB_Ypos(a0)
+			lea	GolGroundZeroANM,a1
+			jsr	SetNewAnim
+			jsr	ForceNewAnim
+			clr.w	GolStrongFLG
+			clr.b	DeathFadeDoneFLG
+			clr.b	DeathFadeReleaseFLG
+			clr.b	PlayerDeadFLG
+			clr.b	GameOverFLG
+			move.w	#-1,TrackObjectNumber
+.ohoh			rts
+
+HandleDEBUG		jsr	tst_button_a 				;debug warper
+			beq.s	.2
+			jsr	tst_button_b
+			beq.s	.2
+			jsr	tst_button_c
+			beq.s	.2
+			moveq	#8,d1
+			btst.b	#up,joy1
+			bne.s	.up
+			btst.b	#down,joy1
+			beq.s	.3
+.down			bsr	MoveGolDown;_Smooth
+			bra	.3
+.up			bsr	MoveGolUp;_Smooth
+.3			btst.b	#left,joy1
+			bne.s	.left
+			btst.b	#right,joy1
+			beq.s	.4
+.right			bsr	MoveGolRight;_Smooth
+			bra	.4
+.left			bsr	MoveGolLeft;_Smooth
+.4			clr.w	OB_Xspd(a0)
+			clr.w	OB_Yspd(a0)
+			clr.w	OB_Xacc(a0)
+			clr.w	OB_Yacc(a0)
+			bsr	GolSetFall;GroundZero
+			jmp	FlagYES
+.2			jmp	FlagNO
+
+			
+GoliathSuperStrength	tst.w	GolStrongFLG
+			beq.s	.ni
+   			subq.w	#1,GolStrongFLG
+			bne.s	.ni
+			tst.b	MusicFLG
+			beq.s	.ni
+			KILL	_MUS_Hammer
+			jmp	RestartLevelMusic
+.ni			rts
+
+GoliathInvincible	tst.w	GolInvincibleFLG
+			beq.s	.ni
+   			subq.w	#1,GolInvincibleFLG
+.ni			rts
+
+
+GoliathSpecials		bsr	HandleLevelFinish
+			bsr	HandleKnockOffTrough
+			
+			move.w	levnum,d1
+			asl.w	#2,d1
+			jmp	GolSpecialJumpTab(pc,d1.w)
+			
+GolSpecialJumpTab	bra	L11gs
+			bra	L12gs
+			bra	L13gs
+			bra	L14gs		
+			bra	L21gs
+			bra	L22gs
+			bra	L23gs
+			bra	L24gs		
+			bra	L31gs
+			bra	L32gs
+			bra	L33gs
+			bra	L34gs		
+			bra	LNULLgs
+			bra	LNULLgs
+			bra	LNULLgs
+			bra	LNULLgs
+			bra	L51gs		
+			bra	LNULLgs
+			bra	LNULLgs
+			bra	LNULLgs
+			bra	LNULLgs
+			bra	L71gs
+			bra	L72gs
+			bra	L73gs
+			bra	L74gs		
+			bra	L75gs		
+			bra	L76gs		
+			bra	L77gs		
+
+LNULLgs			rts
+
+L11gs			bsr	HandleCastleExplodes
+			bsr	HandleArrowRain
+			bsr	HandleBalistaRain
+L12gs
+L13gs
+L14gs			bsr	HandleSpikes
+			bsr	HandlePasteOverWalls
+			bsr	HandleThrown
+			bsr	HandleL1BreakWalls
+			bra	HandleBreakFloors
+			
+L21gs
+L22gs
+L23gs
+L24gs			bsr	HandleVentExhausts
+			bra	HandleHotSpots
+ 			
+L31gs
+L32gs
+L33gs			bsr	HandleEyeRaptors
+			bsr	HandleEyeRooftop
+			bsr	HandleCrashFloor
+			bsr	HandleRaptors
+			bsr	HandleBreakWalls
+			bsr	HandleThrown
+			bra	HandleSkylights
+L34gs			rts	
+
+
+L51gs			bsr	HandleElectrify
+			bsr	HandleOnTracks
+			bsr	HandleTunnels
+			bsr	HandlePatterns
+			bsr	HandleL5BreakWalls
+			bra	HandleL5Skylights
+
+
+L71gs
+L72gs
+L73gs
+L74gs
+L75gs
+L76gs			bsr	HandleEnergizerWalls
+			bsr	HandleWallFlames
+			bsr	HandleGrinders
+			bsr	HandleConveyors
+			bra	HandleHotSpots
+
+L77gs			bsr	HandleDemonaZones
+			bsr	HandleTimerSwitch
+			bra	HandleSwaps
+
+
+HandleEyeRaptors	moveq	#0,d2	
+			move.b	Under,d2
+			cmp.b	#SB_EyeRaptorsS,d2
+			blt.s	.x
+			cmp.b	#SB_EyeRaptorsE,d2
+			bgt.s	.x
+			sub.b	#SB_EyeRaptorsS,d2
+			lea	LevelEyeRaptors,a1	
+			st.b	0(a1,d2.w)
+.x			rts						
+
+
+HandleEyeRooftop	move.b	Under,d2
+			cmp.b	#SB_EyeUp,d2
+			bne.s	.1
+			st.b	EyeRooftopUpTRG
+			rts
+.1			cmp.b	#SB_EyeDn,d2
+			bne.s	.2
+			st.b	EyeRooftopDnTRG
+.2			rts
+
+
+HandleCrashFloor	tst.b	CrashPauseFLG
+			bne.s	.x
+			tst.b	CrashPauseDLY
+			beq.s	.ok
+			subq.b	#1,CrashPauseDLY
+			rts
+.ok			move.b	Under,d2
+			cmp.b	#SB_CrashPause,d2
+			bne.s	.x
+			SFX	37
+			move.b	#4,CrashPauseFLG
+			move.b	#8,CrashPauseDLY
+			bra	GolSetCrashPause
+.x			rts
+
+HandleRaptors		moveq	#0,d2	
+			move.b	Under,d2
+			cmp.b	#SB_RaptorsS,d2
+			blt.s	.x
+			cmp.b	#SB_RaptorsE,d2
+			bgt.s	.x
+			sub.b	#SB_RaptorsS,d2
+			lea	LevelRaptors,a1	
+			st.b	0(a1,d2.w)
+.x			rts						
+
+
+HandleElectrify		tst.b	OB_HitWait(a0)
+			bne.s	.x
+			move.b	UnderTOP,d2
+			cmp.b	#SB_ElecRight,d2
+			beq.s	.rte
+			cmp.b	#SB_ElecLeft,d2
+			beq.s	.lft
+			move.b	UnderLEFT,d2
+			cmp.b	#SB_ElecRight,d2
+			beq.s	.rte
+			cmp.b	#SB_ElecLeft,d2
+			beq.s	.lft
+			move.b	UnderRIGHT,d2
+			cmp.b	#SB_ElecRight,d2
+			beq.s	.rte
+			cmp.b	#SB_ElecLeft,d2
+			beq.s	.lft
+.x			rts
+.rte			move.b	#%00110100,OB_MoveFlags(a0)			
+  			bclr.b	#ob_hitside,OB_Flag1(a0)
+			bra	.1
+.lft			move.b	#%00110101,OB_MoveFlags(a0)			
+			bset.b	#ob_hitside,OB_Flag1(a0)
+.1			move.b	#$10,OB_HitWait(a0)
+			moveq	#AllSpikesHitPOWER,d1
+			bsr	GenericHitPlayer
+			bmi	SetPlayerDead
+			move.b	OB_MasterMode(a0),d1			;get plrs master mode 
+			jmp	GSHbig
+
+
+HandleOnTracks		cmp.w	#GolOnTracksSTATE,OB_State(a0)
+			beq.s	.x
+			move.b	Under,d2
+			cmp.b	#SB_Tracks,d2
+			beq	GolSetOnTracks
+.x			rts
+
+HandleTunnels		move.b	Under,d2
+			cmp.b	#SB_TunnelOut1,d2
+			blt	.x
+			cmp.b	#SB_TunnelOut3,d2
+			bgt	.x
+			sub.b	#SB_TunnelOut1,d2		;has this swap already occured?
+			lea	TunnelONE,a1
+			tst.b	0(a1,d2.w)
+			bne	.x	 			;yes: drop out
+			st.b	0(a1,d2.w)			;flag this swap occured
+			move.b	d2,TunnelTYP
+			move.b	#1,TunnelFLG
+.x			rts
+
+DoTunnels		cmp.b	#1,TunnelFLG
+			beq.s	.stunnelON
+			cmp.b	#2,TunnelFLG
+			beq.s	.tunnelON
+			cmp.b	#3,TunnelFLG
+			beq	.swap
+			cmp.b	#4,TunnelFLG
+			beq	.tunnelOFF
+			rts
+			
+.stunnelON		SFX	102
+			move.b	#%10011111,TunnelColumn		;reset panel
+			move.b	#2,TunnelFLG
+			move.w	#reg18,vctrl
+			clr.b	TunnelDLY
+			clr.b	TunnelEdgeFlipFLG
+			st.b	StopThePlayer
+			jmp	SetupTunnelEdge
+.tunnelON		move.w	#reg17,d1
+			add.b	TunnelColumn,d1
+			move.w	d1,vctrl
+			sub.b	#%00000001,TunnelColumn
+			and.b	#%00011111,TunnelColumn
+			or.b	#$80,TunnelColumn
+			cmp.b	#%10000000,TunnelColumn
+			bne	.x
+
+.sswap			move.w	#reg17+%10000000,vctrl
+			move.b	#3,TunnelFLG
+			rts
+.swap			cmp.w	#$1f0,ForegroundPostX
+			blt	.x
+			btst.b	#0,TunnelTYP
+			beq.s	.out
+.in			st.b	InsideFLG
+			move.l	#Lev5MapBa,__MapB
+			bra	.o2
+.out			clr.b	InsideFLG
+			cmp.b	#4,TunnelTYP
+			beq	.o1
+			move.l	#Lev5MapBb,__MapB
+.o2			jsr	DownloadScrlB
+			bra	.c			
+.o1			move.l	#Lev5MapBc,__MapB
+			jsr	DownloadScrlB
+			lea	Lev51DATA2,a0				;new map
+			jsr	GetDATA2				;setup new map data
+			jsr	SetMapLines				;map line table
+			MUSIC	_MUS_Boss
+			st.b	PlayingPREBOSS
+			move.l	Plr_Database,a1
+			move.w	__PlrX,OB_Xpos(a1)			;set plrs new x,y
+			move.w	__PlrY,OB_Ypos(a1)
+.c			jsr	DownloadScrlA				;setup scrollA
+			clr.b	TunnelDLY
+
+.stunnelOFF		move.b	#4,TunnelFLG
+			st.b	TunnelEdgeFlipFLG
+			jsr	SetupTunnelEdge
+			clr.b	TunnelDLY
+			rts
+.tunnelOFF		move.w	#reg17,d1
+			add.b	TunnelColumn,d1
+			move.w	d1,vctrl
+			sub.b	#%00000001,TunnelColumn
+			and.b	#%00011111,TunnelColumn
+			tst.b	TunnelDLY
+			bne.s	.to1
+			st.b	TunnelDLY
+.x			rts
+.to1			cmp.b	#%00011111,TunnelColumn
+			bne	.x
+			clr.b	StopThePlayer
+			clr.b	TunnelFLG
+			cmp.b	#4,TunnelTYP
+			bne	.x
+			jsr	WhitePalette			;whiteout
+			lea	XanatosPal,a1			;drop in xanatos' palette
+			jsr	SetSinglePalette
+			moveq	#$3,d1				;fade to proper palette
+			lea	GamePalette,a1
+			move.w	#def_blkwhtin,d2
+			jsr	set_whitein	
+			;explosions
+			;shrapnel
+			move.l	#Lev51MapAb,__MapA		;new scrlA	
+			jsr	DownloadScrlA
+			jmp	SpawnXanatos
+			
+
+
+pSIGN			equ	1
+pLIGHT			equ	2
+pPAU			equ	3
+
+Patt1			dc.b	pSIGN,pPAU,0
+			even
+Patt2			dc.b	pLIGHT,pPAU,0
+			even
+Patt3			dc.b	pSIGN,pPAU,pLIGHT,pPAU,0
+			even
+Patt4			dc.b	pSIGN,pSIGN,pPAU,pLIGHT,pPAU,pLIGHT,pPAU,0
+			even
+Patt5			dc.b	pSIGN,pPAU,pSIGN,pPAU,0
+			even
+Patt6			dc.b	pSIGN,pLIGHT,pSIGN,pSIGN,pLIGHT,pSIGN,pLIGHT,pLIGHT,0
+			even
+
+PattVecTAB		dc.l	Patt1,Patt2,Patt3,Patt4,Patt5,Patt6
+
+HandlePatterns		tst.b	PatternFLG
+			beq.s	.test
+		
+			tst.b	PatternCNT			;pause
+			beq.s	.ok
+   			subq.b	#1,PatternCNT
+			bra	.test
+.ok			moveq	#0,d1
+			move.b	PatternNUM,d1
+			move.l	PattVecTAB(pc,d1.w),a1
+.again			move.b	PatternDEX,d1
+			addq.b	#1,PatternDEX
+			move.b	0(a1,d1.w),d1
+			bne.s	.1
+			clr.b	PatternDEX
+			bra	.again
+.1			cmp.b	#pSIGN,d1
+			bne.s	.p1
+			move.b	#hz5060*1,PatternCNT
+			jsr	SpawnPatternSIGN			
+			bra	.test
+.p1			cmp.b	#pLIGHT,d1
+			bne.s	.p2
+			move.b	#hz5060*1,PatternCNT
+			jsr	SpawnPatternLIGHT
+			bra	.test
+.p2			cmp.b	#pPAU,d1
+			bne.s	.test
+			move.b	#hz5060*2,PatternCNT
+
+.test			move.b	Under,d2
+.on			cmp.b	#SB_PatternOnS,d2
+			blt.s	.x
+			cmp.b	#SB_PatternOnE,d2
+			bgt.s	.off
+			tst.b	PatternFLG
+			bne.s	.x
+  			sub.b	#SB_PatternOnS,d2
+			asl.b	#2,d2
+			move.b	d2,PatternNUM
+			st.b	PatternFLG
+			clr.b	PatternDEX
+			clr.b	PatternCNT
+.x			rts
+.off			cmp.b	#SB_PatternOffE,d2
+			bgt.s	.x
+			clr.b	PatternFLG
+			rts
+
+
+
+
+HandleL5Skylights	cmp.w	#GolJumpAttackSTATE,OB_State(a0)
+			bne.s	.x
+			
+.yup			moveq	#0,d2
+			jsr	GetUnderGROUND
+			cmp.b	#SB_L5SkylightsS,d2
+			blt.s	.x
+			cmp.b	#SB_L5SkylightsE,d2
+			bgt.s	.x
+			sub.b	#SB_L5SkylightsS,d2
+			lea	LevelSkylights,a1
+			st.b	0(a1,d2.w)
+.x			rts
+
+HandleL5BreakWalls	cmp.w	#GolRunAttackSTATE,OB_State(a0)
+			beq.s	.yup
+    			cmp.w	#GolGroundBigHitSTATE,OB_State(a0)
+			bne.s	.x
+			
+.yup			moveq	#0,d2
+			btst.b	#ob_movlftrte,OB_Flag5(a0)
+			beq.s	.r
+.l			move.b	UnderLEFT,d2
+			bra	.lr
+.r			move.b	UnderRIGHT,d2
+.lr			cmp.b	#SB_L5BreakWallS,d2
+			blt.s	.x
+			cmp.b	#SB_L5BreakWallE,d2
+			bgt.s	.x
+			sub.b	#SB_L5BreakWallS,d2
+			lea	LevelWalls,a1
+			st.b	0(a1,d2.w)
+.x			rts
+
+
+
+HandleDemonaZones	clr.b	GolOnFloorFLG
+			clr.b	GolOnWallLeftFLG
+			clr.b	GolOnWallRightFLG
+			clr.b	GolOnCeilingFLG
+			moveq	#0,d2
+			move.b	Under,d2
+			cmp.b	#SB_OnFloor,d2
+			beq.s	.onf
+			cmp.b	#SB_OnWallLeft,d2
+			beq.s	.onwl
+			cmp.b	#SB_OnWallRight,d2
+			beq.s	.onwr
+			cmp.b	#SB_OnCeiling,d2
+			bne.s	.x
+.onc			st.b	GolOnCeilingFLG
+.x			rts
+.onwl			st.b	GolOnWallLeftFLG
+			rts
+.onwr			st.b	GolOnWallRightFLG
+			rts
+.onf			st.b	GolOnFloorFLG
+			rts
+
+
+HandleTimerSwitch	moveq	#0,d2
+			move.b	Under,d2
+			cmp.b	#SB_TimerS,d2
+			blt.s	.x
+			cmp.b	#SB_TimerE,d2
+			bgt.s	.x
+			sub.b	#SB_TimerS,d2
+			lea	WallPasteTimers,a1
+			st.b	0(a1,d2.w)
+.x			rts
+
+HandleSwaps		move.b	Under,d2
+			cmp.b	#SB_Swap,d2
+			bne.s	.x
+			cmp.w	#GolGroundZeroSTATE,OB_State(a0)
+			bne.s	.x
+			move.w	#GolDemonaStartSTATE,OB_State(a0)
+			move.b	#_DB_Wait3,OB_Var1(a0)
+			
+			SFX	55
+			
+			move.l	#Lev77MapAc,__MapA			;swap in final map
+			jsr	DownloadScrlA
+			move.w	#$e0,bot_lim				;modify bottom limit
+			lea	Exp2Pal,a1				;drop in ancient fx palette
+			jsr	SetSinglePalette
+
+			st.b	DemonaFLG1				;plr loses control
+			st.b	DemonaFLG3				;flag plr reached top
+.x			rts
+
+
+
+HandleEnergizerWalls	tst.b	EnergizerHitDLY
+			beq.s	.ok
+   			subq.b	#1,EnergizerHitDLY
+			rts
+
+.ok			cmp.w	#GolRunAttackSTATE,OB_State(a0)
+			beq.s	.yup
+    			cmp.w	#GolGroundBigHitSTATE,OB_State(a0)
+			bne.s	.x
+			
+.yup			moveq	#0,d2
+			btst.b	#ob_movlftrte,OB_Flag5(a0)
+			beq.s	.r
+.l			move.b	UnderLEFT,d2
+			bra	.lr
+.r			move.b	UnderRIGHT,d2
+.lr			cmp.b	#SB_EnergizeWallS,d2
+			blt.s	.x
+			cmp.b	#SB_EnergizeWallE,d2
+			bgt.s	.x
+			sub.b	#SB_EnergizeWallS,d2
+			lea	EnergizerWalls,a1
+			st.b	0(a1,d2.w)
+.x			rts
+
+ 
+
+HandleGrinders		move.b	UnderFEET,d2
+			cmp.b	#SB_Grinder,d2
+			beq	GolSetInGrinder
+			rts
+
+HandleConveyors		btst.b	#grndmode,OB_MasterMode(a0)
+			beq.s	.x
+
+			cmp.w	#GolOffBalanceSTATE,OB_State(a0)
+			bne.s	.1
+			btst.b	#ob_xflp,OB_Flag1(a0)
+			beq.s	.r
+.l			subq.w	#8,OB_Xpos(a0)
+			bset.b	#ob_movlftrte,OB_Flag5(a0)
+			bra	GolSetEdgeFall
+.r			addq.w	#8,OB_Xpos(a0)
+			bclr.b	#ob_movlftrte,OB_Flag5(a0)
+			bra	GolSetEdgeFall
+
+.1			move.b	UnderFEET,d2
+			cmp.b	#SB_ConveyRight,d2
+			beq.s	.rte
+			cmp.b	#SB_ConveyLeft,d2
+			beq.s	.lft
+			move.b	UnderRIGHTFEET,d2
+			cmp.b	#SB_ConveyRight,d2
+			beq.s	.rte
+			cmp.b	#SB_ConveyLeft,d2
+			beq.s	.lft
+			move.b	UnderLEFTFEET,d2
+			cmp.b	#SB_ConveyRight,d2
+			beq.s	.rte
+			cmp.b	#SB_ConveyLeft,d2
+			beq.s	.lft
+.x			rts
+.rte			moveq	#1,d1
+			bra	MoveGolRight_NF_Smooth
+.lft			moveq	#1,d1
+			bra	MoveGolLeft_NF_Smooth
+			
+
+
+			if	1=0
+HandleConveyors		btst.b	#grndmode,OB_MasterMode(a0)
+			beq.s	.x
+			move.b	UnderFEET,d2
+			cmp.b	#SB_ConveyRight,d2
+			beq.s	.rte
+			cmp.b	#SB_ConveyLeft,d2
+			beq.s	.lft
+			btst.b	#ob_xflp,OB_Flag1(a0)
+			beq.s	.r
+.l			move.b	UnderRIGHTFEET,d2
+			cmp.b	#SB_ConveyRight,d2
+			beq.s	.tf
+			cmp.b	#SB_ConveyLeft,d2
+			beq.s	.tf
+			rts
+.r			move.b	UnderLEFTFEET,d2
+			cmp.b	#SB_ConveyRight,d2
+			beq.s	.tf
+			cmp.b	#SB_ConveyLeft,d2
+			bne.s	.x
+.tf			cmp.w	#GolOffBalanceSTATE,OB_State(a0)
+			beq	GolSetEdgeFall
+.x			rts
+.rte			moveq	#1,d1
+			bra	MoveGolRight_NF_Smooth
+.lft			moveq	#1,d1
+			bra	MoveGolLeft_NF_Smooth
+			endif
+			
+
+HandleWallFlames	tst.b	WallFlameActiveFLG
+			bne.s	.x
+			
+			btst.b	#grndmode,OB_MasterMode(a0)
+			bne.s	.floor
+			btst.b	#ceilmode,OB_MasterMode(a0)
+			bne.s	.ceiling
+			btst.b	#wallmode,OB_MasterMode(a0)
+			bne.s	.wall
+.x			rts
+
+.floor			move.b	UnderFEET,d2
+			cmp.b	#SB_FlameFloor,d2
+			bne.s	.x
+			jmp	SpawnFloorFlame
+.ceiling		move.b	Under,d2
+			cmp.b	#SB_FlameCeiling,d2
+			bne.s	.x
+			jmp	SpawnFloorFlame
+.wall			move.b	Under,d2
+			btst.b	#ob_xflp,OB_Flag1(a0)
+			bne.s	.wr
+.wl			cmp.b	#SB_FlameWallLeft,d2
+			bne.s	.x
+			jmp	SpawnWallFlame
+.wr			cmp.b	#SB_FlameWallRight,d2
+			bne.s	.x
+			jmp	SpawnWallFlame
+
+
+HandleSpikes		btst.b	#hitmode,OB_MasterMode(a0)
+			bne.s	.x
+			move.b	Under,d2
+			cmp.b	#SB_SpikesRight,d2
+			beq.s	.rte
+			cmp.b	#SB_SpikesLeft,d2
+			beq.s	.lft
+			move.b	UnderTOP,d2
+			cmp.b	#SB_SpikesRight,d2
+			beq.s	.rte
+			cmp.b	#SB_SpikesLeft,d2
+			beq.s	.lft
+			move.b	UnderLEFT,d2
+			cmp.b	#SB_SpikesRight,d2
+			beq.s	.rte
+			cmp.b	#SB_SpikesLeft,d2
+			beq.s	.lft
+			move.b	UnderRIGHT,d2
+			cmp.b	#SB_SpikesRight,d2
+			beq.s	.rte
+			cmp.b	#SB_SpikesLeft,d2
+			beq.s	.lft
+.x			rts
+.rte			move.b	#%00110100,OB_MoveFlags(a0)			
+  			bra	.1
+.lft			move.b	#%00110101,OB_MoveFlags(a0)			
+.1			move.b	#$8,OB_HitWait(a0)
+			move.w	#AllSpikesHitPOWER,d1
+			bsr	GenericHitPlayer
+			bmi	SetPlayerDead
+			move.b	OB_MasterMode(a0),d1			;get plrs master mode 
+			jmp	GSHbig
+
+
+HandleArrowRain		tst.b	ArrowsDoneFLG
+			bne.s	.x
+			move.b	Under,d2
+			cmp.b	#SB_ArrowsOn,d2
+			beq.s	.on
+			cmp.b	#SB_ArrowsOff,d2
+			bne.s	.d1
+.off			clr.b	ArrowsOnFLG
+			cmp.w	#$580,Plr_XPos
+			blt.s	.x
+			st.b	ArrowsDoneFLG
+.x			rts
+.on			st.b	ArrowsOnFLG
+.d1			tst.b	ArrowsOnFLG
+			beq.s	.x
+			
+.doarrow		move.b	second,d1
+			and.b	#$1f,d1
+			bne.s	.x
+			movem.l	a0/d0,-(sp)
+			SPAWN_HI	Arrow_MAX_Size
+			bpl.s	.2
+			move.l	a0,a1
+			movem.l	(sp)+,d0/a0
+			move.w	#Arrow_OB,OB_Type(a1)
+			bset.b	#ob_tidy,OB_Flag5(a1)
+			bset.b	#ob_hiprior,OB_Flag2(a1)
+			bset.b	#ob_nooffx,OB_Flag2(a1)
+			bset.b	#ob_xflp,OB_Flag1(a1)
+			jsr	Randy
+			and.w	#$17f,d6
+			add.w	map_x_p,d6
+			add.w	#$140,d6
+			move.w	d6,OB_Xpos(a1)
+			move.w	map_y_p,d1
+			move.w	d1,OB_Ypos(a1)
+			move.b	#ArrowHitPOWER,OB_HitPower(a1)
+			jsr	SetSmallAttackA1
+			move.b	#2,OB_Var1(a1)
+			lea	ArrowDownANM,a2
+			jsr	SetNewAnimA1			
+			jmp	ForceNewAnimA1			
+.2			movem.l	(sp)+,d0/a0
+			rts
+
+
+HandleBalistaRain	move.b	Under,d2
+			cmp.b	#SB_BalistasOn,d2
+			beq.s	.on
+			cmp.b	#SB_BalistasOff,d2
+			bne.s	.d1
+.off			clr.b	BalistasOnFLG
+.x			rts
+.on			st.b	BalistasOnFLG
+			move.b	#$20,BalistasDLY
+			
+.d1			tst.b	BalistasOnFLG
+			beq.s	.x
+			
+.dobalistas		move.w	#Balista_OB,d2
+			jsr	FindObject
+			bmi.s	.x
+
+			addq.b	#1,BalistasDLY
+			cmp.b	#$60,BalistasDLY
+			bne.s	.x
+			clr.b	BalistasDLY
+			
+			SFX	35
+			
+			movem.l	a0/d0,-(sp)
+			SPAWN_LO	BalistaLog_MAX_Size
+			bpl.s	.1
+			move.l	a0,a1
+			movem.l	(sp)+,d0/a0
+			move.w	#BalistaLog_OB,OB_Type(a1)
+			bset.b	#ob_xflp,OB_Flag1(a1)
+			bset.b	#ob_tidy,OB_Flag5(a1)
+			move.w	map_x_p,d1
+			add.w	#46*8,d1
+			move.w	d1,OB_Xpos(a1)
+			move.w	#$21e-$20,OB_Ypos(a1)
+			clr.b	OB_Var7(a1)
+			st.b	OB_Var7a(a1)
+			rts
+.1			movem.l	(sp)+,d0/a0
+.xx			rts
+
+
+HandleCastleExplodes	moveq	#0,d2
+			move.b	Under,d2
+			cmp.b	#SB_CastleExpS,d2
+			blt.s	.x
+			cmp.b	#SB_CastleExpE,d2
+			bgt.s	.x
+			sub.b	#SB_CastleExpS,d2
+			lea	LevelCastlePieces,a1
+			st.b	0(a1,d2.w)
+.x			rts
+			
+
+HandlePasteOverWalls	moveq	#0,d2
+			move.b	UnderHEAD,d2
+			cmp.b	#SB_PasteWallsS,d2
+			blt.s	.x
+			cmp.b	#SB_PasteWallsE,d2
+			bgt.s	.x
+			sub.b	#SB_PasteWallsS,d2
+			lea	LevelPasteWalls,a1
+			st.b	0(a1,d2.w)
+.x			rts
+			
+
+HandleJumpOnWeight	tst.b	GolSpriteCarryDLY
+			beq.s	.y1
+   			subq.b	#1,GolSpriteCarryDLY
+			bne.s	.xx
+			;move.l	DetectedWeightOB,a1
+			;bclr.b	#ob_carry,OB_Flag3(a1)
+			clr.b	IsGolOnWeightFLG
+			clr.b	PlrJumpOnWeightFLG
+			clr.b	PlrFallOnWeightFLG
+.xx			jmp	FlagNOd
+
+.y1			tst.b	PlrJumpOnWeightFLG
+			beq.s	.x
+			tst.b	IsGolOnWeightFLG
+			bne.s	.xx
+			st.b	IsGolOnWeightFLG
+			jmp	FlagYESd
+
+.x			clr.b	IsGolOnWeightFLG
+			jmp	FlagNOd
+
+
+HandleFallOnWeight	tst.b	GolSpriteCarryDLY
+			beq.s	.y1
+   			subq.b	#1,GolSpriteCarryDLY
+			bne.s	.xx
+.xxx			clr.b	IsGolOnWeightFLG
+			clr.b	PlrJumpOnWeightFLG
+			clr.b	PlrFallOnWeightFLG
+.xx			jmp	FlagNO
+
+.y1			;cmp.b	#-1,GolJumpType				;fall off edge
+			;beq.s	.xxx
+			tst.b	PlrFallOnWeightFLG
+			beq.s	.xxx
+			tst.b	IsGolOnWeightFLG
+			bne.s	.xx
+			st.b	IsGolOnWeightFLG
+			move.l	DetectedWeightOB,a1
+			cmp.w	#OPPlatform_OB,OB_Type(a1)
+			beq	GolSetOnOPP
+			jmp	FlagYES
+
+.x			clr.b	IsGolOnWeightFLG
+			jmp	FlagNO
+
+
+HandleHotSpots		move.b	UnderFEET,d2
+			cmp.b	#SB_HotSpot,d2
+			bne.s	.x
+			
+			tst.b	PlrHotHitDLY
+			beq.s	.ok
+			
+			move.b	PlrHotHitDLY,d1
+			and.b	#$7,d1
+			bne.s	.1
+			bsr	SpawnFlameLick
+.1			subq.b	#1,PlrHotHitDLY
+			rts
+.ok			move.b	#32,PlrHotHitDLY
+			move.l	DetectedWeightOB,a1
+			btst.b	#ob_carry,OB_Flag3(a1)
+			beq.s	.1a
+			bset.b	#ob_hit_big,OB_Flag6(a0)
+			bra	.1b
+.1a			bset.b	#ob_hit_small,OB_Flag6(a0)
+.1b			bset.b	#ob_beinghit,OB_Flag1(a0)	;flag ob being hit	
+			moveq	#HotSpotHitPOWER,d1
+			bsr	GenericHitPlayer
+			bmi	SetPlayerDead
+.x			rts
+			
+		
+SpawnFlameLick		movem.l	a0/d0,-(sp)
+			SPAWN_HI	FlameLick_MAX_Size
+			bpl.s	.1
+			move.l	a0,a1
+			movem.l	(sp)+,d0/a0
+			move.w	#FlameLick_OB,OB_Type(a1)
+			bset.b	#ob_tidy,OB_Flag5(a1)
+			move.w	OB_Xpos(a0),OB_Xpos(a1)
+			move.w	OB_Ypos(a0),OB_Ypos(a1)
+			jsr	Randy
+			and.w	#$1f,d6
+			btst.b	#ob_xflp,OB_Flag1(a0)
+			beq.s	.r
+			add.w	d6,OB_Xpos(a1)
+			bra	.lr
+.r			sub.w	d6,OB_Xpos(a1)
+.lr			bset.b	#ob_setup,OB_Flag2(a1)
+			st.b	OB_Var2(a1)
+			cmp.w	#Level71,levnum
+			blt.s	.norm
+.l7			lea	L7FlameLickANM,a2
+			bra	.111
+.norm			lea	FireWispANM,a2
+.111			jsr	SetNewAnimA1
+			jmp	ForceNewAnimA1
+.1			movem.l	(sp)+,d0/a0
+.x			rts
+
+
+HandleVentExhausts	moveq	#0,d2
+			move.b	Under,d2
+			cmp.b	#$10,d2	
+			blt.s	.sub
+			cmp.b	#$20,d2	
+			blt.s	.blowright
+			cmp.b	#$30,d2	
+			blt.s	.blowleft
+
+.sub			clr.b	VentFLG
+			tst.b	VentVAR1
+			beq.s	.bb
+			addq.b	#1,VentVAR2
+			and.b	#3,VentVAR2
+			bne.s	.bb
+			subq.b	#1,VentVAR1
+.bb			move.b	VentVAR1,VentADD
+.x			clr.b	VentLFT
+			clr.b	VentRTE
+			rts
+
+.blowright		sub.b	#$10,d2				;check if vent is on
+			lea	LevelVentsR,a1
+			tst.b	0(a1,d2.w)
+			beq.s	.x	
+			st.b	VentRTE
+			clr.b	VentLFT
+			bra	.dovent
+
+.blowleft		sub.b	#$20,d2				;check if vent is on
+			lea	LevelVentsL,a1
+			tst.b	0(a1,d2.w)
+			beq.s	.x	
+			clr.b	VentRTE
+			st.b	VentLFT
+			
+.dovent			st.b	VentFLG
+			cmp.b	#8,VentVAR1
+			beq.s	.aa
+			addq.b	#1,VentVAR2
+			and.b	#3,VentVAR2
+			bne.s	.aa
+			addq.b	#1,VentVAR1
+.aa			move.b	VentVAR1,VentADD
+
+			tst.b	VentFLG
+			beq	.x
+			tst.b	VentDLY
+			beq.s	.ok
+   			subq.b	#1,VentDLY
+			rts
+.ok			bra	GolSetVent
+
+
+HandleThrown		tst.b	SteamVentFLG
+			bne	GolSetThrown
+.x			rts
+
+
+HandleLevelFinish	move.b	Under,d2
+			cmp.b	#$7f,d2
+			bne.s	.x
+			st.b	NextLevelFLG
+.x			rts
+
+;HandleVents		tst.b	VentDLY
+;			beq.s	.ok
+;			sub.b	#1,VentDLY
+;.x			rts	
+;.ok			tst.b	VentFLG
+;			beq.s	.x
+;			bra	GolSetVent
+
+
+HandleL1BreakWalls	cmp.w	#GolRunAttackSTATE,OB_State(a0)
+			beq.s	.yup
+    			cmp.w	#GolGroundBigHitSTATE,OB_State(a0)
+			bne.s	.x
+			
+.yup			moveq	#0,d2
+			btst.b	#ob_movlftrte,OB_Flag5(a0)
+			beq.s	.r
+.l			move.b	UnderLEFT,d2
+			bra	.lr
+.r			move.b	UnderRIGHT,d2
+.lr			cmp.b	#SB_L1BreakWallS,d2
+			blt.s	.x
+			cmp.b	#SB_L1BreakWallE,d2
+			bgt.s	.x
+			sub.b	#SB_L1BreakWallS,d2
+			lea	LevelWalls,a1
+			st.b	0(a1,d2.w)
+.x			rts
+
+
+HandleBreakWalls	cmp.w	#GolRunAttackSTATE,OB_State(a0)
+			beq.s	.yup
+    			cmp.w	#GolGroundBigHitSTATE,OB_State(a0)
+			bne.s	.x
+			
+.yup			moveq	#0,d2
+			btst.b	#ob_movlftrte,OB_Flag5(a0)
+			beq.s	.r
+.l			move.b	UnderLEFT,d2
+			bra	.lr
+.r			move.b	UnderRIGHT,d2
+.lr			cmp.b	#SB_BreakWallS,d2
+			blt.s	.x
+			cmp.b	#SB_BreakWallE,d2
+			bgt.s	.x
+			sub.b	#SB_BreakWallS,d2
+			lea	LevelWalls,a1
+			st.b	0(a1,d2.w)
+.x			rts
+
+
+HandleSkylights		cmp.w	#GolJumpAttackSTATE,OB_State(a0)
+			bne.s	.x
+			
+.yup			moveq	#0,d2
+			jsr	GetUnderGROUND
+			cmp.b	#SB_SkylightS,d2
+			blt.s	.x
+			cmp.b	#SB_SkylightE,d2
+			bgt.s	.x
+			sub.b	#SB_SkylightS,d2
+			lea	LevelSkylights,a1
+			st.b	0(a1,d2.w)
+.x			rts
+
+
+HandleBreakFloors	cmp.w	#GolJumpAttackSTATE,OB_State(a0)
+			bne.s	.x
+			
+.yup			moveq	#0,d2
+			jsr	GetUnderGROUND
+			cmp.b	#SB_BreakFloorS,d2
+			blt.s	.x
+			cmp.b	#SB_BreakFloorE,d2
+			bgt.s	.x
+			sub.b	#SB_BreakFloorS,d2
+			lea	LevelSkylights,a1
+			st.b	0(a1,d2.w)
+.x			rts
+
+
+
+;HandleLev11RockGen	cmp.w	#Level11,levnum
+;			bne.s	.x
+;			move.b	Under,d2
+;			cmp.b	#SB_FlameRockGen1,d2
+;			bne.s	.x
+;			move.w	#FlameRockGen1_OB,d2
+;			bsr	FindObject
+;			bmi.s	.x
+;			bra	SetupFlameRockGen1
+;.x			rts
+		
+
+
+HandleGolContours	jsr	GetUnderFEET
+			jsr	TestLevelFloors
+			bmi	GolSetEdgeFall
+			bsr	SetHeight
+			bpl.s	.1
+.x			rts
+			
+.1			moveq	#0,d3
+			move.w	#-$10,d4
+			jsr	GetUnderGENERIC
+			moveq	#8,d1
+			bsr	MoveGolUp_Smooth
+			jsr	GetXInBlock
+			move.b	0(a1,d7.w),d1	
+			ext.w	d1
+			beq.s	.2
+			subq.w	#1,d1
+			and.w	#$fff0,OB_Ypos(a0)
+			or.w	d1,OB_Ypos(a0)
+			rts
+
+.2			addq.w	#8,OB_Ypos(a0)	
+			moveq	#0,d3
+			moveq	#$10,d4
+			jsr	GetUnderGENERIC
+			moveq	#8,d1
+			bsr	MoveGolDown_Smooth
+			jsr	GetXInBlock
+			move.b	0(a1,d7.w),d1	
+			ext.w	d1
+			beq.s	.3
+			subq.w	#1,d1
+			;beq.s	.3
+			and.w	#$fff0,OB_Ypos(a0)
+			or.w	d1,OB_Ypos(a0)
+			rts
+
+.3			bra	GolSetEdgeFall		;GolSetOffBalanceL	;EdgeFall			
+
+
+SetStartHeight		sub.w	#$10,OB_Ypos(a0)
+			jsr	GetXYpos
+			jsr	GetFlrData
+SetHeight		bsr	PullContourUnder
+			bne.s	.1
+			jmp	FlagNO
+.1			subq.w	#1,d1
+			and.w	#$fff0,OB_Ypos(a0)
+			or.w	d1,OB_Ypos(a0)
+			jmp	FlagYES
+	
+
+PullContourUnder	jsr	GetXInBlock
+			move.b	0(a1,d7.w),d1	
+			ext.w	d1
+			rts
+			
+SetWalkingLeft		st.b	walking_left
+			clr.b	walking_right
+			rts
+
+SetWalkingRight		st.b	walking_right
+			clr.b	walking_left
+			rts
+
+
+ClrSomeStuff		clr.b	GolJumpType
+ 			clr.b	GolSpriteCarryDLY
+CSS1			clr.b	PlrFallOnWeightFLG
+			clr.b	PlrJumpOnWeightFLG
+CSS2			clr.b	GolJumpFLG
+ 			clr.b	GolFallFLG
+			clr.b	NoFollowFLG
+			clr.w	OB_Xspd(a0)				;clr mover vars
+			clr.w	OB_Yspd(a0)
+			clr.w	OB_Xacc(a0)
+			clr.w	OB_Yacc(a0)
+			clr.b	OB_MoveFlags(a0)		
+			clr.b	GolRunFLG				;clr run, idle, look flags
+			clr.b	GolRunCNT
+			clr.b	GolIdleCNT
+			clr.b	GolLookUpFLG
+			clr.b	GolLookDownFLG
+			clr.b	CrashPauseFLG
+			rts
+			

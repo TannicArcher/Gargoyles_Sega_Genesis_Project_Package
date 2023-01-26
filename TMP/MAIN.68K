@@ -1,0 +1,1760 @@
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ Gargoyles - MAIN GAME						   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+ResetTheGame		move.w	#$2700,sr
+			bra	cold_start
+
+MainCode		move.w	#$2700,sr
+			lea	TheStack,sp		;set stack pointer
+			bsr	SetupMachine
+			
+			bsr	StartupSequence		;SEGA/Legal/Titlepage/Options
+			
+			moveq	#0,d1
+			bsr	FluffSequence
+
+			move.w	#$2700,sr
+			st.b	working
+			clr.b	service
+			bsr	SetupGame
+			bsr	SetupLevel		;game setups
+			bsr	SetupGoliath		;player
+			bsr	TriggerALL
+			bsr	SetupLevelMusic
+			lea	GamePalette,a1
+			bsr	lite_fader
+			clr.b	working
+			clr.b	first_pass
+			st.b	service
+			st.b	NewGameFLG
+			move.w	#$2000,sr
+
+MainLoop		bsr	WaitFrm
+			
+			tst.b	PlayerDeadFLG
+			beq	.1
+			jmp	PlayerDead
+.1			tst.b	GameOverFLG
+			beq	.2
+			moveq	#1,d1
+			bsr	FluffSequence
+			bmi	ResetTheGame
+
+.2			tst.b	BurnProcess
+			bne.s	ProcessBURN
+			bra	MainLoop
+			
+ProcessBURN		jsr	DoBurnLogic
+			bra	MainLoop
+
+
+
+; - VERTICAL BLANK Routines ------------------------------------------------
+
+GameVBLANK		equ	0
+ShellVBLANK		equ	4
+DebugVBLANK		equ	8
+A3dVBLANK		equ	12
+BitmapVBLANK		equ	16
+
+V_Blank			move.w	#$2700,sr
+			movem.l	d0-d7/a0-a6,-(sp)
+	
+			tst.b	doing_vblank
+			bne	NullVBL_1
+			
+			cmp.b	#$f0,joy1
+			beq	ResetTheGame
+		
+			bsr	TickTime
+			
+			tst.b	pause_flg
+			beq.s	.ok
+			POLL	0
+			bsr	HandleJoypads			;read controllers
+			if	debug
+			tst.b	d_joy2				
+			bne.s	.ok
+			endif
+			btst.b	#start,d_joy1
+			beq	NullVBL_1
+			clr.b	pause_flg
+			clr.b	d_joy1
+			bra	NullVBL_1
+
+.ok			st.b	doing_vblank
+			move.w	VBLANKPhase,d0
+			jmp	VBLANKPhaseRouts(pc,d0.w)
+
+NullVBL_1		movem.l	(sp)+,d0-d7/a0-a6
+NullVBL_2		move.w	#$2000,sr
+			rte
+NullVBL_3		movem.l	(sp)+,d0-d7/a0-a6
+			rte
+
+
+VBLANKPhaseRouts	bra	V_Blank1		;main game vblank
+			bra	V_Blank2		;shell vblank
+			bra	V_Blank3		;debug vblank
+			bra	V_Blank4		;3d vblank
+			bra	V_Blank5		;Bitmap vblank
+
+; - MAIN GAME VBLANK Routine -----------------------------------------------
+
+V_Blank1		tst.b	service
+			beq	.pj
+			bsr	HandleHardwareDMA		;do hardware stuff
+			col	$eee
+			bsr	HandleDMAStack			;see whats on the DMA stack
+			bsr	HandleEdgeDMA			;dma screen edges
+			move.w	#$2000,sr
+			POLL	0
+			bsr	HandleScroll			;do the scrolling
+			bsr	HandleTriggers			;trigger any new enemies/switch off any old enemies
+			col	$ccc
+			bsr	HandleObjects			;All object stuff
+			col	$eee
+			bsr	HandleGemsVBL			;handle gems
+			bsr	HandleJoypads			;read controllers
+			bsr	HandleCharAnims
+			jsr	HandleLevelMechanics		;
+			bsr	Fade_Routs		
+			bsr	RestorePalette
+			bsr	HandleColorCycles
+			bsr	HandleColorAnims
+			st.b	first_pass
+			
+.pj			btst.b	#start,d_joy1
+			beq.s	.1
+			eor.b	#1,pause_flg
+
+.1			col	$000
+			clr.b	doing_vblank
+			bra	NullVBL_3
+
+
+; - SHELL VBLANK Routine -----------------------------------------------
+
+V_Blank2		tst.b	service
+			beq	.pj
+			bsr	HandleHardwareDMA		;do hardware stuff
+			bsr	HandleDMAStack			;see whats on the DMA stack
+			move.w	#$2000,sr
+			POLL	0
+			bsr	HandleObjects			;All object stuff
+			bsr	HandleGemsVBL			;handle gems
+			bsr	HandleJoypads			;read controllers
+			bsr	Fade_Routs		
+
+.pj			clr.b	doing_vblank
+			bra	NullVBL_1
+
+
+; - DEBUG VBLANK Routine -----------------------------------------------
+
+V_Blank3		tst.b	service
+			beq	.pj
+			bsr	HandleHardwareDMA		;do hardware stuff
+			bsr	HandleDMAStack			;see whats on the DMA stack
+			move.w	#$2000,sr
+			POLL	0
+			bsr	HandleGemsVBL			;handle gems
+			bsr	HandleJoypads			;read controllers
+			bsr	Fade_Routs		
+
+.pj			clr.b	doing_vblank
+			bra	NullVBL_1
+
+
+; - 3D VBLANK Routine -----------------------------------------------
+
+V_Blank4		tst.b	service
+			beq	.pj
+			bsr	HandleHardwareDMA		;do hardware stuff
+			bsr	HandleDMAStack			;see whats on the DMA stack
+			move.w	#$2000,sr
+			POLL	0
+			bsr	HandleObjectsSORTED		;All object stuff
+			jsr	SortObjectsZ
+			bsr	HandleGemsVBL			;handle gems
+			bsr	HandleJoypads			;read controllers
+			bsr	Fade_Routs		
+
+.pj			clr.b	doing_vblank
+			bra	NullVBL_1
+
+
+; - BITMAP VBLANK Routine -----------------------------------------------
+
+V_Blank5		tst.b	service
+			beq	.pj
+			bsr	HandleHardwareDMA		;do hardware stuff
+			bsr	HandleDMAStack			;see whats on the DMA stack
+			move.w	#$2000,sr
+			POLL	0
+			bsr	HandleObjectsSORTED		;All object stuff
+			jsr	SortObjectsZ
+			bsr	HandleGemsVBL			;handle gems
+			bsr	HandleJoypads			;read controllers
+			bsr	Fade_Routs		
+
+.pj			clr.b	doing_vblank
+			bra	NullVBL_1
+
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ SETUP a Horizontal Blank Interupt					   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ Entry: a6 = FXTABLE_ADDRS : The Address in RAM of the FX Table	   บ
+; บ 	   a5 = SCANLINE_ADDRS : The Hardware address ($40020010)	   บ
+; บ        d7 = Starting scan line					   บ
+; บ        d6 = Interval						   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+SetupHBLANK		move.w	#reg0+%00010100,vctrl			;enable HBlank Interupt
+			move.w	#reg16+%00000001,vctrl
+			add.w	#reg10,d7				;set start scan line
+			move.w	d7,SCANLINE_START
+			add.w	#reg10,d6				;set interval
+			move.w	d6,SCANLINE_INTERVAL			
+			move.l	a6,FXTABLE_ADDRS			;set fx table address
+			move.l	a6,FXTABLE_RESET
+			move.l	a5,SCANLINE_ADDRS			;set hardware address
+			rts
+
+
+H_Blank			move	#$2700,sr
+			move.l	a0,-(sp)
+			move.l	SCANLINE_ADDRS,vctrl
+			move.w	SCANLINE_DATA,vdata
+			addq.l	#2,FXTABLE_ADDRS
+			move.l	FXTABLE_ADDRS,a0
+			move.w	(a0),SCANLINE_DATA
+			move.w	SCANLINE_INTERVAL,vctrl
+;			move.l	#$c01e0000,vctrl
+;			move.w	(a0),vdata
+			move.l	(sp)+,a0
+			rte
+
+
+			if	1=0
+;tubetab			HEX 009A0095008F00890084007E00790073006E00690064005F005A00550051004C
+;			HEX 00480043003F003B00370033002F002C002800250022001F001C001900160014
+;;			HEX 0011000F000D000B000900080006000500040003000200010000000000000000
+;;			HEX 00000000000000010001000200030004000500070008000A000C000E00100013
+;			HEX 0011000F000D000B000900080006000500040003000200010000
+;			HEX 000000010001000200030004000500070008000A000C000E00100013
+;			HEX 00150018001A001D002000230027002A002E003100350039003D00410046004A
+;			HEX 004E00530058005D00610066006C00710076007B00810086008C00920097009D
+;			HEX ffff
+
+tubetab			dc.w	35,20,20,12,9,9,5,5,5,4,5,5,4,5,5
+			dc.w	4,4,4,3,4,4,3,4,4,3,3,3
+			dc.w	2,3,3,2,3,3,2,2,2,1,2,2
+			dc.w	1,1
+			dc.w	2,2,1,2,2,2,3,3,2,3,2,2
+			dc.w	3,3,3,4,4,3,4,4,3,4,4,4	
+			dc.w	5,5,4,5,5,4,5,5,5,9,9,12,20,20,35
+			dc.w	-1
+
+tubelen			equ	-$b5
+SinDiv			equ	3
+
+
+setweird		move.w	#reg10+8,vctrl
+			move.w	#0,vsram_1
+			addq.w	#1,vsram_2
+			and.w	#$1,vsram_2
+			bne.s	.1a
+			add.w	#1,vsram_3
+.1a			move.w	vsram_3,d0
+;			add.w	d0,vsram_1
+			move.l	#screen_tab,vsram_a
+			
+			lea	screen_tab,a1
+			move.w	#((512)/16)-1,d0
+.l1			move.l	#0,(a1)+
+			move.l	#0,(a1)+
+			move.l	#0,(a1)+
+			move.l	#0,(a1)+
+			dbra	d0,.l1
+			
+.fin			lea	screen_tab+$80,a1
+			lea	tubetab,a2
+			lea	Sin,a4
+			move.w	#SinDiv,d5				;scratch_ram+16,d5
+	
+			moveq	#0,d1
+			addq.w	#4,tube_index
+			and.w	#$1ff,tube_index
+			move.w	tube_index,d1
+			asl.w	#1,d1
+			move.w	0(a4,d1.w),d1
+			bpl.s	.1
+			neg.w	d1
+			divu.w	d5,d1
+			and.w	#$1fe,d1
+			sub.w	d1,a1
+			st.b	vsram_7
+			bra	.aaa
+.1 			divu.w	d5,d1
+			and.w	#$1fe,d1
+			add.w	d1,a1	
+			clr.b	vsram_7
+		
+.aaa			asl.w	#1,d1			;mod 1st with sin
+			move.w	(a2)+,d2
+			tst.b	vsram_7
+			bne.s	.w
+			sub.w	d1,d2	
+			bra	.w2
+.w			add.w	d1,d2	
+.w2			move.w	d2,(a1)+
+			
+.lp1			move.w	(a2)+,d2
+			bmi.s	.fina
+			move.w	d2,(a1)+
+			add.w	d2,d3
+			bra	.lp1		
+			   
+.fina			move.w	#tubelen,d2			;mod last to bring picture back	
+			tst.b	vsram_7
+			beq.s	.w3
+			sub.w	d1,d2	
+			bra	.w4
+.w3			add.w	d1,d2	
+.w4			move.w	d2,(a1)+
+
+			rts
+
+
+yp1			dc.w	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+yp2			dc.w	-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,1,1,1,1,1,1,1,1,1,1
+yp3			dc.w	-2,-2,-2,-2,-2,-2,-2,-2,-2,-1,1,2,2,2,2,2,2,2,2,2
+yp4			dc.w	-3,-3,-3,-3,-3,-3,-3,-3,-2,-1,1,2,3,3,3,3,3,3,3,3
+yp5			dc.w	-4,-4,-4,-4,-4,-4,-4,-3,-2,-1,1,2,3,4,4,4,4,4,4,4
+yp6			dc.w	-5,-5,-5,-5,-5,-5,-4,-3,-2,-1,1,2,3,4,5,5,5,5,5,5
+yp7			dc.w	-6,-6,-6,-6,-6,-5,-4,-3,-2,-1,1,2,3,4,5,6,6,6,6,6
+yp8			dc.w	-7,-7,-7,-7,-6,-5,-4,-3,-2,-1,1,2,3,4,5,6,7,7,7,7
+yp9			dc.w	-8,-8,-8,-7,-6,-5,-4,-3,-2,-1,1,2,3,4,5,6,7,8,8,8
+yp10			dc.w	-9,-9,-8,-7,-6,-5,-4,-3,-2,-1,1,2,3,4,5,6,7,8,9,9
+yp11			dc.w	-10,-9,-8,-7,-6,-5,-4,-3,-2,-1,1,2,3,4,5,6,7,8,9,10
+
+yposvec			dc.l	yp1,yp2,yp3,yp4,yp5,yp6,yp7,yp8,yp9,yp10,yp11
+			dc.l	yp11,yp10,yp9,yp8,yp7,yp6,yp5,yp4,yp3,yp2,yp1,-1
+			
+
+padder			dc.l	$100
+			endif
+
+
+; ************************************************************************** ;
+; ************************************************************************** ;
+; **** GEMS handling routines.
+; ************************************************************************** ;
+
+SetupGems		if	music_flg
+			lea	sampbank,a0
+			move.l	a0,-(sp)
+			lea	seqbank,a0
+			move.l	a0,-(sp)
+			lea	envbank,a0
+			move.l	a0,-(sp)
+			lea	patchbank,a0
+			move.l	a0,-(sp)
+			jsr	gemsinit
+			adda.w	#4*4,sp
+			
+			move.l	#-1,sfx_number1
+			move.l	#-1,sfx_number2
+			move.l	#-1,sfx_number3
+			move.l	#-1,stop_sfx
+			move.l	#-1,music_number
+			move.l	#-2,last_music
+
+			endif
+			rts
+
+
+HandleGemsVBL		if	music_flg
+			jsr	gemsholdz80
+			jsr	gemsdmastart
+			move.w	#$0,BUSREQ			;Z80 bus request off
+			jsr	gemsdmaend
+			
+			move.l	stop_sfx,d0			;sto a sfx
+			bmi.s	.ss1
+    			jsr	StopMusic
+			move.l	#-1,stop_sfx
+
+.ss1			move.l	sfx_number1,d0			;queue sfx
+			bmi.s	.ss2
+			bsr	GoMusic
+			move.l	#-1,sfx_number1
+.ss2			move.l	sfx_number2,d0
+			bmi.s	.ss3
+			bsr	GoMusic
+			move.l	#-1,sfx_number2
+.ss3			move.l	sfx_number3,d0
+			bmi.s	.ss4
+			bsr	GoMusic
+			move.l	#-1,sfx_number3	
+
+.ss4			move.l	music_number,d0			;queue music
+			bmi.s	.sm
+			cmp.l	last_music,d0
+			beq.s	.sm
+   			move.l	d0,music_tmp
+			move.l	last_music,d0
+			jsr	StopMusic
+   			move.l	music_tmp,d0
+			move.l	d0,last_music
+			jsr	GoMusic
+			move.l	#-1,music_number
+			endif
+.sm			rts
+	
+; - Enter D0=music # -------------------------------------------------------
+
+GoMusic			if	music_flg
+			movem.l	a6/a0/d0,-(sp)		;preserve a6/a0/d0
+			jsr	gemsstartsong
+			movem.l	(sp)+,a6/a0/d0
+			endif
+			rts
+
+StopMusic		if	music_flg
+			movem.l	a6/a0/d0,-(sp)		;preserve a6/a0/d0
+			jsr	gemsstopsong
+			movem.l	(sp)+,a6/a0/d0
+			endif
+			rts
+
+			;don't use any regs
+SetSFX			tst.l	sfx_number1
+			bpl.s	.s2
+			move.l	sfx_poll,sfx_number1
+			rts
+.s2			tst.l	sfx_number2
+			bpl.s	.s3
+			move.l	sfx_poll,sfx_number2
+			rts
+.s3			tst.l	sfx_number3
+			bpl.s	.x
+			move.l	sfx_poll,sfx_number3
+.x			rts
+
+levmusvec		dc.l	0,0,0,0						;level11 .. 13
+			dc.l	0,0,0,0						;level21 .. 23
+			dc.l	0,0,0,0						;level31 .. 33
+			dc.l	0,0,0,0						;level41 .. 43
+			dc.l	0						;level51
+			dc.l	0,0,0,0						;level61 .. 63
+			dc.l	0,0,0,0						;level71 .. 73
+			dc.l	0
+
+SetupLevelMusic		move.w	levnum,d1
+			lea	levmusvec,a1
+			asl.w	#2,d1
+			move.l	0(a1,d1.w),music_number		
+      			rts
+
+
+; ************************************************************************** ;
+; ************************************************************************** ;
+; **** Useful miscallaeneous routines.
+; ************************************************************************** ;
+
+TickTime		tst.b	second
+			bne.s	.s1
+			move.b	#hz5060+1,second
+.s1			subq.b	#1,second
+			rts
+
+
+FlagYES			tas	yes
+			rts
+FlagNO			tas	no
+			rts
+
+
+SetupMachine		if	music_flg
+			bsr	SetupGems
+			endif
+
+			bsr	SetupVDP
+			
+			clr.b	service
+			clr.b	no
+			st.b	yes
+			move.w	#$b42f,rndnum
+			move.l	#"cHiG",rndseed
+			move.l	#TheDmaStack,DMA_Stack	;set DMA stack pointer
+			lea	zero,a6
+			movem.l	(a6),d0-d7/a0-a6	; initialize all registers
+			rts
+
+
+
+;boing			incbin	data\objects\smiley.chr
+;			even
+;dma_smi		move.l	DMA_Stack,a6
+;			move.w	#32,-(a6)			;dest
+;			move.l	#boing,d1			;source
+;			lsr.l	#1,d1  				;/2
+;			move.l	d1,-(a6)
+;			move.w	#16,-(a6)			;len
+;			move.w	#_DMATransfer,-(a6)		;flag this data package is a dma transfer
+;			move.l	a6,DMA_Stack
+;			rts
+
+bang			MOVE.L	#$C0000000,vctrl
+			MOVE.W	color,vdata
+			add.w	#$111,color
+			and.w	#$fff,color
+			POLL	0
+			bra.s	bang
+		
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ DecompressSWD                                                          บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ Decompress data in Elmer's SWD format.                                 บ
+; วฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤถ
+; บ Inputs      A0.L    Pointer to compressed data (word aligned)          บ
+; บ             A1.L    Pointer to destination buffer                      บ
+; บ                                                                        บ
+; บ Outputs     None                                                       บ
+; บ                                                                        บ
+; บ Preserved   None                                                       บ
+; บ                                                                        บ
+; บ Note        Altered by Mike Lamb to use multi-bit shifts for speed.    บ
+; บ                                                                        บ
+; บ             D6.W = No of bits required from read routine.              บ
+; บ             D7.W = No of bits left in upper D1.                        บ
+; บ             D3.l = Length of data decompressed (.b)                    บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+			MODULE
+
+DecompressSWD		MOVEQ	#0,D7
+			moveq	#0,d3
+
+			BRA.S	.GetCommand
+
+.ByteCommand		MOVEQ	#8,D6
+			BSR	.ReadBits
+			MOVE.B	D1,(A1)+
+			addq.l	#1,d3	
+
+.GetCommand		DBRA	D7,.Skip0
+
+			MOVE	(A0)+,D1		
+			SWAP	D1
+			MOVEQ	#$0F,D7
+
+.Skip0			CLR.W	D1
+			ROL.L	#1,D1
+			TST.W	D1
+			BEQ.S	.ByteCommand	
+
+.GetLength		MOVEQ	#2,D2
+
+			DBRA	D7,.Skip1
+
+			MOVE	(A0)+,D1		
+			SWAP	D1
+			MOVEQ	#$0F,D7	
+
+.Skip1			CLR.W	D1
+			ROL.L	#1,D1
+			TST.W	D1
+			BEQ.S	.GotLength
+
+			MOVEQ	#2,D6
+			BSR.S	.ReadBits
+			TST.W	D1
+			BNE.S	.GotLength	
+
+			MOVEQ	#5,D2
+			MOVEQ	#4,D6
+			BSR.S	.ReadBits
+			TST.W	D1
+			BNE.S	.GotLength	
+
+			MOVEQ	#20,D2
+			MOVEQ	#8,D6
+			BSR.S	.ReadBits
+			TST.W	D1
+			BEQ.S	.EndOfFile	
+
+.GotLength		ADD.W	D1,D2
+
+.GetOffset		MOVEQ	#2,D6
+			BSR.S	.ReadBits
+			TST.W	D1
+			BEQ.S	.Offset5
+			SUBQ.W	#1,D1
+			BEQ.S	.Offset7
+			SUBQ.W	#1,D1
+			BEQ.S	.Offset9
+			SUBQ.W	#1,D1
+
+.Offset10		MOVEQ	#10,D6
+			BSR.S	.ReadBits
+			ADD.W	#$02A1,D1
+			BRA.S	.Copy	
+
+.Offset9		MOVEQ	#9,D6
+			BSR.S	.ReadBits
+			ADD.W	#$00A1,D1
+			BRA.S	.Copy
+
+.Offset7		MOVEQ	#7,D6
+			BSR.S	.ReadBits
+			ADD.W	#$0021,D1
+			BRA.S	.Copy
+
+.Offset5		MOVEQ	#5,D6
+			BSR.S	.ReadBits
+			ADDQ.W	#$1,D1
+
+.Copy			MOVE.L	A1,A2
+			SUB.W	D1,A2
+
+			SUBQ.W	#1,D2
+.CopyLoop		MOVE.B	(A2)+,(A1)+
+			addq.l	#1,d3
+			DBRA	D2,.CopyLoop	
+
+			BRA	.GetCommand
+
+;
+; D6.W = No of bits required
+; D7.W = No of bits left in upper word of D1.L
+;
+
+.ReadBits		CLR.W	D1
+			CMP.W	D6,D7
+			BCC.S	.Skip3
+
+			TST	D7
+			BEQ.S	.Skip2
+
+			ROL.L	D7,D1
+			SUB	D7,D6
+
+.Skip2			SWAP	D1
+			MOVE	(A0)+,D1
+			SWAP	D1
+			MOVEQ	#$10,D7
+
+.Skip3			ROL.L	D6,D1
+			SUB	D6,D7
+
+.EndOfFile		RTS
+
+			MODEND
+
+
+put_pal			moveq	#$f,d0
+.l1			move.w	(a0)+,d1
+			asl.w	#1,d1
+			move.w	d1,(a1)+
+			dbra	d0,.l1
+   			rts
+
+set_game_regs		move.w	#reg16+%00000001,vctrl	;scroll size 64*32
+			rts
+
+get_address		move.w	d6,d7			
+			asl.l	#2,d7
+			move.w	d6,d7
+			swap	d7
+			and.l	#$3fff0003,d7
+			or.l	#$40000000,d7
+			rts
+get_addressd1		move.w	d1,d5			
+			asl.l	#2,d5
+			move.w	d1,d5
+			swap	d5
+			and.l	#$3fff0003,d5
+			or.l	#$40000000,d5
+			rts
+
+get_vram_a		move.w	d1,d3	
+			asl.l	#2,d3
+			move.w	d1,d3
+			swap	d3
+			and.l	#$3fff0003,d3
+			tst.b	d2
+			beq.s	.vram
+     			cmp.b	#1,d2
+			beq.s	.cram
+			or.l	#$40000090,d3	;vsram
+			bne.s	.o
+.cram			or.l	#$c0000080,d3	;cram	      	
+			bne.s	.o
+.vram			or.l	#$40000080,d3	;vram
+.o			rts
+
+
+frame_delay		bsr	WaitFrm
+			btst.b	#start,joy1
+			bne.s	.y
+  			dbra	d1,frame_delay
+			tas	no
+			rts
+.y			tas	yes
+			rts
+
+
+frame_delay2		bsr	WaitFrm
+			dbra	d1,frame_delay2
+.x			rts
+		
+wait_frm2		move.w	vctrl,d1
+			and.w	#$80,d1
+			beq.s	wait_frm2
+			rts
+WaitFrm			move.b	second,d0
+.l1			cmp.b	second,d0
+			beq.s	.l1
+			rts
+		
+wipe_sprts		lea	SprtAttr_RAM,a0
+			move.w	#(4*80)-1,d0
+.l1			clr.w	(a0)+
+			dbra	d0,.l1
+			rts
+
+
+
+; ************************************************************************** ;
+; ************************************************************************** ;
+; **** Level setup routines
+; ************************************************************************** ;
+
+SetupGame		move.w	#GameVBLANK,VBLANKPhase
+			clr.l	joy1
+			clr.l	joy2
+			move.b	#but_c,button_a		;set defaults
+			move.b	#but_b,button_b
+			move.b	#but_a,button_c
+			move.b	#0,difficulty
+			move.b	#GolMaxLives-6,lives
+			bra	set_game_regs
+
+
+SetupLevel		jsr	InitVRamAlloc
+			bsr	SetupDATA
+			bsr	InitOBJECTS
+			jsr	SetupExt		;setup specific to level
+			bsr	DnldBits
+			bsr	SetupPanel
+			bsr	SetupMisc
+			if	show_tect
+			jsr	SetupCorners		;debug corners
+			endif
+			rts
+
+SetupDATA		bsr	GetDATA
+			bsr	SetMapLines				;map line table
+			bsr	SetupFloor				;setup floor table in RAM						   
+			bsr	SetupCharsetA				;setup charset A
+			bsr	Clean_DeComRam
+			bsr	SetupScrlB
+			bsr	SetupScrlA				;setup scroll A
+.xxx			rts	
+
+
+SetupMisc		lea	LevelWalls,a1
+			moveq	#((LevelEnd-LevelWalls)/4)-1,d1
+.l1			clr.l	(a1)+
+			dbra	d1,.l1
+			rts
+
+			
+GetDATA			move.w	levnum,d0
+			asl.w	#2,d0
+			lea	LevDATA_Vecs,a0
+			move.l	0(a0,d0.w),a0
+				
+			move.w	_LLim(a0),lft_lim			;left scroll limit
+			move.w	_RLim(a0),rte_lim			;right  "       "
+			move.w	_TLim(a0),top_lim			;top    "       "
+			move.w	_BLim(a0),bot_lim			;bottom "       "	
+			move.w	_MWide(a0),map_wide			;map width
+			move.w	_MDeep(a0),map_deep			;map depth
+			move.w	_MapX(a0),map_x_p			;map x
+			move.w	_MapY(a0),map_y_p			;map y
+			move.w	_PixX(a0),pix_x				;scroll x
+			move.w	_PixY(a0),pix_y				;scroll y
+			move.w	_PlrX(a0),__PlrX			;plr x
+			move.w	_PlrY(a0),__PlrY			;plr y
+			move.l	_MPal(a0),a4				;palette
+			bsr	SetupPalette
+			move.w	_Music(a0),music_number			;music
+			move.l	_Flr(a0),__Flr				;floor (held in RAM)
+			move.l	_Con(a0),LevelCon			;contour (held in ROM)
+			move.l	_Obj(a0),OBJECTDataLVec			;object trigger database
+			move.l	_Canm(a0),LevelCAnim			;char animation			
+			move.l	_ChrA(a0),__ChrA			;charset A (decompressed to RAM)
+			move.l	_ChrB(a0),__ChrB			;charset B (decompressed to RAM)
+			move.l	_MapA(a0),__MapA			;map A (held in RAM)
+			move.l	_MapB(a0),__MapB			;map B (held in ROM)
+			move.l	_BlkA(a0),__BlkA			;block A (held in ROM)
+			move.l	_BlkB(a0),__BlkB			;block B (held in ROM)
+			rts
+
+
+SetMapLines		lea	mapline_tab,a1
+			moveq	#0,d0
+;			sub.w	map_wide,d0
+			move.w	#$ff,d1
+.l3			move.w	d0,(a1)+
+			add.w	map_wide,d0
+			dbra	d1,.l3
+			rts
+
+
+SetupPalette		move.l	(a4)+,a1
+			cmp.l	#-1,a1
+			beq.s	.exit
+			bsr	SetSinglePalette
+			bra	SetupPalette
+.exit			rts
+			
+
+SetupFloor		lea	Floor_Buff,a1				;wipe buffer
+			move.l	a1,LevelFlr
+			move.w	#((Floor_Buff_End-Floor_Buff)/4)-1,d1
+.l1			clr.l	(a1)+
+			dbra	d1,.l1
+			
+			move.l	__Flr,a0
+			lea	Floor_Buff,a1
+			bra	DecompressSWD
+
+
+SetupCharsetA		move.l	__ChrA,a0
+			lea	DECOMPRESSION_RAM,a1
+			bsr	DecompressSWD
+			jsr	VRamAlloc_BF				;allocate the VRAM (d1=addrs)
+			bpl	bang					;out of mem
+			
+			move.l	DMA_Stack,a6
+			move.w	d1,-(a6)				;dest
+			move.l	#DECOMPRESSION_RAM/2,-(a6)		;source
+			lsr.w	#1,d3
+			move.w	d3,-(a6)				;len
+			move.w	#_DMATransfer,-(a6)			;flag this data package is a dma transfer
+			move.l	a6,DMA_Stack
+
+			bra	HandleDMAStack
+
+
+Clean_DeComRam		moveq	#2,d0
+.wait			and.w	vctrl,d0
+			bne.s	.wait
+			lea	DECOMPRESSION_RAM,a1
+			move.w	#((DECOMPRESSION_RAM_END-DECOMPRESSION_RAM)/4)-1,d1
+.l1			clr.l	(a1)+
+			dbra	d1,.l1	
+			rts	
+
+SetupScrlA		lea	MapA_Buff,a0				;clear corrupted map buffer
+			move.w	#((MapA_Buff_e-MapA_Buff)/4)-1,d0
+.l1			clr.l	(a0)+
+			dbra	d0,.l1
+			move.l	__MapA,a0
+			lea	MapA_Buff,a1
+			bsr	DecompressSWD
+			jmp	Unzip_ScrlA				;42*32 char area
+					
+
+HorLineScroll		equ	%00000011
+HorCellScroll		equ	%00000010
+HorWholScroll		equ	%00000000
+VerCellScroll		equ	%00000100
+VerWholScroll		equ	%00000000
+	
+SetScroll		move.w	#reg11,d1
+			add.w	d0,d1
+			move.w	d1,vctrl
+			rts
+
+
+
+
+DnldBits		rts
+			if	1=0
+			bsr	a2f
+			endif
+			rts
+
+			;setup panel
+SetupPanel		blit_vr Health1Chr,Panel_VRAM,Panel_Len,vram	;blit max size
+		
+			bsr	GetFreeOBJECT_HI			;panel is a resident object
+			bsr	SetupObjectRES		
+			move.l	OB_RefAnRam(a0),a2
+			move.w	#Health2_Base,_VRAM_Adiv32(a2)		;Set Base of resident sprite in VRAM
+			move.w	#Health2_OB,OB_Type(a0)
+			move.w	#$28,OB_Xpos(a0)
+			move.w	#$e6,OB_Ypos(a0)
+			lea	Health2ANM,a1
+			bsr	.o1
+			bsr	GetFreeOBJECT_HI			;panel is a resident object
+			bsr	SetupObjectRES		
+			move.l	OB_RefAnRam(a0),a2
+			move.w	#Health1_Base,_VRAM_Adiv32(a2)		;Set Base of resident sprite in VRAM
+			move.w	#Health1_OB,OB_Type(a0)
+			move.w	#$2c,OB_Xpos(a0)
+			move.w	#$e8,OB_Ypos(a0)
+			lea	Health1ANM,a1
+			bsr	.o1
+
+			SPAWN_HI	4*32
+			move.w	#Numeral_OB,OB_Type(a0)
+			move.w	#$4c,OB_Xpos(a0)
+			move.w	#$e4,OB_Ypos(a0)
+			moveq	#0,d1
+			move.b	lives,d1
+			asl.w	#2,d1
+			lea	NumeralANM_TAB,a1
+			move.l	0(a1,d1.w),a1
+			
+.o1			bsr	SetNewAnim	
+			bsr	ForceNewAnim
+			move.b	#_ob_hiprior+_ob_nooff,OB_Flag2(a0)
+			bset.b	#ob_noclip,OB_Flag1(a0)			;clipping off
+			bset.b	#ob_noscroll,OB_Flag5(a0)		
+			rts
+
+
+def_whiteout		equ	-16
+def_blackout		equ	16
+def_blkwhtin		equ	0	
+
+
+LightenPalette		tst.b	PalLightCNT
+			bne.s	.x
+			lea	Pal1,a1
+			lea	TempPalette,a2
+			move.w	#$3f,d1
+.l1			move.w	(a1),d2
+			move.w	d2,(a2)+
+			add.w	#$222,d2
+			cmp.w	#$fff,d2
+			ble.s	.ok
+			move.w	#$fff,d2
+.ok			move.w	d2,(a1)+
+			dbra	d1,.l1
+   			move.b	#4,PalLightCNT
+.x			rts
+
+
+RestorePalette		tst.b	PalLightCNT
+			beq.s	.x
+			subq.b	#1,PalLightCNT
+			bne.s	.x
+			lea	Pal1,a1
+			lea	TempPalette,a2
+			move.w	#$3f,d1
+.l1			move.w	(a2)+,(a1)+
+			dbra	d1,.l1
+.x   			rts
+
+
+wait_fade		tst.b	faded_flg
+			beq.s	wait_fade
+			rts	
+
+black_palette		lea	Pal1,a0
+			moveq	#$3f,d0
+.l1			clr.w	(a0)+
+			dbra	d0,.l1
+   			rts
+
+dark_fader		moveq	#$3,d1	   			;fade to black
+			move.w	#def_blackout,d2
+dark_fader1		bra	set_blackout
+
+lite_fader		moveq	#$3,d1
+			move.w	#def_blkwhtin,d2
+lite_fader1		bra	set_blackin	
+
+
+set_whiteout		move.b	d1,fade_dex
+			clr.b	fade_cnt
+			st.b	whiteout_flg
+			clr.b	blackout_flg
+			clr.b	faded_flg
+			clr.w	pfader
+			move.w	d2,pfader_d
+			rts
+set_blackout		move.b	d1,fade_dex
+			clr.b	fade_cnt
+			st.b	blackout_flg
+			clr.b	whiteout_flg
+			clr.b	faded_flg
+			clr.w	pfader
+			move.w	d2,pfader_d
+			rts
+set_whitein		move.b	d1,fade_dex
+			move.l	a1,fade_palette
+			clr.b	fade_cnt
+			st.b	whitein_flg
+			clr.b	blackin_flg
+			clr.b	faded_flg
+			move.w	#-16,pfader
+			move.w	d2,pfader_d
+			rts
+set_blackin		move.b	d1,fade_dex
+			move.l	a1,fade_palette
+			clr.b	fade_cnt
+			st.b	blackin_flg
+			clr.b	whitein_flg
+			clr.b	faded_flg
+			move.w	#16,pfader
+			move.w	d2,pfader_d
+			rts
+
+
+Fade_Routs		addq.b	#1,fade_cnt
+			move.b	fade_dex,d1
+			and.b	d1,fade_cnt
+			bne	.x
+					
+			move.w	pfader_d,d1
+			tst.b	blackin_flg
+			bne.s	.lite1
+			tst.b	blackout_flg
+			bne.s	.dark1
+			tst.b	whitein_flg
+			bne.s	.dark2
+			tst.b	whiteout_flg
+			bne.s	.lite2
+			rts	
+
+.dark1			cmp.w	pfader,d1
+			beq.s	.fin
+			addq.w	#2,pfader
+			bra	.df
+.lite1			cmp.w	pfader,d1
+			beq.s	.fin
+			subq.w	#2,pfader
+      			bra	.df
+.dark2			cmp.w	pfader,d1
+			beq.s	.fin
+			addq.w	#2,pfader
+			bra	.df
+.lite2			cmp.w	pfader,d1
+			beq.s	.fin
+			subq.w	#2,pfader
+			bra	.df
+.fin			st.b	faded_flg
+			clr.b	whitein_flg
+			clr.b	blackin_flg
+			clr.b	whiteout_flg
+			clr.b	blackout_flg		
+
+.df			move.l	fade_palette,a3
+			lea	Pal1,a2
+			move.w	pfader,d6
+			
+;			tst.b	frame_flg
+;			beq.s	.1ok
+;			moveq	#32-1,d7
+;			bra	.slev_lp
+.1ok			moveq	#64-1,d7		
+
+.slev_lp		move.w	(a3)+,d0
+			move.w	d0,d1
+			move.w	d1,d2
+			and.w	#$F,d0
+			lsr.w	#4,d1
+			and.w	#$f,d1
+			lsr.w	#8,d2
+			and.w	#$f,d2	
+
+.do_r			sub.w	d6,d0
+			bpl.s	.r_mchk
+			moveq	#0,d0
+.r_mchk			cmp.w	#$e,d0
+			ble.s	.do_g
+			moveq	#$e,d0	
+
+.do_g			sub.w	d6,d1
+			bpl.s	.g_mchk
+			moveq	#0,d1
+.g_mchk			cmp.w	#$e,d1
+			ble.s	.do_b
+			moveq	#$e,d1	
+
+.do_b			sub.w	d6,d2
+			bpl.s	.b_mchk
+			moveq	#0,d2
+.b_mchk			cmp.w	#$e,d2
+			ble.s	.set
+			moveq	#$e,d2
+.set			lsl.w	#4,d2
+			or.b	d1,d2
+			lsl.w	#4,d2
+			or.b	d0,d2
+			move.w	d2,(a2)+
+			dbra	d7,.slev_lp
+.x			rts
+
+
+SetSinglePalette	move.l	(a1)+,a2
+			move.w	(a1)+,d7
+.l1			move.w	(a1)+,(a2)+
+			dbra	d7,.l1
+			rts
+	
+
+BlackPalette		lea	Pal1,a0
+			moveq	#$3f,d0
+.l1			clr.w	(a0)+
+			dbra	d0,.l1
+   			rts
+
+
+SetupVDP		lea	vdp1,a0
+			bsr	vdp_set
+			move.w	#reg15+2,vctrl
+			move.l	#$c0000000,vctrl
+			moveq	#$3f,d7
+.cram_clra		move.w	#0,vdata
+			dbra	d7,.cram_clra
+			rts
+
+
+; VRAM MEMORY MAP (Tentative)
+;
+; $0000 - $8000		- Background A/B Tileset (1024 Chars)
+; $8000 - $bfff		- Flown Sprite Objects (536 Chars (5*10*10 Objects))
+; $c000 - $cfff		- Background A CharMap
+; $d000 - $dfff		- Free (128 Chars)
+; $e000 - $efff		- Background B CharMap
+; $f000 - $f3ff		- HScroll Table
+; $f400 - $f6ff		- Sprite Attr Table
+; $f800 - $ffff		- Free (64 Chars)
+
+
+			;initial VDP register values
+			;
+vdp1			dc.b	%00000100	;0  HBL off, read HV count off
+			dc.b	%01110100	;1  disp on, VBL on, DMA on, NTSC
+			dc.b	$c000>>10	;2  SCROLL A @ $c000        
+			dc.b	0		;3  WINDOW
+			dc.b	$e000>>13	;4  SCROLL B @ $e000
+			dc.b	$f400>>9	;5  SPRT ATTR TAB @ $f400
+			dc.b	$00		;6  *		
+			dc.b	0		;7  back colour
+			dc.b	$00		;8  *
+			dc.b	$00		;9  *	
+			dc.b	255		;10 HBL every 0 line(s)
+			dc.b	%00000111	;11 %00000vhh : hh=line scroll:v=cell scroll
+			if	column=32
+			dc.b	%00000000	;12 32 coloumn, shadow off, interlace off
+			else
+			dc.b	%10000001	;12 40 coloumn, shadow off, interlace off
+			endif
+			dc.b	$f000>>10	;13 H scroll data tab @ $f000
+			dc.b	$00		;14 *
+			dc.b	2		;15 auto inc val = 2
+			dc.b	%00000001	;16 scroll size 64*32
+			dc.b	0		;17 window from 1st col
+			dc.b	0		;18 window to 3 line
+			EVEN
+		
+vdp_set			MOVE	#$8000,D0
+			MOVEQ	#17,D7
+.VDP_REG_LP		MOVE.B	(A0)+,D0	;READ INITIAL REG VALUE
+			MOVE	D0,VCTRL	;WRITE TO CONTROL PORT
+			ADD	#$100,D0	;NEXT REGISTER
+			DBRA	D7,.VDP_REG_LP
+			RTS
+
+
+; ************************************************************************** ;
+; ************************************************************************** ;
+; **** Joypad read/data format routines (3 Button & 6 Button).
+; ************************************************************************** ;
+
+
+HandleJoypads		IF	music_flg
+			jsr	gemsholdz80
+			ENDIF		
+
+			bsr	Joy1_Read
+			bsr	Joy2_Read 		
+
+			IF	music_flg
+			jsr	gemsreleasez80
+			ENDIF
+
+			tst.b	demo_mode
+			beq.s	.x
+			move.b	d_joy1,demo_djoy_1
+			move.b	d_joy2,demo_djoy_2
+.x			rts
+
+
+			;joystick decode data
+			;
+Joxtab			dc.B	%00000000
+			dc.B	%00000001
+			dc.B	%00000010
+			dc.B	%00000001
+			dc.B	%00000100
+			dc.B	%00000101
+			dc.B	%00000110	
+			dc.B	%00000110	
+			dc.B	%00001000
+			dc.B	%00001001
+			dc.B	%00001010
+			dc.B	%00001010	
+			dc.B	%00001000	
+			dc.B	%00001001
+			dc.B	%00001010
+			dc.B	%00001010	
+
+
+JOYUP			=	0
+JOYDOWN			=	1
+JOYLEFT			=	2
+JOYRIGHT		=	3
+JOY_A			=	4
+JOY_B			=	5
+JOY_C			=	6
+JOYSTART		=	7
+
+
+			;Joystick read routine
+			;
+			;EXITS WITH 'D0' AS JOY VALUE	
+			;
+Joy2_Read		LEA	joy2prt,A1
+			bsr	Joy_Read
+			move.b	d0,joy2		
+
+			tst.b	d0		;debounce joypad
+			bne.s	.ok
+   			clr.b	o_joy2
+			clr.b	d_joy2
+			rts	
+
+.ok			move.b	o_joy2,d1
+			
+			moveq	#0,d7		
+
+.l1			move.b	d1,d2
+			and.b	#1,d2
+			move.b	d0,d3
+			and.b	#1,d3	
+
+			cmp.b	d2,d3
+			beq.s	.2	
+
+.1			tst.b	d3
+			beq.s	.4
+			bset.b	d7,o_joy2
+			bset.b	d7,d_joy2
+			bra	.3
+.4			bclr.b	d7,o_joy2
+			bclr.b	d7,d_joy2
+			bra	.3
+
+.2			bclr.b	d7,d_joy2		
+
+.3			lsr.b	#1,d0
+			lsr.b	#1,d1
+			
+			addq.b	#1,d7
+			cmp.b	#8,d7
+			bne.s	.l1
+			rts
+
+
+Joy1_Read		lea	joy1prt,A1
+			bsr	Joy_Read
+			move.b	d0,joy1		;un-debounced joypad	
+			tst.b	d0		;debounce joypad
+			bne.s	.ok
+   			clr.b	o_joy1
+			clr.b	d_joy1
+			rts	
+
+.ok			move.b	o_joy1,d1
+			
+			moveq	#0,d7	
+
+.l1			move.b	d1,d2
+			and.b	#1,d2
+			move.b	d0,d3
+			and.b	#1,d3
+
+			cmp.b	d2,d3
+			beq.s	.2
+
+.1			tst.b	d3
+			beq.s	.4
+			bset.b	d7,o_joy1
+			bset.b	d7,d_joy1
+			bra	.3
+.4			bclr.b	d7,o_joy1
+			bclr.b	d7,d_joy1
+			bra	.3
+
+.2			bclr.b	d7,d_joy1		
+
+.3			lsr.b	#1,d0
+			lsr.b	#1,d1
+			
+			addq.b	#1,d7
+			cmp.b	#8,d7
+			bne.s	.l1
+			rts
+
+			tst.b	d0
+ddswe			beq.s	.1
+			cmp.b	o_joy1,d0
+			beq.s	.2
+.1			move.b	d0,o_joy1
+			move.b	d0,d_joy1
+			rts
+.2			clr.b	d_joy1
+			rts
+
+
+
+Joy_Read		MOVE.B #$40,joy1dir-joy1prt(A1)
+			MOVE.B #0,(A1)
+			MOVEQ  #20,D1
+jw0:			NOP
+			DBRA   D1,jw0
+
+			MOVE.B (A1),D0
+			NOT.B  D0
+			ASL.B  #2,D0
+			AND.L  #%11000000,D0
+
+			MOVE.B #$40,(A1)
+			MOVEQ  #20,D1
+jw1:			NOP
+			DBRA   D1,jw1
+ 
+			MOVE.B (A1),D1
+			NOT.B  D1
+			AND.L  #%00111111,D1
+			OR.L   D1,D0
+			MOVE.L D0,D1
+			AND.L  #$f0,D1
+			AND.L  #$f,D0
+			MOVE.L A0,-(SP)
+			LEA    Joxtab,A0
+			MOVE.B (A0,D0.L),D0
+
+			OR.B   D1,D0
+
+.SKIP			MOVE.L (SP)+,A0
+			MOVE.B #0,joy1dir-joy1prt(A1)
+			rts
+
+
+tst_d_button_a		move.b	button_a,d7		
+			btst.b	d7,d_joy1
+			rts
+tst_d_button_b		move.b	button_b,d7		
+			btst.b	d7,d_joy1
+			rts
+tst_d_button_c		move.b	button_c,d7
+			btst.b	d7,d_joy1
+			rts
+tst_button_a		move.b	button_a,d7		
+			btst.b	d7,joy1
+			rts
+tst_button_b		move.b	button_b,d7		
+			btst.b	d7,joy1
+			rts
+tst_button_c		move.b	button_c,d7
+			btst.b	d7,joy1
+			rts
+		
+
+
+; ************************************************************************** ;
+; ************************************************************************** ;
+; **** DMA routines - Game related (Scroll, spot animation etc.)
+; ************************************************************************** ;
+
+
+cyc_pal			dc.l	-1,Pal1,Pal1,Pal3
+
+cyc_1st			dc.b	-1,13,14,1		;1st colour
+cyc_2nd			dc.b	-1,15,15,13		;last colour
+
+cyc_dir			dc.b	-1,0,0,0		;0=< : 1=>
+cyc_dela		dc.b	-1,5,9,2
+
+
+HandleColorCycles	tst.b	faded_flg
+			beq.s	.x
+
+			tst.b	cyc_num
+			beq.s	.x
+			tst.b	cyc_del
+			beq.s	.ok
+			subq.b	#1,cyc_del
+.x			rts
+
+.ok			moveq	#0,d1
+			moveq	#0,d2
+			moveq	#0,d3
+			moveq	#0,d4	
+
+			move.b	cyc_num,d1
+			lea	cyc_dela,a1
+			move.b	0(a1,d1.w),cyc_del	
+
+			lea	cyc_dir,a1
+			move.b	0(a1,d1.w),d2
+			lea	cyc_1st,a1
+			move.b	0(a1,d1.w),d3
+			lea	cyc_2nd,a1
+			move.b	0(a1,d1.w),d4
+			asl.w	#2,d1
+			lea	cyc_pal,a1
+			move.l	0(a1,d1.w),a1
+			move.l	a1,a2
+			asl.w	#1,d3
+			asl.w	#1,d4
+			add.l	d3,a1
+			add.l	d4,a2
+
+			tst.b	d2
+			beq.s	.backward
+
+.forward		move.l	a2,a3
+			subq.l	#2,a3
+		
+			cmp.l	a3,a1		;two colours
+			bne.s	.o2
+			move.w	(a2),d2
+			move.w	(a3),(a2)
+			move.w	d2,(a3)
+			rts
+.o2			move.w	(a2),d2
+.l1			move.w	(a3),(a2)
+   			subq.l	#2,a2
+			subq.l	#2,a3
+			cmp.l	a3,a1
+			bne.s	.l1
+			move.w	(a3),(a2)
+			move.w	d2,(a3)
+			rts
+
+.backward		move.l	a1,a3
+			addq.l	#2,a3
+			
+			cmp.l	a3,a2
+			bne.s	.o1
+			move.w	(a1),d2
+			move.w	(a3),(a1)
+			move.w	d2,(a3)
+			rts
+.o1			move.w	(a1),d2
+.l2			move.w	(a3),(a1)
+   			addq.l	#2,a1
+			addq.l	#2,a3
+			cmp.l	a3,a2
+			bne.s	.l2
+			move.w	(a3),(a1)
+			move.w	d2,(a3)
+			rts
+
+
+; ************************************************************************** ;
+
+can_v			dc.l	-1,can1				;vector to color animation sequence
+
+can1			dc.b	0,1,-1			;index to 3 tabs belo
+
+can_pal			dc.l	Pal2,Pal1			;palette #
+can_col			dc.b	7,$b				;color #
+can_cnt			dc.b	4,4				;delay
+
+can_off			dc.w	can_tab-can_tab,c1t-can_tab
+
+can_tab			dc.w	$117,$115,$003,$001,$000,$000,$000,$000,$000,$000,$000,-1		;sequence of colors
+c1t			dc.w	$033,$044,$055,$066,$055,$044,-1 
+
+HandleColorAnims	tst.b	faded_flg
+			beq.s	.x
+			
+			bsr	HandleSignCAnim
+
+			tst.b	can_num
+			bne.s	.2
+.x			rts
+		
+.2			lea	zero,a1
+			movem.l	(a1)+,d0-d7	
+
+			move.b	can_num,d1
+			asl.b	#2,d1
+			lea	can_v,a1
+			move.l	0(a1,d1.w),a1
+			
+			moveq	#0,d1
+.loop			move.b	0(a1,d1.w),d2
+			bmi.s	.x
+		
+			lea	can_del,a2
+			tst.b	0(a2,d1.w)
+			beq.s	.ok
+			subq.b	#1,0(a2,d1.w)
+			bra	.nxt
+.ok			lea	can_cnt,a3
+			move.b	0(a3,d2.w),0(a2,d1.w)
+					
+			lea	can_col,a2
+			move.b	0(a2,d2.w),d3
+			asl.b	#1,d3
+			asl.w	#1,d2
+			lea	can_off,a2
+			move.w	0(a2,d2.w),d4
+			lea	can_dex,a4
+			add.b	0(a4,d1.w),d4
+			asl.w	#1,d2
+			lea	can_pal,a2
+			move.l	0(a2,d2.w),a2
+		
+			lea	can_tab,a3
+			move.w	0(a3,d4.w),d5
+			bmi.s	.1
+			asl.w	#1,d5
+			move.w	d5,0(a2,d3.w)
+			addq.b	#2,0(a4,d1.w)
+.nxt			addq.b	#1,d1
+			bra	.loop
+.1			clr.b	0(a4,d1.w)
+			bra	.loop
+
+s1cat			dc.w	$066,$033,$066,$033,$066,$033,$033,$033,$033,$033,$066,-1
+s2cat			dc.w	$066,$033,$033,$033,$066,$033,$066,$033,$066,$066,$033,-1
+s3cat			dc.w	$033,$033,$033,$033,$033,$033,$066,$033,$066,$033,$033
+			dc.w	$066,$066,$033,$033,$033,$066,$066,$066,-1
+s4cat			dc.w	$066,$066,$066,$033,$033,$033,$033,$033,$033,$033,$066,-1
+
+scatv			dc.l	s1cat,s2cat,s3cat,s4cat
+
+HandleSignCAnim		cmp.w	#Level31,levnum
+			blt.s	.x
+			cmp.w	#Level34,levnum
+			bgt.s	.x
+
+			tst.b	SignCAnimDel
+			beq.s	.1
+			subq.b	#1,SignCAnimDel
+.x			rts
+.1			btst.b	#0,second
+			beq.s	.x
+			
+			move.l	SignCAnimVec,a1
+			moveq	#0,d1
+.l1			move.b	SignCAnimDex,d1
+			move.w	0(a1,d1.w),d1
+			bpl.s	.ok
+			clr.b	SignCAnimDex
+			bsr	Randy
+			and.w	#$7f,d6
+			move.b	d6,SignCAnimDel
+			and.w	#3,d6
+			asl.w	#2,d6
+			move.l	scatv(pc,d6.w),SignCAnimVec
+			rts
+.ok			asl.w	#1,d1
+			move.w	d1,Pal1+($c*2)
+			addq.b	#2,SignCAnimDex
+			rts
+
+
+			
+			
+
+
+; - NUMBER PRINTS ----------------------------------------------------------
+
+bbase			dc.b	100,10,1
+			even
+wbase			dc.w	10000,1000,100,10,1
+lbase			dc.l	1000000,100000,10000,1000,100,10,1
+ 
+c_byte			;tst.b	d5
+			;beq.s	.x
+			clr.b	d3
+			lea	bbase,a1
+			moveq	#0,d0
+.l2			bsr	get_address
+			move.l	d7,vctrl
+			moveq	#0,d1
+.l1			sub.b	0(a1,d0.w),d5
+			bmi.s	.1
+			addq.w	#1,d1
+			bra	.l1
+.1			add.b	0(a1,d0.w),d5
+			tst.w	d1
+			bne.s	.prn
+			tst.b	d3
+			bne.s	.prn
+			tst.b	d4
+			beq.s	.5
+.6			subq.b	#1,d4
+			bra	.2
+.5			;move.w	#$400c+pan_off+$8000,vdata	;pblnk,vdata
+			;bra	.2
+.prn			tst.b	d4
+			bne.s	.6
+;			add.w	#p029_base,d1
+			move.w	d1,vdata
+			st.b	d3
+.2			addq.w	#2,d6
+			addq.w	#1,d0
+			cmp.w	#3,d0
+			bne.s	.l2
+.x			rts	
+
+
+c_long			tst.l	d5
+			beq.s	.x
+			clr.b	d3
+			lea	lbase,a1
+			moveq	#0,d0
+.l2			bsr	get_address
+			move.l	d7,vctrl
+			moveq	#0,d1
+.l1			sub.l	0(a1,d0.w),d5
+			bmi.s	.1
+			addq.w	#1,d1
+			bra	.l1
+.1			add.l	0(a1,d0.w),d5
+			tst.w	d1
+			bne.s	.prn
+			tst.b	d3
+			bne.s	.prn
+			tst.b	d4
+			beq.s	.5
+.6			subq.b	#1,d4
+			bra	.2
+.5;			move.w	#pblnk,vdata
+			bra	.2
+.prn			tst.b	d4
+			bne.s	.6
+;			add.w	#p029_base,d1
+			move.w	d1,vdata
+			st.b	d3
+.2			addq.w	#2,d6
+			addq.w	#4,d0
+			cmp.w	#28,d0
+			bne.s	.l2
+.x			rts
+
+
+;; ********** DEBUG STUFF ************ ;;
+
+here			POLL	0
+			move.l	#$c0000000,vctrl
+			moveq	#$3f,d0
+			lea	Pal1,a0
+.l1			move.w	(a0),d1
+			addq.w	#1,d1
+			move.w	d1,(a0)+
+			move.w	d1,vdata
+			dbra	d0,.l1
+			bra	here
+
+numbers			move.w	#reg15+2,vctrl
+			
+			rts
+
+
+hex_print_b		bsr	get_address
+			move.l	d7,vctrl
+			move.b	d5,d1
+			bra	digit	
+
+hex_print_w		bsr	get_address
+			move.l	d7,vctrl
+			move.w	d5,d1		
+			lsr.w	#8,d1
+			bsr	digit
+			move.w	d5,d1
+			and.w	#$ff,d1
+			bra	digit		
+
+hex_print_l		bsr	get_address
+			move.l	d7,vctrl
+			move.l	d5,d1
+			swap	d1
+			lsr.w	#8,d1
+			bsr	digit
+			move.l	d5,d1
+			swap	d1
+			and.w	#$ff,d1
+			bsr	digit
+			move.l	d5,d1
+			lsr.w	#8,d1
+			bsr	digit
+			move.w	d5,d1
+			and.w	#$ff,d1	
+
+digit			moveq	#0,d2
+			move.b	d1,d2
+			lsr.b	#4,d2
+			bsr	dig1
+			moveq	#0,d2
+			move.b	d1,d2
+			and.b	#$f,d2
+			
+dig1			
+			;add.w	#hex_base+$8000+cp3,d2
+			move.w	d2,vdata
+			rts			
+
+		
+		
+a2f			rts
+			if	1=0
+			lea	a2f_chr,a0
+			move.w	#$10000-(16*32),d6
+			bsr	get_address
+			move.l	d7,vctrl
+			move.w	#((16*32)/2)-1,d0
+.l1			move.w	(a0)+,vdata
+			dbra	d0,.l1
+			rts
+			endif	
+
+
+;*** RANDOM NUMBER ROUTINES
+Randy			move.l	rndseed,d7
+			move.w	rndnum,d6
+			rol.l	#1,d7
+			eor.w	d6,d7
+			swap	d7
+			eor.w	d7,d6
+			rol.w	#1,d6
+			eor.w	d6,d7
+			swap	d7
+			eor.w	d7,d6
+			move.w	d6,rndnum
+			move.l	d7,rndseed
+			rts
+
+

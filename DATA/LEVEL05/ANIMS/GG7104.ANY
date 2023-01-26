@@ -1,0 +1,18 @@
+	include	testani.68k
+
+	ani_palette	GG7104
+	ani_sprites	GG7104
+
+GG7104_anim	animation
+@1	ani_sprite	GG7104_0001
+	ani_sprite	GG7104_0002
+	ani_sprite	GG7104_0003
+	ani_sprite	GG7104_0004
+	ani_sprite	GG7104_0005
+	ani_sprite	GG7104_0006
+	ani_sprite	GG7104_0007
+	ani_sprite	GG7104_0008
+	ani_goto	@1
+	ani_end
+
+	ani_footer

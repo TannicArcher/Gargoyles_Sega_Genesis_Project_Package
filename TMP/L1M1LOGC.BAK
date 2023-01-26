@@ -1,0 +1,384 @@
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ EXPLOSION #1 LOGIC							   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ Explosion control logic ...						   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+;
+;SetupExplode1		bsr	GetFreeOBJECT	 			;get a free object
+;			bpl.s	.ohoh					;ohoh no objects free
+;			move.l	#Explode1_MAX_Size,d3			;explosions biggest size requirement
+;			bsr	SetupObjectFLY_ROM			;setup explosion as a raw ROM flown object
+;			bpl.s	.ohoh					;explosion wasn't setup
+;			move.w	#Explode1_OB,OB_Type(a0)		;setup explosion specifics for this object
+;			move.b	#_ob_hiprior,OB_Flag2(a0)
+;			move.w	#-1,OB_Nrg(a0)
+;.ohoh			rts
+;
+;
+;Explode1_Logic		btst.b	#ob_setup,OB_Flag2(a0)
+;			bne.s	.1
+;			bset.b	#ob_setup,OB_Flag2(a0)
+;			lea	Explode1ANM,a1				;nul animation
+;			bsr	SetNewAnim
+;			
+;.1			tst.l	OB_AnSequence(a0)
+;			bne.s	.x
+;			bra	SwitchObjectOff
+;.x			rts
+
+
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ EXPLOSION #2 LOGIC							   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ Explosion control logic ...						   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+;
+;SetupExplode2		bsr	GetFreeOBJECT	 			;get a free object
+;			bpl.s	.ohoh					;ohoh no objects free
+;			move.l	#Explode2_MAX_Size,d3			;explosions biggest size requirement
+;			bsr	SetupObjectFLY_ROM			;setup explosion as a raw ROM flown object
+;			bpl.s	.ohoh					;explosion wasn't setup
+;			move.w	#Explode2_OB,OB_Type(a0)		;setup explosion specifics for this object
+;			move.b	#_ob_hiprior,OB_Flag2(a0)
+;			move.w	#-1,OB_Nrg(a0)
+;.ohoh			rts
+;
+;
+;Explode2_Logic		btst.b	#ob_setup,OB_Flag2(a0)
+;			bne.s	.1
+;			bset.b	#ob_setup,OB_Flag2(a0)
+;			lea	Explode2ANM,a1				;nul animation
+;			bsr	SetNewAnim
+;			
+;.1			tst.l	OB_AnSequence(a0)
+;			bne.s	.x
+;			bra	SwitchObjectOff
+;.x			rts
+
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ ARCHER #1 LOGIC							   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ Archer control logic ...						   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+;
+;SetupArcher1		bsr	GetFreeOBJECT	 			;get a free object
+;			bpl.s	.ohoh					;ohoh no objects free
+;			move.l	#Archer1_MAX_Size,d3			;archers biggest size requirement
+;			bsr	SetupObjectFLY_ROM			;setup archer as a raw ROM flown object
+;			bpl.s	.ohoh					;archer wasn't setup
+;			move.w	#Archer1_OB,OB_Type(a0)			;setup archer specifics for this object
+;			move.b	#_ob_hiprior,OB_Flag2(a0)
+;			move.w	#-1,OB_Nrg(a0)
+;.ohoh			rts
+;
+;
+;Archer1_Logic		btst.b	#ob_setup,OB_Flag2(a0)
+;			bne.s	.1
+;			bset.b	#ob_setup,OB_Flag2(a0)
+;			lea	Archer1ANM,a1				;nul animation
+;			bsr	SetNewAnim
+;			
+;.1			rts
+
+
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ WEAPONS EXPERT #1 LOGIC						   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ Weapons Expert control logic ...					   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+;  				
+;SetupWeapExp1		bsr	GetFreeOBJECT	 			;get a free object
+;			bpl.s	.ohoh					;ohoh no objects free
+;			move.l	#WeapExp1_MAX_Size,d3			;archers biggest size requirement
+;			bsr	SetupObjectFLY_ROM			;setup archer as a raw ROM flown object
+;			bpl.s	.ohoh					;archer wasn't setup
+;			move.w	#WeapExp1_OB,OB_Type(a0)		;setup archer specifics for this object
+;			move.b	#_ob_hiprior,OB_Flag2(a0)
+;			move.w	#-1,OB_Nrg(a0)
+;.ohoh			rts
+;
+;
+;WeapExp1_Logic		btst.b	#ob_setup,OB_Flag2(a0)
+;			bne.s	.1
+;			bset.b	#ob_setup,OB_Flag2(a0)
+;			lea	WeapExp1ANM,a1				;nul animation
+;			bsr	SetNewAnim
+;			
+;.1			rts
+
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ CAMPFIRE #1 LOGIC (LEVEL1.1)					   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ Campfire #1 Control Logic						   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+;
+;CampFire1_Logic		btst.b	#ob_setup,OB_Flag2(a0)
+;			bne.s	.1
+;			bset.b	#ob_setup,OB_Flag2(a0)
+;			lea	CampFireANM1,a1				;animate fire burning		
+;			tst.b	DoneFire1FLG
+;			beq.s	.2
+;			lea	CampFireANM3,a1				;animate fire burning		
+;.2			bra	SetNewAnim
+;				
+;.1			tst.b	DoneFire1FLG
+;			bne.s	.x
+;			btst.b	#start,d_joy1
+;			beq.s	.x
+;			lea	CampFireANM2,a1				;animate fire destroying	
+;			bsr	SetNewAnim
+;  			bsr	SetupCampFireDebris			;setup debris
+;			clr.b	DetectFire1FLG				;Detect fire flag OFF
+;			st.b	DoneFire1FLG				;flag this problem is solved
+;			move.b	#$60,BurnTent1FLG			;Burn tent flag ON
+;.x			rts
+
+
+;CampFire2_Logic		btst.b	#ob_setup,OB_Flag2(a0)
+;			bne.s	.1
+;			bset.b	#ob_setup,OB_Flag2(a0)
+;			lea	CampFireANM1,a1				;animate fire burning		
+;			tst.b	DoneFire2FLG
+;			beq.s	.2
+;			lea	CampFireANM3,a1				;animate fire burning		
+;.2			bra	SetNewAnim
+;				
+;.1			tst.b	DoneFire2FLG
+;			bne.s	.x
+;			btst.b	#start,d_joy1
+;			beq.s	.x
+;			lea	CampFireANM2,a1				;animate fire destroying			
+;			bsr	SetNewAnim
+;  			bsr	SetupCampFireDebris			;setup debris
+;			clr.b	DetectFire2FLG				;Detect fire flag OFF
+;			st.b	DoneFire2FLG				;flag this problem is solved
+;			move.b	#$60,BurnTent2FLG			;Burn tent flag ON
+;.x			rts
+
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ CAMPFIRE DEBRIS LOGIC (LEVEL1.1)					   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ Campfire Debris Control Logic					   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+;
+;DebrisXYA		dc.w	$0400,$0300,0,$48			;1
+;			dc.b	%00001011,0
+;			dc.w	$0300,$0400,0,$48			;2
+;			dc.b	%00001011,0
+;			dc.w	$0200,$0500,0,$48			;3
+;			dc.b	%00001011,0
+;			dc.w	$0100,$0600,0,$48			;4
+;			dc.b	%00001011,0
+;			dc.w	$0100,$0600,0,$48			;5
+;			dc.b	%00001010,0
+;			dc.w	$0200,$0500,0,$48			;6
+;			dc.b	%00001010,0
+;			dc.w	$0300,$0400,0,$48			;7
+;			dc.b	%00001010,0
+;			dc.w	$0400,$0300,0,$48			;8
+;			dc.b	%00001010,0
+;			
+;
+;SetupCampFireDebris	movem.l	d0/a0,-(sp)
+;			
+;			move.l	a0,a6					;save spawners object #
+;			
+;			moveq	#7,d1
+;.l1			move.l	d1,-(sp)
+;			move.w	#CampFireDebris_MAX_Size,d3
+;			move.w	#CampFireDebris_OB,d7
+;			bsr	SpawnOBJECT
+;			bmi.s	.ok
+;			movem.l	(sp)+,d0-d1/a0  			;ran out of objects
+;			rts
+;.ok			sub.w	#$18,OB_Ypos(a0)
+;			move.l	(sp)+,d1
+;			move.w	d1,d2					;setup movements
+;			mulu	#10,d2
+;			lea	DebrisXYA,a1
+;			move.w	0(a1,d2.w),OB_Xspd(a0)			
+;			move.w	2(a1,d2.w),OB_Yspd(a0)			
+;			move.w	4(a1,d2.w),OB_Xacc(a0)			
+;			move.w	6(a1,d2.w),OB_Yacc(a0)
+;			move.b	8(a1,d2.w),OB_MoveFlags(a0)
+;			bset.b	#ob_tidy,OB_Flag5(a0)
+;			dbra	d1,.l1
+;
+;.x			movem.l	(sp)+,d0/a0
+;			rts
+;
+;
+;CampFireDebris_Logic	btst.b	#ob_setup,OB_Flag2(a0)
+;			bne.s	.1
+;			bset.b	#ob_setup,OB_Flag2(a0)
+;			lea	CampFireDebrisANM,a1			;nul animation
+;			bsr	SetNewAnim
+;			
+;.1			tst.w	OB_Yspd(a0)				;yspeed = 0
+;			bne.s	.2
+;			eor.b	#%00001010,OB_MoveFlags(a0)		;flip direction and acceleration
+;		
+;.2			bsr	GetXYpos				;pull whats under object
+;			bsr	GetUnderAddrs
+;			bsr	GetSpecialContour
+;			bsr	TestLevelWalls
+;			bmi.s	.kill					;wall type 
+;			bsr	PosOnContour				;pos it on contour
+;			bmi.s	.kill					
+;			rts
+;.kill			bsr	SwitchObjectOff				;kill this object
+;			rts
+;			move.w	#Explode2_MAX_Size,d3
+;			move.w	#Explode2_OB,d7
+;			move.l	a0,a6
+;			bsr	SpawnOBJECT				;spawn an explosion
+;			add.w	#$10,OB_Ypos(a0)
+;			bset.b	#ob_tidy,OB_Flag5(a0)								
+;			bset.b	#ob_hiprior,OB_Flag2(a0)
+;			rts	    
+
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ TENT FLAP OPEN LOGIC (LEVEL1.1)					   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ Tent flap open/close logic.  Generates enemies.			   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+;
+;Tent1Open_Logic		btst.b	#ob_setup,OB_Flag2(a0)
+;			bne.s	.1
+;			tst.b	DoneFire1FLG				;if the campfire has burnt down the tent
+;			beq.s	.2				
+;			bra	SwitchObjectOff				;then switch the tent flap off
+;.2			bset.b	#ob_setup,OB_Flag2(a0)
+;			lea	TentOpenANM,a1				;animate fire burning				
+;			bsr	SetNewAnim
+;			
+;.1			tst.b	KillTent1FLG
+;			bne.s	.3
+;			tst.b	BurnTent1FLG				;countdown to tent burning
+;			beq.s	.x
+;			subq.b	#1,BurnTent1FLG				;is tent ready to burn?
+;			bne.s	.x
+;			st.b	KillTent1FLG
+;.x			rts
+;
+;.3			st.b	RiseAir1FLG				;flag rising hot air ON
+;			st.b	DetectTent1FLG				;detect tent debris flag ON
+;			bsr	SwitchObjectOff
+;			bsr	GetFreeCharAnim				;get a free char animation slot
+;			bpl.s	.x
+;    			lea	AMAP_GG0802N10_START,a2
+;			bra	SetupCharAnim
+;
+;Tent2Open_Logic		btst.b	#ob_setup,OB_Flag2(a0)
+;			bne.s	.1
+;			tst.b	DoneRock1FLG				;if the rockfall has crushed the tent
+;			beq.s	.2
+;			bra	SwitchObjectOff				;then switch the tent flap off
+;
+;.2			bset.b	#ob_setup,OB_Flag2(a0)
+;			lea	TentOpenANM,a1				;animate fire burning				
+;			bsr	SetNewAnim
+;			
+;.1			rts
+;
+;Tent3Open_Logic		btst.b	#ob_setup,OB_Flag2(a0)
+;			bne.s	.1
+;			tst.b	DoneFire2FLG				;if the campfire has burnt down the tent
+;			beq.s	.2
+;			bra	SwitchObjectOff				;then switch the tent flap off
+;.2			bset.b	#ob_setup,OB_Flag2(a0)
+;			lea	TentOpenANM,a1				
+;			bsr	SetNewAnim
+;			
+;.1			tst.b	KillTent2FLG
+;			bne.s	.3
+;			tst.b	BurnTent2FLG				;countdown to tent burning
+;			beq.s	.x
+;			subq.b	#1,BurnTent2FLG				;is tent ready to burn?
+;			bne.s	.x
+;			st.b	KillTent2FLG
+;.x			rts
+;
+;.3			st.b	RiseAir2FLG				;flag rising hot air ON
+;			st.b	DetectTent2FLG				;detect tent debris flag ON
+;			bsr	SwitchObjectOff
+;			bsr	GetFreeCharAnim				;get a free char animation slot
+;			bpl.s	.x
+;    			lea	AMAP_GG0802N40_START,a2
+;			bra	SetupCharAnim 
+
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ ROLLING, FLAMING ROCK GENERATOR (LEVEL1.1)				   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ Rolling, flaming rock generator logic.				   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+;
+;SetupFlameRockGen1	movem.l	d0/a0,-(sp)
+;			move.l	a0,a6					;save spawners object #
+;			move.w	#FlameRockGen1_OB,d7
+;			bsr	SpawnOBJECTnull				;spawn an invisible null object
+;			
+;			movem.l	(sp)+,d0/a0	  			;ran out of objects
+;			rts
+;
+;
+;FlameRockGen1_Logic	btst.b	#ob_setup,OB_Flag2(a0)
+;			bne.s	.1
+;			bset.b	#ob_setup,OB_Flag2(a0)
+;			
+;.1			rts
+
+
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ ROLLING, FLAMING ROCK LOGIC (LEVEL1.1)				   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ Rolling, flaming rock logic.					   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+;
+;SetupFlameRock1		movem.l	d0/a0,-(sp)
+;			
+;			move.l	a0,a6					;save spawners object #
+;			
+;			move.w	#FlameRock1_MAX_Size,d3
+;			move.w	#FlameRock1_OB,d7
+;			bsr	SpawnOBJECT
+;			bpl.s	.no
+;
+;			nop
+;			;setup initial movement vectors
+;
+;.no			movem.l	(sp)+,d0/a0
+;			rts
+;
+;
+;FlameRock1_Logic	btst.b	#ob_setup,OB_Flag2(a0)
+;			bne.s	.1
+;			bset.b	#ob_setup,OB_Flag2(a0)
+;			lea	FlameRock1ANM,a1
+;			bsr	SetNewAnim
+;			
+;.1			rts
+
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ FIRST ROCK PILE LOGIC (LEVEL1.1)				 	   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ 1st Rock Pile logic.						   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+;
+;RockPile1_Logic		btst.b	#ob_setup,OB_Flag2(a0)
+;			bne.s	.1
+;			bset.b	#ob_setup,OB_Flag2(a0)
+;			lea	RockPile1ANM,a1
+;			bsr	SetNewAnim
+;			
+;.1			rts
+

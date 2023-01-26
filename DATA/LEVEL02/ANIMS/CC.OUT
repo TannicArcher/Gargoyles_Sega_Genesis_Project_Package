@@ -1,0 +1,117 @@
+chop L3M1 specific animations : 1 secs/frame : palette 3
+L3M1 ANIMATION CONVERTION ...
+rem ** CHOP the animations **
+call spr gg2401 %1 1
+chop /t1 /b254 /r253 /c240 /p1 gg2401.anm
+Used 9 sprites, with a total of 28 characters, in 1.0 seconds
+Used 9 sprites, with a total of 26 characters, in 0.2 seconds
+Used 9 sprites, with a total of 27 characters, in 1.0 seconds
+Used 7 sprites, with a total of 28 characters, in 0.1 seconds
+Used 7 sprites, with a total of 27 characters, in 0.3 seconds
+Used 7 sprites, with a total of 24 characters, in 1.0 seconds
+Used 6 sprites, with a total of 27 characters, in 0.6 seconds
+Used 6 sprites, with a total of 28 characters, in 0.6 seconds
+Used 5 sprites, with a total of 29 characters, in 0.1 seconds
+Used 5 sprites, with a total of 31 characters, in 0.2 seconds
+Used 5 sprites, with a total of 33 characters, in 0.3 seconds
+Used 8 sprites, with a total of 34 characters, in 1.0 seconds
+Used 7 sprites, with a total of 36 characters, in 1.0 seconds
+Used 11 sprites, with a total of 35 characters, in 1.0 seconds
+Used 9 sprites, with a total of 35 characters, in 1.0 seconds
+Used 8 sprites, with a total of 37 characters, in 1.0 seconds
+Used 7 sprites, with a total of 36 characters, in 1.0 seconds
+Used 7 sprites, with a total of 34 characters, in 1.0 seconds
+call spr gg2402 %1 1
+chop /t1 /b254 /r253 /c240 /p1 gg2402.anm
+Used 4 sprites, with a total of 12 characters, in 0.0 seconds
+Used 5 sprites, with a total of 11 characters, in 0.0 seconds
+Used 5 sprites, with a total of 14 characters, in 0.0 seconds
+Used 5 sprites, with a total of 11 characters, in 0.0 seconds
+Used 6 sprites, with a total of 11 characters, in 0.0 seconds
+Used 5 sprites, with a total of 11 characters, in 0.0 seconds
+Used 4 sprites, with a total of 12 characters, in 0.0 seconds
+Used 6 sprites, with a total of 14 characters, in 0.0 seconds
+call spr gg2501 %1 1
+chop /t1 /b254 /r253 /c240 /p1 gg2501.anm
+Used 4 sprites, with a total of 14 characters, in 0.0 seconds
+Used 4 sprites, with a total of 19 characters, in 0.0 seconds
+Used 2 sprites, with a total of 20 characters, in 0.0 seconds
+Used 4 sprites, with a total of 17 characters, in 0.0 seconds
+Used 5 sprites, with a total of 19 characters, in 0.0 seconds
+Used 4 sprites, with a total of 18 characters, in 0.0 seconds
+Used 3 sprites, with a total of 25 characters, in 0.0 seconds
+call spr gg2801a %1 1
+chop /t1 /b254 /r253 /c240 /p1 gg2801a.anm
+Used 1 sprites, with a total of 3 characters, in 0.0 seconds
+Used 1 sprites, with a total of 6 characters, in 0.0 seconds
+Used 2 sprites, with a total of 13 characters, in 0.0 seconds
+Used 2 sprites, with a total of 18 characters, in 0.0 seconds
+Used 4 sprites, with a total of 15 characters, in 0.0 seconds
+Used 4 sprites, with a total of 13 characters, in 0.0 seconds
+Used 4 sprites, with a total of 7 characters, in 0.0 seconds
+Used 3 sprites, with a total of 6 characters, in 0.0 seconds
+Used 1 sprites, with a total of 4 characters, in 0.0 seconds
+Used 2 sprites, with a total of 2 characters, in 0.0 seconds
+Used 1 sprites, with a total of 1 characters, in 0.0 seconds
+call spr gg2801b %1 1
+chop /t1 /b254 /r253 /c240 /p1 gg2801b.anm
+Used 1 sprites, with a total of 6 characters, in 0.0 seconds
+Used 2 sprites, with a total of 10 characters, in 0.0 seconds
+Used 2 sprites, with a total of 11 characters, in 0.0 seconds
+Used 3 sprites, with a total of 11 characters, in 0.0 seconds
+Used 3 sprites, with a total of 14 characters, in 0.0 seconds
+Used 4 sprites, with a total of 13 characters, in 0.0 seconds
+Used 2 sprites, with a total of 18 characters, in 0.0 seconds
+Used 3 sprites, with a total of 18 characters, in 0.0 seconds
+call spr gg2802 %1 1
+chop /t1 /b254 /r253 /c240 /p1 gg2802.anm
+Used 4 sprites, with a total of 28 characters, in 0.0 seconds
+Used 5 sprites, with a total of 29 characters, in 0.2 seconds
+Used 5 sprites, with a total of 26 characters, in 0.0 seconds
+Used 4 sprites, with a total of 25 characters, in 0.0 seconds
+Used 6 sprites, with a total of 29 characters, in 0.6 seconds
+Used 6 sprites, with a total of 30 characters, in 0.5 seconds
+Used 6 sprites, with a total of 31 characters, in 0.4 seconds
+call spr gg2803 %1 1
+chop /t1 /b254 /r253 /c240 /p1 gg2803.anm
+Used 5 sprites, with a total of 30 characters, in 0.2 seconds
+Used 7 sprites, with a total of 28 characters, in 1.0 seconds
+Used 6 sprites, with a total of 28 characters, in 0.4 seconds
+Used 4 sprites, with a total of 30 characters, in 0.0 seconds
+Used 7 sprites, with a total of 26 characters, in 1.0 seconds
+Used 5 sprites, with a total of 15 characters, in 0.0 seconds
+Used 4 sprites, with a total of 12 characters, in 0.0 seconds
+Used 3 sprites, with a total of 9 characters, in 0.0 seconds
+call spr gg3303 %1 1
+chop /t1 /b254 /r253 /c240 /p1 gg3303.anm
+Used 2 sprites, with a total of 12 characters, in 0.0 seconds
+rem ** COLLECT the animations **
+call col gg2401
+collect gg2401.col
+call col gg2402
+collect gg2402.col
+call col gg2501
+collect gg2501.col
+call col gg2801a
+collect gg2801a.col
+call col gg2801b
+collect gg2801b.col
+call col gg2802
+collect gg2802.col
+call col gg2803
+collect gg2803.col
+call col gg3303
+collect gg3303.col
+call modany
+
+.ANY FILE FORMATTER V1.00CPS
+
+File to LOAD (Exclude .ANY suffix) :           ? 
+
+OK! All done.
+
+Another FILE (y/n)? 
+Not enough room to load C:\FONTLOAD high
+Please re-run OPTIMIZE.
+Loading low:
+Font updated. TSR enabled.

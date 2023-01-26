@@ -1,0 +1,16 @@
+	include	testani.68k
+
+	ani_palette	GG90704
+	ani_sprites	GG90704
+
+GG90704_anim	animation
+@1	ani_sprite	GG90704_0001
+	ani_sprite	GG90704_0002
+	ani_sprite	GG90704_0003
+	ani_sprite	GG90704_0004
+	ani_sprite	GG90704_0005
+	ani_sprite	GG90704_0006
+	ani_goto	@1
+	ani_end
+
+	ani_footer

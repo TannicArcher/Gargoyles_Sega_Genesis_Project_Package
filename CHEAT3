@@ -1,0 +1,42 @@
+tst.b	demo_mode
+		beq	.d1
+		jsr	gemsholdz80
+		bsr	joy1_read
+		jsr	gemsreleasez80
+		btst.b	#start,d_joy1
+		bne.s	.ttfa
+		move.l	demo_data,a0
+		move.w	record_dex,d0
+		move.b	0(a0,d0.w),joy1
+		move.b	1(a0,d0.w),d_joy1
+		addq.w	#2,record_dex
+		cmp.w	#$1000,record_dex
+		blt	.d3
+		moveq	#3,d1
+		bsr	set_blackout
+.fl		bsr	wait_frm
+		bsr	fade_routs
+		tst.b	faded_flg
+		beq.s	.fl
+.ttfa		move.b	s_button_a,button_a
+		move.b	s_button_b,button_b
+		move.b	s_button_c,button_c
+		move.b	s_difficulty,difficulty
+		bra	my_restart		;thestart
+
+.d1		if	1=0
+		tst.b	record_flag
+		beq.s	.d3
+    		lea	record_ram,a0
+		move.w	record_dex,d0
+		move.b	joy1,0(a0,d0.w)
+		move.b	d_joy1,1(a0,d0.w)
+		addq.w	#2,record_dex
+		cmp.w	#$1000,record_dex
+		blt.s	.d3
+		clr.b	record_flag
+		clr.w	record_dex
+		bra	hang
+		endif
+
+.d3		

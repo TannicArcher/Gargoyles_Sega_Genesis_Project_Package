@@ -1,0 +1,193 @@
+			;build h/w sprite attr tables
+			;  x,y position, h/v flips, palette, pattern etc.
+			;build char data in WRAM buffers
+			;create DMA script to DMA char data to VRAM
+			;  
+BuildOb			move.l	OB_AnSeqLab(a0),a1		;a1=frame (anm >>Label.l<<)
+			move.l	_SprtAttr_RAM,a2
+			move.l	OB_RefAnRam(a0),a3		;a3=RAM reference table
+			move.l	_WRAM_A(a3),a4			;a4=destination WRAM addrs
+		
+			move.w	OB_Xpos(a0),d1			;get and store x,y origin
+			move.w	OB_Ypos(a0),d2
+			clr.w	sdef_cnt			;clr running add
+			clr.b	_ROM_A_F
+			
+			moveq	#0,d7
+			move.b	_NumSprts(a1),d7		;get # of subsprites (loop)
+			
+.ploop			lea	_Sub_bump(a1),a1		;next sub sprite
+			
+			move.w	_VRAM_Adiv32(a3),attr_off	;VRAM addrs/32 = char #
+			
+			moveq	#0,d6
+			move.b	_Pal(a1),d6			;get palette 0..3
+			ror.w	#3,d6				;make it 0000,2000,4000,6000
+			add.w	sdef_cnt,d6			;+running sprite add
+			add.w	d6,attr_off								
+			
+			btst.b	#ob_hiprior,OB_Flag2(a0)	;do priority stuff
+			beq.s	.a
+			or.w	#$8000,attr_off
+.a			btst.b	#ob_loprior,OB_Flag2(a0)
+			beq.s	.b
+			and.w	#$7fff,attr_off
+			
+.b			moveq	#0,d5
+			move.b	_Size(a1),d5			;get size
+			move.b	d5,size(a2)			;save size in sprt attr table
+			asl.b	#1,d5
+			lea	SizeTable,a5
+			move.w	0(a5,d5.w),d6			;get tabled w*h
+			add.w	d6,sdef_cnt			;add w*h to get next base pattern
+			lea	WideTable,a5
+			move.w	0(a5,d5.w),ob_w			;get tabled w*h
+			lea	HighTable,a5
+			move.w	0(a5,d5.w),ob_h			;get tabled w*h
+			
+			move.w	d1,d4				;copy xy origin
+			move.w	d2,d5
+			move.w	_Xoff(a1),d3			;mod from x,y offsets
+			btst.b	#ob_xflp,OB_Flag1(a0)		;check xflip
+			beq.s	.x1
+			or.w	#$0800,attr_off			;set this sprite x flipped
+			neg.w	d3
+			sub.w	ob_w,d3
+.x1			add.w	d3,d4
+			btst.b	#ob_noscroll,OB_Flag5(a0)
+			bne.s	.nxs
+			sub.w	map_x_p,d4
+.nxs			add.w	#$80-$10,d4				;make 0,0 = top left of screen
+			and.w	#$1ff,d4			
+			bne.s	.2
+			moveq	#1,d4				;none of that funky sega sprite masking
+
+.2			move.w	_Yoff(a1),d3			;mod from x,y offsets
+			btst.b	#ob_yflp,OB_Flag1(a0)		;check yflip
+			beq.s	.y1
+			or.w	#$1000,attr_off			;set this sprite y flipped
+			neg.w	d3
+			sub.w	ob_h,d3
+.y1			add.w	d3,d5
+			btst.b	#ob_noscroll,OB_Flag5(a0)
+			bne.s	.nys
+			sub.w	map_y_p,d5
+.nys			add.w	#$80-$18,d5				;make 0,0 = top left of screen
+			and.w	#$1ff,d5			
+
+			move.w	attr_off,attr(a2)		;set pattern/attributes
+			move.b	linker,link(a2)			;link
+			move.w	d4,x_pos(a2)			;set x position
+			move.w	d5,y_pos(a2)			;set y position
+
+			btst.b	#ob_flown,OB_Flag3(a0)
+			beq.s	.nf
+			btst.b	#ob_newdma,OB_Flag5(a0)
+			bne.s	.newdma
+
+.nf			addq.l	#8,a2				;bump to next h/w sprite
+			addq.b	#1,linker			;next link
+    			
+			subq.b	#1,d7				;loop for each sub sprite
+			bne	.ploop
+			
+			move.l	a2,_SprtAttr_RAM		;save a2 for next object 
+			rts
+
+.newdma			btst.b	#ob_flyrom,OB_Flag5(a0)		;if object is flown from ROM, we don't
+			beq.s	.skp2
+			tst.b	_ROM_A_F
+			bne	.skp
+			st.b	_ROM_A_F
+			move.l	_Coff(a1),d3			;get offset for this sprt
+			move.l	_WRAM_A(a3),d4
+			add.l	d3,d4
+			move.l	d4,_ROM_A(a3)
+			bra	.skp
+
+.skp2			move.l	OB_AnChrData(a0),a5		;source chr set
+			move.l	_Coff(a1),d3			;get offset for this sprt
+			add.l	d3,a5	 			;add it to source chr set
+			
+			movem.l	d1/d2/d7,-(sp)
+
+			asl.w	#2,d6				;# of chars in sprite=width*height
+			lea	.CopyJmp,a6
+			move.l	0(a6,d6.w),a6
+			jmp	(a6)
+
+.t16			movem.l	(a5)+,d0-d7			;copy 16 chars
+			movem.l	d0-d7,(a4)								
+			lea	32(a4),a4
+.t15			movem.l	(a5)+,d0-d7			;copy 15 chars
+			movem.l	d0-d7,(a4)								
+			lea	32(a4),a4
+.t14			movem.l	(a5)+,d0-d7			;copy 14 chars
+			movem.l	d0-d7,(a4)								
+			lea	32(a4),a4
+.t13			movem.l	(a5)+,d0-d7			;copy 13 chars
+			movem.l	d0-d7,(a4)								
+			lea	32(a4),a4
+.t12			movem.l	(a5)+,d0-d7			;copy 12 chars
+			movem.l	d0-d7,(a4)								
+			lea	32(a4),a4
+.t11			movem.l	(a5)+,d0-d7			;copy 11 chars
+			movem.l	d0-d7,(a4)								
+			lea	32(a4),a4
+.t10			movem.l	(a5)+,d0-d7			;copy 10 chars
+			movem.l	d0-d7,(a4)								
+			lea	32(a4),a4
+.t9			movem.l	(a5)+,d0-d7			;copy 9 chars
+			movem.l	d0-d7,(a4)								
+			lea	32(a4),a4
+.t8			movem.l	(a5)+,d0-d7			;copy 8 chars
+			movem.l	d0-d7,(a4)								
+			lea	32(a4),a4
+.t7			movem.l	(a5)+,d0-d7			;copy 7 chars
+			movem.l	d0-d7,(a4)								
+			lea	32(a4),a4
+.t6			movem.l	(a5)+,d0-d7			;copy 6 chars
+			movem.l	d0-d7,(a4)								
+			lea	32(a4),a4
+.t5			movem.l	(a5)+,d0-d7			;copy 5 chars
+			movem.l	d0-d7,(a4)								
+			lea	32(a4),a4
+.t4			movem.l	(a5)+,d0-d7			;copy 4 chars
+			movem.l	d0-d7,(a4)								
+			lea	32(a4),a4
+.t3			movem.l	(a5)+,d0-d7			;copy 3 chars
+			movem.l	d0-d7,(a4)								
+			lea	32(a4),a4
+.t2			movem.l	(a5)+,d0-d7			;copy 2 chars
+			movem.l	d0-d7,(a4)								
+			lea	32(a4),a4
+.t1			movem.l	(a5)+,d0-d7			;copy 1 char
+			movem.l	d0-d7,(a4)								
+			lea	32(a4),a4
+			
+			movem.l	(sp)+,d1/d2/d7
+
+.skp			addq.l	#8,a2				;bump to next h/w sprite
+			addq.b	#1,linker			;next link
+
+			subq.b	#1,d7				;loop for each sub sprite
+			bne	.ploop
+
+			move.l	a2,_SprtAttr_RAM
+			bclr.b	#ob_newdma,OB_Flag5(a0)
+			
+			move.l	DMA_Stack,a6
+			move.w	_VRAM_A(a3),-(a6)		;_VRAM_A(a3)=destination of DMA data	
+			move.l	_WRAM_A(a3),d1			;_WRAM_A(a3)=source of data to DMA / 2
+			btst.b	#ob_flyrom,OB_Flag5(a0)		;if object is flown from ROM, we don't
+			beq	.skp3
+			move.l	_ROM_A(a3),d1			;_WRAM_A(a3)=source of data to DMA / 2
+.skp3			lsr.l	#1,d1
+			move.l	d1,-(a6)
+			move.w	sdef_cnt,d1			;sdef_cnt*16=length of data to DMA (.w)
+			asl.w	#4,d1
+			move.w	d1,-(a6)
+			move.w	#_DMATransfer,-(a6)		;flag this data package is a dma transfer
+			move.l	a6,DMA_Stack
+			rts
+

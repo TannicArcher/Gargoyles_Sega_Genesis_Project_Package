@@ -1,0 +1,3 @@
+@del gg??0%1.anm
+@ren gg??0%1%2.anm gg??0%1.anm
+

@@ -1,0 +1,15 @@
+	include	testani.68k
+
+	ani_palette	GV0406
+	ani_sprites	GV0406
+
+GV0406_anim	animation
+@1	ani_sprite	GV0406_0001
+	ani_sprite	GV0406_0002
+	ani_sprite	GV0406_0003
+	ani_sprite	GV0406_0004
+	ani_sprite	GV0406_0005
+	ani_goto	@1
+	ani_end
+
+	ani_footer

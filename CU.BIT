@@ -1,0 +1,15 @@
+btst.b	#up,joy1
+			beq	GolSetWallClimb2Idle
+			move.b	UnderHEAD,d2			;check for ceiling stop/transition 
+			move.l	UnderHEAD_c,a1
+			cmp.b	#SB_CeilingClimb,d2		;is this block a ceiling
+			beq	GolSetWall2CeilTrans		;wall to ceiling transition
+			cmp.b	#SB_Ceiling,d2			;is this block a ceiling
+			beq	GolSetWallClimbZero		;wall to ceiling transition
+			tst.b	0(a1)				;stop at a contour	
+			bne	GolSetWallClimbZero
+			bsr	GolClimbOffWallU		;check for climbable 
+			bmi	GolSetWall2GroundTrans		;trans to floor
+			moveq	#GolClimbWallSpeed,d1		;else move up
+			bra	MoveGolUp
+

@@ -1,0 +1,344 @@
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ HANDLE LEVEL MECHANICS						   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ All Level Specific SPECIAL MECHANICS are contained hereunafter	   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+
+SetupExt		lea	CAnim_Del,a0		;clr colour animation vars
+			lea	CAnim_Dex,a1
+			moveq	#$1f,d0
+.l4			clr.b	(a1)+
+			move.b	d0,(a0)+
+			dbra	d0,.l4
+	 	
+			move.w	levnum,d0
+			asl.w	#2,d0
+			jmp	LEVec(pc,d0.w)
+
+			;special level setup vectors
+LEVec			bra	L11Set
+			bra	L12Set
+			bra	L13Set
+			bra	L14Set		
+			bra	L21Set
+			bra	L22Set
+			bra	L23Set
+			bra	L24Set		
+			bra	L31Set
+			bra	L32Set
+			bra	L33Set
+			bra	L34Set		
+			bra	LNULLSet
+			bra	LNULLSet
+			bra	LNULLSet
+			bra	LNULLSet
+			bra	L51Set		
+			bra	LNULLSet
+			bra	LNULLSet
+			bra	LNULLSet
+			bra	LNULLSet
+			bra	L71Set
+			bra	L72Set
+			bra	L73Set
+			bra	L74Set		
+			bra	L75Set		
+			bra	L76Set		
+			bra	L77Set		
+
+LNULLSet		rts
+
+
+;fx_v			bra	fx1		;0 - no parallax
+;			bra	fx2		;1 - 1/2 parallax
+;			bra	fx3		;2 - 1/4 parallax
+;			bra	fx4		;3 - 1/8 parallax
+;			bra	fx5		;4 - Rookery
+;			bra	fx6		;5 - Rooftop #1 (level3.1)
+;			bra	fx7		;6 - Rookery Boss room (Mutant Viking)
+
+; - Level 1 ----------------------------------------------------------------
+
+L11Set			clr.b	cyc_num			;col cycle #
+			move.b	#3,can_num		;col anim #
+			clr.b	PlayingBOSS
+			move.b	#7,b_fx_num		;Scroll FX #
+			move.w	#reg12+%10000001,vctrl			;12 40 coloumn, shadow off, interlace off
+			move.w	#HorLineScroll!VerWholScroll,d0
+			jsr	SetScroll
+			clr.b	FullScroll_Hor
+			st.b	FullScroll_Ver
+			lea	AMAP_FLAME0_START,a2
+			jsr	SetupCharAnim						
+			lea	AMAP_FLAG0_START,a2
+			jsr	SetupCharAnim
+			move.b	#1,CH_AnCnt(a1)	
+			lea	AMAP_SPARKS0_START,a2
+			jsr	SetupCharAnim						
+			move.b	#2,CH_AnCnt(a1)	
+			lea	AMAP_BIRD0_START,a2
+			jmp	SetupCharAnim						
+
+L12Set			bra	L11Set
+L13Set			bra	L11Set
+L14Set			bsr	L11Set
+			st.b	PlayingBOSS
+			rts
+
+; - Level 2 ----------------------------------------------------------------
+
+L21Set			move.b	#2,cyc_num				;col cycle #
+			clr.b	can_num					;col anim #
+			clr.b	PlayingBOSS
+			move.b	#4,b_fx_num				;Scroll FX #
+			move.w	#reg12+%10000001,vctrl			;12 40 coloumn, shadow off, interlace off
+			move.w	#HorLineScroll!VerWholScroll,d0
+			jsr	SetScroll
+			clr.b	FullScroll_Hor
+			st.b	FullScroll_Ver
+			tst.b	PlayerDeadFLG
+			bne.s	.x
+			move.l	#$00010001,LevelVentsL			;odd/even determines on/off
+			move.l	#$00010001,LevelVentsL+4
+			move.l	#$00010001,LevelVentsL+8
+			move.l	#$00010001,LevelVentsL+12
+			move.l	#$00010001,LevelVentsR
+			move.l	#$00010001,LevelVentsR+4
+			move.l	#$00010001,LevelVentsR+8
+			move.l	#$00010001,LevelVentsR+12
+.x			rts
+L22Set			bra	L21Set
+L23Set			bra	L21Set
+L24Set			bsr	L21Set
+			clr.b	cyc_num				;col cycle #
+			st.b	PlayingBOSS
+			move.b	#6,b_fx_num		;Scroll FX #
+			clr.b	EyeFinishedFLG
+			clr.b	MutVikFloorFallFLG
+			clr.w	ShakeX
+			clr.w	ShakeY
+			rts
+			
+
+; - Level 3 ----------------------------------------------------------------
+
+L31Set			clr.b	cyc_num			;col cycle #
+			move.b	#1,can_num		;col anim #
+			move.b	#5,b_fx_num		;Scroll FX #
+			clr.b	PlayingBOSS
+			clr.w	SignCAnimDel
+			move.l	#s1cat,SignCAnimVec
+			move.w	#reg12+%10000001,vctrl			;12 40 coloumn, shadow off, interlace off
+			move.w	#HorLineScroll!VerWholScroll,d0
+			jsr	SetScroll
+			clr.b	FullScroll_Hor
+			st.b	FullScroll_Ver
+			lea	AMAP_BANNER0_START,a2
+			jsr	SetupCharAnim
+			lea	AMAP_VENT0_START,a2
+			jsr	SetupCharAnim
+			move.b	#1,CH_AnCnt(a1)	
+			rts
+L32Set			bra	L31Set
+L33Set			bra	L31Set
+L34Set			move.w	#reg12+%10000001,vctrl			;12 40 coloumn, shadow off, interlace off
+			move.w	#HorLineScroll!VerWholScroll,d0
+			jsr	SetScroll
+			clr.b	FullScroll_Hor
+			st.b	FullScroll_Ver
+			move.b	#9,b_fx_num		;Scroll FX #
+			clr.b	cyc_num			;col anim #
+			clr.b	can_num			;col anim #
+			st.b	PlayingBOSS
+			lea	LineByLine,a1
+			move.w	#(((64*8)+80)/4)-1,d1
+.l1			clr.l	(a1)+
+			dbra	d1,.l1
+			rts
+				
+
+; - Level 4 ----------------------------------------------------------------
+; - CUT
+
+
+; - Level 5 ----------------------------------------------------------------
+
+L51Set			clr.b	cyc_num			;col cycle #
+			clr.b	can_num			;col anim #
+			clr.b	PlayingBOSS
+			move.b	#8,b_fx_num		;Scroll FX #
+;			move.w	#reg12+%10001001,vctrl	;12 40 coloumn, shadow on, interlace off
+			move.w	#HorLineScroll!VerWholScroll,d0
+			jsr	SetScroll
+			clr.b	FullScroll_Hor
+			st.b	FullScroll_Ver
+			clr.w	Phase
+			clr.l	pix_x1
+			lea	AMAP_ANIM_50_START,a2
+			jsr	SetupCharAnim
+			move.w	pix_x,pix_x2
+
+			move.l	#Window_Base,d6
+			jsr	get_address
+			move.l	d7,vctrl
+			move.w	#$1f,d2
+.l2			move.w	#$3f,d1
+.l1			move.w	#($3a0/$20)+cp1+pri,vdata
+			dbra	d1,.l1
+			dbra	d2,.l2
+  
+			tst.b	InsideFLG
+			beq.s	.x
+			st.b	InsideFLG
+			clr.l	TunnelFLG 
+			clr.l	TunnelFLG+4
+			clr.w	TunnelFLG+8
+			clr.l	BFX_Var1
+			clr.l	BFX_Var3
+			clr.l	BFX_Var5
+			jmp	SetSubwayShear			;reset the line shear	
+.x			rts
+
+
+; - Level 6 ----------------------------------------------------------------
+; - CUT
+
+
+; - Level 7 ----------------------------------------------------------------
+
+L71Set			move.b	#1,cyc_num		;col cycle #
+			move.b	#2,can_num		;col anim #
+			move.b	#10,b_fx_num		;Scroll FX #
+			clr.b	PlayingBOSS
+			move.w	#reg12+%10000001,vctrl			;12 40 coloumn, shadow off, interlace off
+			move.w	#HorLineScroll!VerWholScroll,d0
+			jsr	SetScroll
+			clr.b	FullScroll_Hor
+			st.b	FullScroll_Ver
+			clr.w	Phase
+			lea	AMAP_CABLE00_START,a2
+			jsr	SetupCharAnim						
+			lea	AMAP_GRINDER00_START,a2
+			jsr	SetupCharAnim						
+			move.b	#1,CH_AnCnt(a1)	
+			lea	AMAP_CONVEYOR0_START,a2
+			jsr	SetupCharAnim						
+			move.b	#2,CH_AnCnt(a1)	
+			lea	AMAP_PIT0_START,a2
+			jsr	SetupCharAnim						
+			move.b	#3,CH_AnCnt(a1)	
+			rts
+L72Set			bra	L71Set
+L73Set			bra	L71Set
+L74Set			bra	L71Set
+L75Set			bsr	L71Set
+			clr.b	can_num					;col anim #
+			rts
+L76Set			bra	L71Set
+L77Set			clr.b	cyc_num					;col cycle #
+			clr.b	can_num					;col anim #
+			move.b	#10,b_fx_num				;Scroll FX #
+			st.b	PlayingBOSS
+			clr.b	RabbidHHDeadCNT
+			move.w	#HorLineScroll!VerWholScroll,d0
+			jsr	SetScroll
+			clr.b	FullScroll_Hor
+			st.b	FullScroll_Ver
+			clr.w	Phase
+			rts
+			
+
+HandleLevelMechanics	move.w	levnum,d1
+			asl.w	#2,d1
+			jmp	LMVec(pc,d1.w)
+
+LMVec			bra	L11Mech
+			bra	L12Mech
+			bra	L13Mech
+			bra	L14Mech
+			bra	L21Mech
+			bra	L22Mech
+			bra	L23Mech
+			bra	L24Mech
+			bra	L31Mech
+			bra	L32Mech
+			bra	L33Mech
+			bra	L34Mech
+			bra	L41Mech
+			bra	L42Mech
+			bra	L43Mech
+			bra	L44Mech
+			bra	L51Mech
+			bra	L61Mech
+			bra	L62Mech
+			bra	L63Mech
+			bra	L64Mech
+			bra	L71Mech
+			bra	L72Mech
+			bra	L73Mech
+			bra	L74Mech
+
+; - Level 1 ----------------------------------------------------------------
+
+L11Mech			rts
+L12Mech			rts
+L13Mech			rts
+L14Mech			rts
+
+
+; - Level 2 ----------------------------------------------------------------
+
+L21Mech			rts
+L22Mech			rts
+L23Mech			rts
+L24Mech			rts
+
+
+; - Level 3 ----------------------------------------------------------------
+
+L31Mech			rts
+L32Mech			rts
+L33Mech			rts
+L34Mech			rts
+
+
+; - Level 4 ----------------------------------------------------------------
+
+L41Mech			rts
+L42Mech			rts
+L43Mech			rts
+L44Mech			rts
+
+
+; - Level 5 ----------------------------------------------------------------
+
+L51Mech			rts
+
+
+; - Level 6 ----------------------------------------------------------------
+
+L61Mech			rts
+L62Mech			rts
+L63Mech			rts
+L64Mech			rts
+
+
+; - Level 7 ----------------------------------------------------------------
+
+L71Mech			rts
+L72Mech			rts
+L73Mech			rts
+L74Mech			rts
+
+
+
+
+
+
+
+
+
+
+
+
+

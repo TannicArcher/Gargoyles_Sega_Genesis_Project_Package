@@ -1,0 +1,3085 @@
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ Object Handler/Scheduler						   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ Entry: None.							   บ
+; บ  Exit: Nothing is protected.					   บ
+; บ  Used: d0-d7/a0-a6							   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ Everything to do with OBJECTS happens here!				   บ
+; บ 									   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+
+; MASTER OBJECT HANDLER !!
+
+
+BuildActiveObjectMap	lea	OBJECT_RAM,a0
+			lea	ActiveObjectRam,a1
+
+			move.w	#MaxObs-1,d1
+			move.w	#-1,d2
+.l1			btst.b	#ob_active,OB_Flag1(a0)
+			beq.s	.nxt
+			tst.b	PlayerDeadFLG
+			beq.s	.1
+			bmi.s	.1
+			cmp.l	Plr_Database,a0
+			beq.s	.1
+			bset.b	#ob_kill,OB_Flag2(a0)
+.1			move.l	a0,(a1)+
+			addq.w	#1,d2
+.nxt			lea	OB_DATA_SIZE(a0),a0
+			dbra	d1,.l1
+			move.w	d2,ActiveObjectCnt
+HOX			rts
+
+
+HandleObjects		bsr	BuildActiveObjectMap
+			tst.w	ActiveObjectCnt
+			bmi.s	HOX
+			
+			btst.b	#0,second
+			beq.s	.frm0
+
+; - Frame #1 ---------------------------------------------------------------
+
+.frm1			bsr	Enemy2PlayerATTACK
+
+			move.b	#1,linker
+			move.l	#SprtAttr_RAM,_SprtAttr_RAM	;a2=sprt attribute table	
+
+			lea	ActiveObjectRam,a5
+
+			move.w	ActiveObjectCnt,d0
+.l1			movem.l	d0/a5,-(sp)
+			move.l	(a5),a0
+			bsr	LogicOb				;do the logic/control for this object
+			bsr	MoveOb				;move this object
+			bsr	AnimOb				;animate this object
+			bsr	BuildOb				;physically build this object
+			btst.b	#ob_kill,OB_Flag2(a0)		;is object active
+			beq.s	.1				;no: skip it
+			bsr	TidyKilledObject
+.1			movem.l	(sp)+,d0/a5
+			addq.l	#4,a5
+			dbra	d0,.l1
+			
+			move.l	_SprtAttr_RAM,a2		;restore a2
+			clr.b	-8+link(a2)			;zero last link
+			bra	ClrSprend			;wipe unused sprites off screen
+
+
+; - Frame #0 ---------------------------------------------------------------
+
+.frm0			bsr	HandlePlayerCollision		;Handle collision detection
+			
+.frm0a			move.b	#1,linker
+			move.l	#SprtAttr_RAM,_SprtAttr_RAM	;a2=sprt attribute table	
+
+			lea	ActiveObjectRam,a5
+
+			move.w	ActiveObjectCnt,d0
+.l1a			movem.l	d0/a5,-(sp)
+			move.l	(a5),a0
+			bsr	LogicOb				;do the logic/control for this object
+			bsr	MoveOb				;move this object
+			bsr	KillOb				;handle objects going off screen
+			bsr	AnimOb				;animate this object
+			bsr	BuildOb				;physically build this object
+			btst.b	#ob_kill,OB_Flag2(a0)		;is object active
+			beq.s	.1a				;no: skip it
+			bsr	TidyKilledObject
+.1a			movem.l	(sp)+,d0/a5
+			addq.l	#4,a5
+			dbra	d0,.l1a
+			
+			move.l	_SprtAttr_RAM,a2		;restore a2
+			clr.b	-8+link(a2)			;zero last link
+			bra	ClrSprend			;wipe unused sprites off screen
+
+
+HandleObjectsSORTED	move.b	#1,linker
+			move.l	#SprtAttr_RAM,_SprtAttr_RAM	;a2=sprt attribute table	
+			
+			lea	Sort_D,a3
+			
+			moveq	#MaxObs-1,d1
+.l1			move.l	d1,-(sp)
+
+			lea	OBJECT_RAM,a0			;point to objects RAM
+			move.w	(a3)+,d0
+			bmi.s	.nxtob
+			move.w	d0,d2
+			asl.w	#6,d2
+			add.w	d2,a0
+			lsr.w	#1,d0
+
+			btst.b	#ob_active,OB_Flag1(a0)		;is object active
+			beq.s	.nxtob				;no: skip it
+			
+			move.l	a3,-(sp)
+			bsr	LogicOb				;do the logic/control for this object
+			bsr	MoveOb				;move this object
+			bsr	KillOb				;handle objects going off screen
+			bsr	AnimOb				;animate this object
+			bsr	BuildOb				;physically build this object
+			move.l	(sp)+,a3
+
+.nxtob			move.l	(sp)+,d1
+			dbra	d1,.l1
+			clr.b	-8+link(a2)			;zero last link
+			bra	ClrSprend			;wipe unused sprites off screen
+
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ Universal, SINGLE OBJECT Animation Routine				   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ Entry: D0 = Object number.						   บ
+; บ  Exit: N/A								   บ
+; บ  Used: D0-D7/A0-A6 (protected)					   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ Author: Chris Shrigley						   บ
+; บ   Date: 2/15/94							   บ
+; บ    Rev: 6/94							   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+;
+; Data structure :
+; 
+; Seq#	anm	Label.l,Duration.b,Flags.b	;straight animantion data (flags,frame #,animation duration)
+; 	anm	AJmp.w,Seq#.l 			;Jump directive (reloads anim pointer with Seq#)						
+; 	anm	ARep.w				;Repeat animation (loop)								
+; 	anm	AEnd.w				;End animation (stop)									
+; 	anm	APat.w,Rout.l			;Patch to any subroutine								
+; 	anm	AMov.w,Flags.b,pad.b,Xspd.w,Yspd.w,Xacc.w,Yacc.w	;Physical movement of animated object (up x pixels) 					
+; 	anm	AJsr.w,Seq#.l 			;JSR directive (reloads anim pointer with Seq#) returns to original Seq#
+;	anm	ARts.w				;Used with AJsr (returns to old Seq# and position)						
+; 						;NB. JSR's are not stacked so recursive JSR cannot be done.
+;	anm	ANew.w,Data.l			;init a new animation sequence
+;
+;
+; Sample animation : (not a good example)
+;
+; Seq1	anm	jmpfrm1,4,%00000000
+;	anm	jmpfrm2,4,%00000000
+;	anm	AJsr,Seq2
+;	anm	jmpfrm3,4,%00000000
+;	anm	AEnd
+;
+; Seq2	anm	jmpkickfrm1,4,%00000000
+;	anm	ARts
+;
+
+
+
+AJmp			equ	-1
+ARep			equ	-2
+AEnd			equ	-3
+APat			equ	-4
+AMov			equ	-5
+AJsr			equ	-6
+ARts			equ	-7
+ANew			equ	-8
+AMov2			equ	-9	;move player/scroll
+APau			equ	-10
+AVar1			equ	-11
+AVar2			equ	-12
+AVar3			equ	-13
+AVar4			equ	-14
+ALoop			equ	-15
+AInit			equ	-16
+AMovDF			equ	-17	;move player/scroll in flip direction
+
+M2lft			equ	0
+M2rte			equ	1
+M2up			equ	2
+M2dn			equ	3
+
+MDFlftrte		equ	0
+MDFupdn		 	equ	1
+
+
+
+AnimOb			tst.l	OB_AnSequence(a0)		;do we have a sequence?
+			beq	.exit
+
+			move.b	OB_AnCmp(a0),d1
+			beq.s	.no_patch			;1st time around
+			cmp.b	OB_AnCnt(a0),d1
+			ble.s	.next
+			addq.b	#1,OB_AnCnt(a0)
+			rts
+											
+.next			clr.b	OB_AnCnt(a0)
+			;tst.l	OB_AnPatch(a0)			;have we got a patch to execute?
+			;beq.s	.no_patch			;no: exit
+			;move.l	OB_AnPatch(a0),a5		;rack it up
+			;clr.l	OB_AnPatch(a0)			;clr the entry
+			;jmp	(a5)				;do the patch
+
+.no_patch		move.w	OB_AnDex(a0),d1			;index
+			move.l	OB_AnSequence(a0),a6		;sequence vec
+			add.w	d1,a6
+			move.w	0(a6),d2			;data
+			beq.s	.doANM
+			move.w	d2,d3
+			neg.w	d3
+			asl.w	#2,d3
+			jmp	.AnimRoutine(pc,d3.w)
+			
+.AnimRoutine		bra	.doNULL
+			bra	.doJMP			
+			bra	.doREP
+			bra	.doEND
+			bra	.doPAT
+			bra	.doMOV
+			bra	.doJSR
+			bra	.doRTS
+			bra	.doNEW
+			bra	.doMOV2
+			bra	.doPAU
+			bra	.doVAR1
+			bra	.doVAR2
+			bra	.doVAR3
+			bra	.doVAR4
+			bra	.doLOOP
+			bra	.doINIT
+			bra	.doMOVDF
+		
+.doANM			bclr.b	#ob_tidy,OB_Flag5(a0)		;clr tidy bit
+			move.l	2(a6),OB_AnSeqLab(a0)		;a1=frame (anm >>Label.l<<)
+			move.b	6(a6),OB_AnCmp(a0)		;duration
+			move.b	7(a6),OB_AnFlags(a0)		;flags
+			bset.b	#ob_newdma,OB_Flag5(a0)
+			btst.b	#ob_anxflptog,OB_AnFlags(a0)
+			beq.s	.n1
+			eor.b	#_ob_xflp,OB_Flag1(a0)
+.n1			btst.b	#ob_anyflptog,OB_AnFlags(a0)
+			beq.s	.n2
+			eor.b	#_ob_yflp,OB_Flag1(a0)
+.n2			bra	bump8				
+
+.doNULL			bra	bump2
+
+.doJMP			move.l	2(a6),OB_AnSequence(a0)		;set new sequence pointer
+			;drop thru to index clr
+
+.doREP			clr.w	OB_AnDex(a0)			;clr index
+			bra	.no_patch
+
+.doEND			clr.l	OB_AnSequence(a0)   		;clr sequence pointer
+			clr.w	OB_AnDex(a0)			;clr index
+			bra	.exit
+
+.doPAT			move.l	2(a6),OB_AnPatch(a0)		;set patch routine
+			bra	bump6
+
+.doMOV			move.b 2(a6),OB_MoveFlags(a0)		;store Flags
+			move.w 4(a6),OB_Xspd(a0)		;store X speed
+			move.w 6(a6),OB_Yspd(a0)		;store Y speed
+			move.w 8(a6),OB_Xacc(a0)		;store X acc
+			move.w 10(a6),OB_Yacc(a0)		;store Y acc
+			bra	bump12
+
+.doJSR			move.l	OB_AnSequence(a0),OB_AnSeqTemp(a0)	;save sequence
+			move.w	OB_AnDex(a0),OB_AnDexTemp(a0)		;and index
+			bra	.doJMP
+		
+.doRTS			move.l	OB_AnSeqTemp(a0),OB_AnSequence(a0)	;restore sequence
+			move.w	OB_AnDexTemp(a0),OB_AnDex(a0)		;and index
+			bra	bump6
+		
+.doNEW			move.l	2(a6),a1				;setup a new animation
+			bsr	SetNewAnim_Q
+			bra	.no_patch
+
+.doMOV2			move.b	3(a6),d2
+			ext.w	d2
+			cmp.b	#M2lft,2(a6)				;move the sprite object NOW
+			beq.s	.m2l
+			cmp.b	#M2rte,2(a6)
+			beq.s	.m2r
+			cmp.b	#M2up,2(a6)
+			beq.s	.m2u
+.m2d			add.w	d2,OB_Ypos(a0)
+			bclr.b	#ob_movupdn,OB_Flag5(a0)
+			bsr	bump4
+			bra	.no_patch
+.m2l			sub.w	d2,OB_Xpos(a0)
+			bset.b	#ob_movlftrte,OB_Flag5(a0)
+			bsr	bump4
+			bra	.no_patch
+.m2r			add.w	d2,OB_Xpos(a0)
+			bclr.b	#ob_movlftrte,OB_Flag5(a0)
+			bsr	bump4
+			bra	.no_patch
+.m2u			sub.w	d2,OB_Ypos(a0)
+			bset.b	#ob_movupdn,OB_Flag5(a0)
+			bsr	bump4
+			bra	.no_patch
+			
+.doPAU			move.b	2(a6),OB_AnCmp(a0)		;force pause
+			bra	bump4
+
+.doVAR1			move.b	2(a6),OB_EventVar1(a0)
+			bsr	bump4					
+			bra	.no_patch
+.doVAR2			move.b	2(a6),OB_EventVar2(a0)
+			bsr	bump4					
+			bra	.no_patch
+.doVAR3			move.b	2(a6),OB_EventVar3(a0)
+			bsr	bump4					
+			bra	.no_patch
+.doVAR4			move.b	2(a6),OB_EventVar4(a0)
+			bsr	bump4
+			bra	.no_patch
+					
+.doLOOP			tst.b	OB_AnLoop(a0)
+			bne.s	.dl1
+    			move.b	6(a6),OB_AnLoop(a0)
+.dl1			subq.b	#1,OB_AnLoop(a0)
+			beq.s	.dl2
+			move.l	2(a6),OB_AnSequence(a0)		;set new sequence pointer
+			clr.w	OB_AnDex(a0)			;clr index
+			bsr	bump8
+			bra	.no_patch
+.dl2			bra	bump8
+	
+.doINIT			clr.w	OB_AnDex(a0)			;clr index
+			clr.b	OB_AnLoop(a0)
+			clr.l	OB_AnPatch(a0)	
+			clr.w	OB_AnDex(a0)	
+			clr.b	OB_AnFlags(a0)	
+			clr.b	OB_AnCnt(a0)	
+			clr.b	OB_EventVar1(a0)
+			clr.b	OB_EventVar2(a0)
+			clr.b	OB_EventVar3(a0)
+			clr.b	OB_EventVar4(a0)
+			bra	bump2
+
+.doMOVDF		move.b	3(a6),d2				;move in direction faced
+			ext.w	d2
+			cmp.b	#MDFupdn,2(a6)
+			beq.s	.mdfud
+.mdflr			btst.b	#ob_xflp,OB_Flag1(a0)
+			beq.s	.mdflr1
+			sub.w	d2,OB_Xpos(a0)
+			bset.b	#ob_movlftrte,OB_Flag5(a0)
+			bra	.mdfx
+.mdflr1			add.w	d2,OB_Xpos(a0)
+			bclr.b	#ob_movlftrte,OB_Flag5(a0)
+			bra	.mdfx
+.mdfud			btst.b	#ob_yflp,OB_Flag1(a0)
+			beq.s	.mdfud1
+			add.w	d2,OB_Ypos(a0)
+			bclr.b	#ob_movupdn,OB_Flag5(a0)
+			bra	.mdfx
+.mdfud1			sub.w	d2,OB_Ypos(a0)
+			bset.b	#ob_movupdn,OB_Flag5(a0)
+.mdfx			bsr	bump4
+			bra	.no_patch
+
+.exit			rts
+
+bump12			moveq	#12,d1				;bump index by 12Bytes
+			bra	bump_x
+bump8			moveq	#8,d1				;bump index by 8Bytes
+			bra	bump_x
+bump6			moveq	#6,d1				;bump index by 6Bytes
+			bra	bump_x
+bump4			moveq	#4,d1 				;bump index by 4Bytes
+			bra	bump_x
+bump2			moveq	#2,d1 				;bump index by 2Bytes
+bump_x			add.w	d1,OB_AnDex(a0)
+			rts
+
+
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ Universal, COMPOSITE OBJECT Animation Routine			   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ Entry: D0 = Object number.						   บ
+; บ  Exit: N/A								   บ
+; บ  Used: D0-D7/A0-A6 (protected)					   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ Author: Chris Shrigley						   บ
+; บ   Date: 12/29/94							   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+
+AnimCompOb		rts
+
+
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ OBJECT Builder							   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ Entry: a0=frame label.l						   บ
+; บ  Exit: n/a								   บ
+; บ  Used: n/a								   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ Author: Chris Shrigley						   บ
+; บ   Date: 2/1/94							   บ
+; บ    Rev: 6/94 .. 1/95 (to use Cary Hara' CHOP data format)		   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ Build objects using all the data tables.				   บ
+; บ   Create Sprite ATTR table (to be DMA'd by Vblank)			   บ
+; บ   Create DMA script for DMAing all the data during the Vblank          บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+			rsreset
+_NumSprts		rs.b	1
+_NumBoxes		rs.b	1
+_MinX			rs.w	1
+_MinY			rs.w	1
+_MaxX			rs.w	1
+_MaxY			rs.w	1
+_Sub_bump		rs.w	1
+			rsreset
+_SizeRaw		rs.b	1
+_SizeMod		rs.b	1
+_Wide			rs.w	1
+_High			rs.w	1
+_Pal			rs.w	1
+_Xoff			rs.w	1
+_Yoff			rs.w	1
+_Coff			rs.l	1
+_es			rs.w	0
+_Sub_bump2		equ	_es-_Sub_bump
+
+
+			;build h/w sprite attr tables
+			;  x,y position, h/v flips, palette, pattern etc.
+			;create DMA script to DMA char data to VRAM
+			;  
+BuildOb			btst.b	#ob_tidy,OB_Flag5(a0)
+			bne	ClrCollisionBoxes
+
+			move.w	OB_Xpos(a0),d1			;get and store x,y origin
+			move.w	OB_Ypos(a0),d2
+
+			btst.b	#ob_noclip,OB_Flag1(a0)
+			bne.s	.noclip
+			cmp.w	ClipLeft,d1
+			blt	ClrCollisionBoxes
+			cmp.w	ClipRight,d1
+			bgt	ClrCollisionBoxes
+			cmp.w	ClipTop,d2
+			blt	ClrCollisionBoxes
+			cmp.w	ClipBottom,d2
+			bgt	ClrCollisionBoxes
+
+.noclip			move.l	OB_AnSeqLab(a0),a1		;a1=frame (anm >>Label.l<<)
+			move.l	_SprtAttr_RAM,a2
+			move.l	OB_RefAnRam(a0),a3		;a3=RAM reference table
+			
+			move.l	OB_AnChrData(a0),d3		;source chr set
+			add.l	_Coff+_Sub_bump(a1),d3		;get base of ROM char data (for this frame)
+			move.l	d3,_ROM_A_T
+			
+			clr.w	OB_Priority			;palette/priority over rides
+			move.w	_Sub_bump+_Pal(a1),OB_Palette
+			btst.b	#ob_newpal,OB_Flag1(a0)
+			beq.s	.a1
+   			move.w	OB_Pal(a0),OB_Palette
+.a1			btst.b	#ob_hiprior,OB_Flag2(a0)	;do priority stuff
+			beq.s	.a
+			move.w	#$8000,OB_Priority		;set this sprite hi priority
+
+.a			clr.w	sdef_cnt			;clr running add
+			
+			moveq	#0,d7
+			moveq	#0,d5
+			move.b	_NumSprts(a1),d7		;get # of subsprites (loop)
+			move.b	_NumBoxes(a1),OB_CBCount	;get # of collision boxes
+
+.ploop			lea	_Sub_bump(a1),a1		;next sub sprite
+			
+			move.w	_VRAM_Adiv32(a3),d6		;VRAM addrs/32 = char #
+			add.w	sdef_cnt,d6			;+running sprt count
+			add.w	OB_Palette,d6			;+palette
+			;add.w	_Pal(a1),d6			;NOTE: Palette info available for individual sprites
+			or.w	OB_Priority,d6			;set this sprites priority
+			
+			move.b	_SizeRaw(a1),size(a2)		;store raw size in sprt attr
+			move.b	_SizeMod(a1),d5			;+size to running sprt #
+			add.w	d5,sdef_cnt
+	
+			move.w	d1,d4				;copy xy origin
+			move.w	_Xoff(a1),d3			;mod from x,y offsets
+			btst.b	#ob_xflp,OB_Flag1(a0)		;check xflip
+			beq.s	.x1
+			or.w	#$0800,d6			;set this sprite x flipped
+			neg.w	d3				;adjust x for flip
+			sub.w	_Wide(a1),d3
+.x1			add.w	d3,d4
+			btst.b	#ob_noscroll,OB_Flag5(a0)	;does scroll effect object
+			bne.s	.nxs
+			sub.w	map_x_p,d4			;yes: add in scrolls x
+   			sub.w	ShakeX,d4
+.nxs			add.w	#$80-$10,d4			;make 0,0 = top left of screen
+			and.w	#$1ff,d4			
+			bne.s	.2
+			moveq	#1,d4				;none of that funky sega sprite masking
+.2			move.w	d4,x_pos(a2)			;set x position
+
+			move.w	d2,d4
+			move.w	_Yoff(a1),d3			;mod from x,y offsets
+			btst.b	#ob_yflp,OB_Flag1(a0)		;check yflip
+			beq.s	.y1
+			or.w	#$1000,d6			;set this sprite y flipped
+			neg.w	d3				;adjust y for flip
+			sub.w	_High(a1),d3
+.y1			add.w	d3,d4
+			btst.b	#ob_noscroll,OB_Flag5(a0)	;does scroll effect object
+			bne.s	.nys
+			sub.w	map_y_p,d4			;yes: add in scrolls y
+   			sub.w	ShakeY,d4
+.nys			add.w	#$80-$10,d4			;make 0,0 = top left of screen
+			and.w	#$1ff,d4			
+			move.w	d4,y_pos(a2)			;set y position
+
+			move.w	d6,attr(a2)			;set pattern/attributes
+			move.b	linker,link(a2)			;link
+
+			lea	_Sub_bump2(a1),a1		;next sub sprite
+			
+			cmp.l	#SprtAttr_RAM_End-8,a2		;trap: out of h/w sprites
+			bge.s	.overflow
+
+			addq.l	#8,a2				;bump to next h/w sprite
+			addq.b	#1,linker			;next link
+			dbra	d7,.ploop			;loop for each sub sprite
+			
+			move.l	a2,_SprtAttr_RAM		;save a2 for next object 
+			btst.b	#ob_flown,OB_Flag3(a0)
+			beq	PullCollisionBoxes
+			btst.b	#ob_newdma,OB_Flag5(a0)		;still set dma even if runout of sprites
+			beq	PullCollisionBoxes
+			bsr	QueueNewDMA
+			bra	PullCollisionBoxes
+
+.overflow		move.l	a2,_SprtAttr_RAM		;save a2 for next object 
+			btst.b	#ob_flown,OB_Flag3(a0)
+			beq	PullCollisionBoxes_O
+			btst.b	#ob_newdma,OB_Flag5(a0)		;still set dma even if runout of sprites
+			beq	PullCollisionBoxes_O
+			bsr	QueueNewDMA
+			bra	PullCollisionBoxes_O
+.exit			rts
+
+
+QueueNewDMA		bclr.b	#ob_newdma,OB_Flag5(a0)		;clr dma flag
+			move.w	_VRAM_A(a3),d4			;_VRAM_A(a3)=destination of DMA data	
+			
+			moveq	#0,d1
+			move.w	sdef_cnt,d1			;sdef_cnt*16=length of data to DMA (.w)
+			asl.w	#4,d1				;length in words
+			move.l	_ROM_A_T,d2			;source
+			lsr.l	#1,d2				;source in words
+			move.l	d2,d3				
+			add.w	d1,d2				;add the length to the source
+			bcc.s	.norm				;if overflowd, then data spans 64k boundary
+			beq.s	.norm				;if exact then do a normal DMA
+			sub.w	d2,d1				;d1=truncated length:d2=overflow length
+			
+			move.l	DMA_Stack,a6			;place entry in DMA Stack
+			move.w	d4,-(a6)			;destination of DMA data	
+			move.l	d3,-(a6)			;source of data to DMA
+			move.w	d1,-(a6)			;truncated length
+			move.w	#_DMATransfer,-(a6)		;flag this data package is a dma transfer
+			add.l	d1,d3				;add truncated length to source
+			asl.w	#1,d1				;make truncated length into bytes
+			add.w	d1,d4				;add byte truncated length to detination
+			move.w	d4,-(a6)			;destination of DMA data	
+			move.l	d3,-(a6)			;source of data to DMA
+			move.w	d2,-(a6)			;overflow length
+			move.w	#_DMATransfer,-(a6)		;flag this data package is a dma transfer
+			move.l	a6,DMA_Stack			;retain stack integrity	
+			rts
+
+.norm			move.l	DMA_Stack,a6			;place entry in DMA Stack
+			move.w	d4,-(a6)			;destination of DMA data	
+			move.l	d3,-(a6)			;source of data to DMA
+			move.w	d1,-(a6)			;length
+			move.w	#_DMATransfer,-(a6)		;flag this data package is a dma transfer
+			move.l	a6,DMA_Stack			;retain stack integrity	
+			rts
+
+
+ClrCollisionBoxes	move.l	OB_CollisionRAM(a0),a4		;Overflow collsion boxes
+			move.l	#$88888888,OB_CBox1X1(a4)	
+			move.l	#$88888888,OB_CBox1X2(a4)
+			move.l	#$88888888,OB_CBox2X1(a4)		
+			move.l	#$88888888,OB_CBox2X2(a4)
+			move.l	#$88888888,OB_CBox3X1(a4)		
+			move.l	#$88888888,OB_CBox3X2(a4)
+			rts
+
+PullCollisionBoxes_O	move.l	OB_CollisionRAM(a0),a4		;Overflow collsion boxes
+			move.l	#$88888888,OB_CBox1X1(a4)	
+			move.l	#$88888888,OB_CBox1X2(a4)
+			move.l	#$88888888,OB_CBox2X1(a4)		
+			move.l	#$88888888,OB_CBox2X2(a4)
+			move.l	#$88888888,OB_CBox3X1(a4)		
+			move.l	#$88888888,OB_CBox3X2(a4)
+			tst.b	OB_CBCount
+			bne.s	.ok
+.x			rts
+.ok			;bmi.s	.x
+			addq.l	#2,a1				;search
+			cmp.l	#"CBOX",(a1)
+			bne.s	.ok
+   			addq.l	#4,a1
+  			bra	PCB_Bit
+
+PullCollisionBoxes	move.l	OB_CollisionRAM(a0),a4
+			move.l	#$88888888,OB_CBox1X1(a4)		;clr collision boxes
+			move.l	#$88888888,OB_CBox1X2(a4)
+			move.l	#$88888888,OB_CBox2X1(a4)		
+			move.l	#$88888888,OB_CBox2X2(a4)
+			move.l	#$88888888,OB_CBox3X1(a4)		
+			move.l	#$88888888,OB_CBox3X2(a4)
+			tst.b	OB_CBCount
+			bne.s	.ok
+			rts
+.ok			lea	14(a1),a1
+  			
+PCB_Bit			move.b	OB_CBCount,d1
+			bsr	pb1
+			subq.b	#1,d1
+			beq.s	.x
+			lea	14(a1),a1
+			bsr	pb1
+			subq.b	#1,d1
+			beq.s	.x
+			lea	14(a1),a1
+			bsr	pb1
+			subq.b	#1,d1
+			beq.s	.x
+			lea	14(a1),a1
+			bsr	pb1
+.x			rts
+
+pb1			move.w	0(a1),d3
+			move.w	2(a1),d4
+			move.w	4(a1),d5
+			move.w	6(a1),d6
+			move.w	8(a1),d7
+			asl.w	#3,d7
+
+Cb2			btst.b	#ob_xflp,OB_Flag1(a0)
+			beq	.1
+			neg.w	d3
+			neg.w	d5
+			move.w	OB_Xpos(a0),d2
+			tst.w	d3
+			bpl.s	.aa
+			neg.w	d3
+			sub.w	d3,d2
+			bra	.ab
+.aa			add.w	d3,d2			
+.ab			move.w	d2,OB_CBox1X2(a4,d7.w)
+			move.w	OB_Xpos(a0),d2
+			tst.w	d5
+			bpl.s	.aa2
+			neg.w	d5
+			sub.w	d5,d2
+     			bra	.ab2
+.aa2			add.w	d5,d2			
+.ab2			move.w	d2,OB_CBox1X1(a4,d7.w)
+			bra	.2
+.1			move.w	OB_Xpos(a0),d2
+			tst.w	d3
+			bpl.s	.a
+			neg.w	d3
+			sub.w	d3,d2
+			bra	.b
+.a			add.w	d3,d2			
+.b			move.w	d2,OB_CBox1X1(a4,d7.w)
+			move.w	OB_Xpos(a0),d2
+			tst.w	d5
+			bpl.s	.a2
+			neg.w	d5
+			sub.w	d5,d2
+     			bra	.b2
+.a2			add.w	d5,d2			
+.b2			move.w	d2,OB_CBox1X2(a4,d7.w)
+			
+.2			btst.b	#ob_yflp,OB_Flag1(a0)
+			beq.s	.3
+			neg.w	d4
+			neg.w	d6
+			move.w	OB_Ypos(a0),d2
+			tst.w	d4
+			bpl.s	.aa1
+			neg.w	d4
+			sub.w	d4,d2
+			bra	.ab1
+.aa1			add.w	d4,d2			
+.ab1			move.w	d2,OB_CBox1Y2(a4,d7.w)
+			move.w	OB_Ypos(a0),d2
+			tst.w	d6
+			bpl.s	.aa3
+			neg.w	d6
+			sub.w	d6,d2
+			bra	.ab3
+.aa3			add.w	d6,d2			
+.ab3			move.w	d2,OB_CBox1Y1(a4,d7.w)
+			rts
+.3			move.w	OB_Ypos(a0),d2
+			tst.w	d4
+			bpl.s	.a1
+			neg.w	d4
+			sub.w	d4,d2
+			bra	.b1
+.a1			add.w	d4,d2			
+.b1			move.w	d2,OB_CBox1Y1(a4,d7.w)
+			move.w	OB_Ypos(a0),d2
+			tst.w	d6
+			bpl.s	.a3
+			neg.w	d6
+			sub.w	d6,d2
+			bra	.b3
+.a3			add.w	d6,d2			
+.b3			move.w	d2,OB_CBox1Y2(a4,d7.w)
+			rts
+
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ Universal OBJECT Mover						   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ Entry: n/a								   บ
+; บ  Exit: n/a								   บ
+; บ  Used: n/a								   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ Moves objects based on ;						   บ
+; บ OB_MoveFlags, OB_Xspd, OB_Yspd, OB_Xacc, OB_Yacc			   บ
+; บ NOTE : OB_Xspd&OB_Yspd are WORD.  The HiByte=Actual speed		   บ
+; บ        the LoByte=Fractional speed.					   บ
+; บ 	   the speed must be devided by 256 to get actual speed		   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+
+MoveOb			btst.b	#ob_noxmove,OB_MoveFlags(a0)	;dont store
+			bne.s	.ov1
+			move.w	OB_Xspd(a0),d1			;speed
+			beq.s	.ov1				;=0 the do nothing
+			lsr.w	#8,d1				;/256
+			btst.b	#ob_movxdir,OB_MoveFlags(a0)	;move in which dir?
+			beq.s	.rt
+.lt			sub.w	d1,OB_Xpos(a0)			;left <
+			bset.b	#ob_movlftrte,OB_Flag5(a0)
+			bra	.ov1
+.rt			add.w	d1,OB_Xpos(a0)			;right >
+			bclr.b	#ob_movlftrte,OB_Flag5(a0)
+			
+.ov1			btst.b	#ob_noymove,OB_MoveFlags(a0)	;dont store
+			bne.s	.ov2
+			move.w	OB_Yspd(a0),d1			;speed
+			beq.s	.nxtob				;=0 the do nothing
+			lsr.w	#8,d1				;/256
+			btst.b	#ob_movydir,OB_MoveFlags(a0)	;move in which dir?
+			beq.s	.dn
+.up			sub.w	d1,OB_Ypos(a0)			;up /\
+			bset.b	#ob_movupdn,OB_Flag5(a0)
+			bra	.ov2
+.dn			add.w	d1,OB_Ypos(a0)			;down \/
+			bclr.b	#ob_movupdn,OB_Flag5(a0)
+			
+.ov2			move.w	OB_Xacc(a0),d1			;any X speed mods?
+			beq.s	.ov3			    	;no: skip
+			btst.b	#ob_movxacc,OB_MoveFlags(a0)	;acc/decceleration?
+			beq.s	.xacc
+.xdecc			sub.w	d1,OB_Xspd(a0)			;deccelerate			
+			bpl	.ov3
+			clr.w	OB_Xspd(a0)
+			bra	.ov3
+.xacc			add.w	d1,OB_Xspd(a0)			;accelerate			
+								
+.ov3			move.w	OB_Yacc(a0),d1			;any Y speed mods?
+			beq.s	.nxtob				;no: skip
+			btst.b	#ob_movyacc,OB_MoveFlags(a0)	;acc/decceleration?
+			beq.s	.yacc
+.ydecc			sub.w	d1,OB_Yspd(a0)			;deccelerate		
+			bpl	.nxtob
+			clr.w	OB_Yspd(a0)
+			bra	.nxtob
+.yacc			add.w	d1,OB_Yspd(a0)			;accelerate		
+			
+.nxtob			rts
+
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ OBJECT COLLISION ROUTINES						   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ Entry: d0=Object #							   บ
+; บ  Exit: Collision flags set accordingly.				   บ
+; บ  Used: n/a								   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ Universal object collision handler. These routines, compare collision  บ
+; บ boxes and set flags and/or execute routines based on the outcome.	   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+
+HandlePlayerCollision	move.l	Plr_Database,a1
+			btst.b	#attkmode,OB_MasterMode(a1)
+			bne.s	Player2EnemyATTACK
+			btst.b	#grabmode,OB_MasterMode(a1)
+			bne.s	Player2EnemyATTACK
+			rts
+
+Player2EnemyATTACK	move.l	OB_CollisionRAM(a1),a2
+			bsr	GetAttackBox
+			cmp.w	#$8888,d1
+			beq.s	.x
+
+			lea	ActiveObjectRam,a5
+
+			move.w	ActiveObjectCnt,d0
+.l1			movem.l	d0/a5,-(sp)
+			move.l	(a5),a0
+			
+			cmp.l	Plr_Database,a0
+			beq.s	.nxt
+			tst.b	OB_HitWait(a0)
+			bne.s	.nxt
+			btst.b	#ob_notect1,OB_Flag3(a0)	;disable sprt 2 sprt detection (0=no:1=yes)
+			bne.s	.nxt
+			
+			move.l	OB_CollisionRAM(a0),a1		;enemies Collision RAM
+			
+			move.w	OB_CBox1X2(a1),d5		;test Plr CBox against NME CBox
+			cmp.w	#$8888,d5
+			beq.s	.nxt
+			cmp.w	d5,d1
+			bgt.s	.nxt
+			move.w	OB_CBox1Y2(a1),d6		;test Plr CBox against NME CBox
+			cmp.w	d6,d2
+			bgt.s	.nxt
+			move.w	OB_CBox1X1(a1),d5		;test Plr CBox against NME CBox
+			cmp.w	d5,d3
+			blt.s	.nxt
+			move.w	OB_CBox1Y1(a1),d6		;test Plr CBox against NME CBox
+			cmp.w	d6,d4
+			blt.s	.nxt
+		
+			bsr	SetNmeHitSide
+			
+.nxt			movem.l	(sp)+,d0/a5
+			addq.l	#4,a5
+			dbra	d0,.l1
+.x			rts
+
+
+Enemy2PlayerATTACK	move.l	Plr_Database,a3
+			tst.b	OB_HitWait(a3)
+			bne	.x
+			
+			move.l	OB_CollisionRAM(a3),a1
+			move.w	OB_CBox1X1(a1),d1		;get plr Collision box
+			cmp.w	#$8888,d1			;there isn't one
+			beq	.x				;so exit
+			move.w	OB_CBox1X2(a1),d2		
+			move.w	OB_CBox1Y1(a1),d3		
+			move.w	OB_CBox1Y2(a1),d4		
+			
+			lea	ActiveObjectRam,a5
+
+			move.w	ActiveObjectCnt,d0
+.l1			movem.l	d0/a5,-(sp)
+			move.l	(a5),a0
+			cmp.l	Plr_Database,a0
+			beq.s	.nxt
+			btst.b	#ob_notect1,OB_Flag3(a0)	;disable sprt 2 sprt detection (0=no:1=yes)
+			bne.s	.nxt
+			
+			move.l	OB_CollisionRAM(a0),a2		;enemies Collision RAM
+			move.w	OB_CBox3X1(a2),d5		;get nme attack box	
+			cmp.w	#$8888,d5			;there isn't one
+			beq.s	.nxt				;so next enemy
+			cmp.w	d5,d2				;cmp nme x1 with plr x2
+			blt.s	.nxt				;plr x2<nme x1 so no collision
+			move.w	OB_CBox3X2(a2),d5		;get nme attack box	
+			cmp.w	d5,d1
+			bgt.s	.nxt
+			move.w	OB_CBox3Y1(a2),d5		;get nme attack box	
+			cmp.w	d5,d4
+			blt.s	.nxt
+			move.w	OB_CBox3Y2(a2),d5		;get nme attack box	
+			cmp.w	d5,d3
+			bgt.s	.nxt
+			
+			bset.b	#ob_hitting,OB_Flag1(a0)	;flag this object is hitting (player)
+			movem.l	(sp)+,d0/a5
+			bra	SetPlrHitSide
+			
+.nxt			movem.l	(sp)+,d0/a5
+			addq.l	#4,a5
+			addq.l	#2,a6
+			dbra	d0,.l1
+.x			rts
+
+
+HandleBeingHit		tst.b	OB_HitWait(a0)
+			beq.s	.ok
+			subq.b	#1,OB_HitWait(a0)
+
+.ok			move.b	OB_Flag6(a0),d1
+			and.b	#obhit_mask,d1
+			beq.s	.x
+			move.l	OB_HitRoutine(a0),a1
+			cmp.l	#-1,a1
+			beq.s	.x
+			jmp	0(a1)
+.x			rts
+
+HandleHitTally		tst.b	OB_Var9a(a0)			;zeros the hit tally - OB_Var9(a0) 
+			beq.s	.1				;if hit times out
+			subq.b	#1,OB_Var9a(a0)
+			bne.s	.1
+			clr.b	OB_Var9(a0)
+.1			rts			
+
+			;optimize this
+Get1stHitBox		move.w	OB_CBox1X1(a2),d1
+			move.w	OB_CBox1Y1(a2),d2
+			move.w	OB_CBox1X2(a2),d3
+			move.w	OB_CBox1Y2(a2),d4
+	       		rts
+Get2ndHitBox		move.w	OB_CBox2X1(a2),d1
+			move.w	OB_CBox2Y1(a2),d2
+			move.w	OB_CBox2X2(a2),d3
+			move.w	OB_CBox2Y2(a2),d4
+	       		rts
+GetAttackBox		move.w	OB_CBox3X1(a2),d1
+			move.w	OB_CBox3Y1(a2),d2
+			move.w	OB_CBox3X2(a2),d3
+			move.w	OB_CBox3Y2(a2),d4
+			rts
+CmpHitBox		move.w	OB_CBox1X2(a1),d5		;test Plr CBox against NME CBox
+			cmp.w	d5,d1
+			bgt	FlagNO
+			move.w	OB_CBox1Y2(a1),d6		;test Plr CBox against NME CBox
+			cmp.w	d6,d2
+			bgt	FlagNO
+			move.w	OB_CBox1X1(a1),d5		;test Plr CBox against NME CBox
+			cmp.w	d5,d3
+			blt	FlagNO
+			move.w	OB_CBox1Y1(a1),d6		;test Plr CBox against NME CBox
+			cmp.w	d6,d4
+			blt	FlagNO
+			bra	FlagYES
+
+
+PlayerBody2EnemyBody	move.l	OB_CollisionRAM(a0),a2
+			bsr	Get1stHitBox
+			cmp.w	#$8888,d1
+			beq	FlagNO
+			move.l	Plr_Database,a1
+			move.l	OB_CollisionRAM(a1),a3		;plrs Collision RAM
+			
+			move.w	OB_CBox1X2(a3),d5		;test Plr CBox against NME CBox
+			cmp.w	#$8888,d5
+			beq	FlagNO
+			cmp.w	d5,d1
+			bgt	FlagNO
+			move.w	OB_CBox1Y2(a3),d6		;test Plr CBox against NME CBox
+			cmp.w	d6,d2
+			bgt	FlagNO
+			move.w	OB_CBox1X1(a3),d5		;test Plr CBox against NME CBox
+			cmp.w	d5,d3
+			blt	FlagNO
+			move.w	OB_CBox1Y1(a3),d6		;test Plr CBox against NME CBox
+			cmp.w	d6,d4
+			blt	FlagNO
+			bra	FlagYES
+
+
+PlayerFeet2EnemyBody	move.l	OB_CollisionRAM(a0),a2
+			bsr	Get2ndHitBox
+			cmp.w	#$8888,d1
+			beq	FlagNO
+			move.l	Plr_Database,a1
+			
+			move.w	OB_Xpos(a1),d5
+			addq.w	#8,d5
+			cmp.w	d5,d1
+			bgt	FlagNO
+			sub.w	#$10,d5
+			cmp.w	d5,d3
+			blt	FlagNO
+			move.w	OB_Ypos(a1),d5
+			cmp.w	d5,d2
+			bgt	FlagNO
+			cmp.w	d5,d4
+			blt	FlagNO
+			bra	FlagYES
+
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ OBJECT TRIGGER/INITIALISE ROUTINES					   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ Entry: n/a								   บ
+; บ  Exit: n/a								   บ
+; บ  Used: n/a								   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ All OBJECT triggering and setup routines are here.			   บ
+; บ Object Triggering (switching on) is linked to the scroll routine.	   บ
+; บ When a new edge is decompressed and dma'd, this routine will scan	   บ
+; บ a column and/or row in the map and pull out an OBJECT entry from	   บ
+; บ the 4th layer of the TUME map.  See File: "OBDATA.INC" for more info.  บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+; **** TO DO : Handle X going > Right map limit
+; **** TO DO : Handle Y going > Bottom map limit
+
+
+ScreenWide		equ	40
+ScreenHigh		equ	28
+
+LRClipMargin		equ	$60
+TBClipMargin		equ	$60
+
+OnZoneSize		equ	6*16		;# gtile * 16pix
+
+Adjust_T_XXX		equ	((ScreenWide*8)/2)+OnZoneSize
+Adjust_T_YYY		equ	((ScreenHigh*8)/2)+OnZoneSize
+
+VertScanCMP		equ	Adjust_T_YYY/8	
+HorzScanCMP		equ	Adjust_T_XXX/8	
+
+
+HandleTriggers		;rts
+			
+			tst.b	Trigger_LEFT
+			beq.s	.1
+			clr.b	Trigger_LEFT
+			bsr	CheckLeft_T
+			bra	.2
+.1			tst.b	Trigger_RIGHT
+			beq.s	.2
+			clr.b	Trigger_RIGHT
+			bsr	CheckRight_T
+
+.2			tst.b	Trigger_TOP
+			beq.s	.3
+			clr.b	Trigger_TOP
+			bra	CheckTop_T
+.3			tst.b	Trigger_BOTTOM
+			beq	clrtxx
+			clr.b	Trigger_BOTTOM
+			bra	CheckBottom_T
+.x			rts
+
+CheckRight_T		move.w	SCenterX,d1			;get center of screen
+			move.w	SCenterY,d2			;get center of screen
+			sub.w	x_speed,d1
+			moveq	#VertScanCMP-1,d7		;height of vertical column
+			add.w	#Adjust_T_XXX,d1		;adjust to get start pos (in pixels)
+			;handle x going > right map limit
+			bra	CGLR_T
+
+CheckLeft_T		move.w	SCenterX,d1			;get center of screen
+			move.w	SCenterY,d2			;get center of screen
+			add.w	x_speed,d1
+CL_T			moveq	#VertScanCMP-1,d7		;height of vertical column
+			sub.w	#Adjust_T_XXX,d1		;adjust to get start pos (in pixels)
+			bmi.s	clrtxx
+CGLR_T			sub.w	#Adjust_T_YYY,d2		
+			bpl.s	.ok
+			neg.w	d2   				;handle y going negative
+			lsr.w	#4,d2
+			sub.w	d2,d7
+			moveq	#0,d2
+
+.ok			move.w	d1,OBPOS_X
+			move.w	d2,OBPOS_Y
+			jsr	GetUnderAddrs			;get the map address		
+			move.w	map_wide,d5			;get map width for add
+			ext.l	d5
+
+.loop			moveq	#0,d3
+			jsr	GetObject			;pull the object block from 4th layer
+			tst.b	d3				;test entry
+			beq.s	.nxt				;0 = null
+			subq.w	#1,d3				;-1=adjusted index
+
+			movem.l	d7/d5/a5,-(sp)
+			bsr	SetupThisObject			;we have a valid object, so lets set it up ...
+			movem.l	(sp)+,d7/d5/a5
+			
+.nxt			add.w	#$10,OBPOS_Y
+			add.l	d5,a5				;move down the column
+			dbra	d7,.loop
+clrtxx			rts
+
+
+CheckBottom_T		move.w	SCenterX,d1			;get center of screen
+			move.w	SCenterY,d2			;get center of screen
+			sub.w	y_speed,d2
+			moveq	#HorzScanCMP-1,d7		;height of vertical column
+			add.w	#Adjust_T_YYY,d2		
+			;handle y going > bottom map limit
+			bra	CGTB_T
+
+CheckTop_T		move.w	SCenterX,d1			;get center of screen
+			move.w	SCenterY,d2			;get center of screen
+			add.w	y_speed,d2
+			moveq	#HorzScanCMP-1,d7		;height of vertical column
+			sub.w	#Adjust_T_YYY,d2		
+			bmi.s	ctbtxx
+
+CGTB_T			sub.w	#Adjust_T_XXX,d1		;adjust to get start pos (in pixels)
+			bpl.s	.ok
+			neg.w	d1				;handle x going negative
+			lsr.w	#4,d1
+			sub.w	d1,d7
+			moveq	#0,d1
+
+.ok			move.w	d1,OBPOS_X
+			move.w	d2,OBPOS_Y
+			jsr	GetUnderAddrs			;get the map address		
+
+.loop			jsr	GetObject			;pull the object block from 4th layer
+			tst.b	d3				;test entry
+			beq.s	.nxt				;0 = null
+			subq.w	#1,d3				;-1=adjusted index
+			
+			movem.l	d7/a5,-(sp)
+			bsr	SetupThisObject			;we have a valid object, so lets set it up ...
+			movem.l	(sp)+,d7/a5
+			
+.nxt			add.w	#$10,OBPOS_X
+			addq.l	#2,a5				;move down the column
+			dbra	d7,.loop
+ctbtxx			rts
+
+
+TriggerALL		cmp.w	#Level12,levnum
+			beq.s	.ok
+			cmp.w	#Level13,levnum
+			bne.s	.no
+.ok			jsr	SpawnWEIGHTS
+
+.no			cmp.w	#Level51,levnum
+			bne.s	.no2
+			jsr	SpawnTunnelEdge
+			jsr	SpawnForegroundPost
+			jsr	SetupForegroundPost
+
+.no2			cmp.w	#Level14,levnum
+			beq.s	.sbm
+			cmp.w	#Level24,levnum
+			beq.s	.sbm
+			cmp.w	#Level34,levnum
+			beq.s	.sbm
+			cmp.w	#Level77,levnum
+			bne.s	.oo
+.sbm			jsr	SetupBossMeter
+
+.oo			move.w	map_x_p,d6			;trigger all objects that should be triggered
+			move.w	map_y_p,d7			;by performing a column sweep across the map
+			moveq	#HorzScanCMP-1,d3
+.loop			movem.l	d3/d6/d7,-(sp)
+			move.w	map_x_p,d1			;get top left	
+			move.w	map_y_p,d2		
+			add.w	#(ScreenWide*8)/2,d1		;add to get center of screen
+			add.w	#(ScreenHigh*8)/2,d2
+			bsr	CL_T
+			add.w	#$10,map_x_p
+			movem.l	(sp)+,d3/d6/d7
+			dbra	d3,.loop
+			move.w	d6,map_x_p
+			move.w	d7,map_y_p
+			clr.l	Trigger_LEFT
+			rts
+
+							
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ GetOBLayer - Get OBJECT entry from OBJECT LAYER @ X,Y		   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ Entry: d1/d2 = X/Y							   บ
+; บ  Exit: a1/d3 = pointer to entry in layer/entry			   บ
+; บ  Used: n/a								   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ Sets up layer address and pulls initial entry.			   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+GetOBLayer		jsr	GetUnderAddrs
+			move.w	(a5),d1			;get block
+			lsr.w	#1,d1			;/2 for .FLR index
+			move.l	LevelFlr,a1		;get .FLR table
+			move.b	3(a1,d1.w),d3		;Object from 4th layer
+			move.l	LevelCon,a1
+			add.l	d1,a1			;a1=addrs of contour data
+			rts
+
+
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ KILL OBJECTS ...							   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ Entry: d0=Object #							   บ
+; บ  Exit: n/a								   บ
+; บ  Used: n/a								   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ Switches objects off if they go out of screen bounds.		   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+OffZoneSize		equ	OnZoneSize+(8*16)
+
+OffLeftRight		equ	((ScreenWide*8)/2)+OffZoneSize
+OffTopBot		equ	((ScreenHigh*8)/2)+OffZoneSize
+
+GetScreenCenterClips	move.w	map_x_p,d1			;get top left	
+			move.w	map_y_p,d2		
+			add.w	#(ScreenWide*8)/2,d1		;add to get center of screen
+			add.w	#(ScreenHigh*8)/2,d2
+			move.w	d1,SCenterX
+			move.w	d2,SCenterY
+			sub.w	#((ScreenWide*8)/2)+LRClipMargin,d1
+			move.w	d1,ClipLeft
+			add.w	#(ScreenWide*8)+(LRClipMargin*2),d1
+			move.w	d1,ClipRight
+			sub.w	#((ScreenHigh*8)/2)+TBClipMargin,d2
+			move.w	d2,ClipTop
+			add.w	#(ScreenHigh*8)+(TBClipMargin*2),d2
+			move.w	d2,ClipBottom
+.x			rts
+
+
+KillOb			btst.b	#ob_nooff,OB_Flag2(a0)
+			bne.s	.no
+			
+			move.w	SCenterX,d1
+			move.w	SCenterY,d2
+			
+			btst.b	#ob_nooffx,OB_Flag2(a0)
+			bne.s	.n1
+			move.w	d1,d3
+			sub.w	#OffLeftRight,d1
+			add.w	#OffLeftRight,d3
+			cmp.w	OB_Xpos(a0),d1
+			bgt	SwitchObjectOff
+			cmp.w	OB_Xpos(a0),d3
+			blt	SwitchObjectOff
+
+.n1			btst.b	#ob_nooffy,OB_Flag2(a0)
+			bne.s	.no
+			move.w	d2,d3				;check if y is out of bounds
+			sub.w	#OffTopBot,d2
+			add.w	#OffTopBot,d3
+			cmp.w	OB_Ypos(a0),d2
+			bgt	SwitchObjectOff
+			cmp.w	OB_Ypos(a0),d3
+			blt	SwitchObjectOff
+.no			rts
+
+
+;SwitchObjectOff_A1	movem.l	a0/a1/d1,-(sp)
+;			move.l	a1,a0
+;			bsr	SwitchObjectOff
+;			movem.l	(sp)+,a0/a1/d1
+;			rts
+
+SwitchObjectOff		bset.b	#ob_kill,OB_Flag2(a0)		;turn object off
+ 			cmp.w	#EyeOfOdin_OB,OB_Type(a0)
+			bne.s	.1
+			KILL	55
+.1			rts
+
+SwitchObjectOffA1	bset.b	#ob_kill,OB_Flag2(a1)		;turn object off
+			cmp.w	#EyeOfOdin_OB,OB_Type(a1)
+			bne.s	.1
+			KILL	55
+.1			rts
+			
+TidyKilledObject	lea	OBOnOffFlags,a1			;flag this object is off
+			move.w	OB_ObNum(a0),d3
+			beq.s	.not_triggered			;trap a non triggered object
+			subq.w	#1,d3				;-1 of index to make valid
+			clr.b	0(a1,d3.w)			;flag this (triggered) object as OFF
+
+.not_triggered		move.l	OB_OffRoutine(a0),a1		;get objects off routine
+			cmp.l	#-1,a1				;null? (default)
+			beq.s	.1 				
+			move.l	a0,-(sp)
+			jsr	(a1)				;execute off routine
+			move.l	(sp)+,a0
+			
+.1			bclr.b	#ob_kill,OB_Flag2(a0)		
+			bclr.b	#ob_active,OB_Flag1(a0)
+			move.l	OB_CollisionRAM(a0),a1
+			move.l	#$88888888,OB_CBox1X1(a1)	;clr collision boxes
+			move.l	#$88888888,OB_CBox1X2(a1)
+			move.l	#$88888888,OB_CBox2X1(a1)		
+			move.l	#$88888888,OB_CBox2X2(a1)
+			move.l	#$88888888,OB_CBox3X1(a1)		
+			move.l	#$88888888,OB_CBox3X2(a1)
+			
+			btst.b	#ob_flown,OB_Flag3(a0)
+			bne.s	.2
+			rts
+.2			move.l	OB_RefAnRam(a0),a1		;get ram reference table
+			move.w	_VRAM_L(a1),d0			;length
+			move.w	_VRAM_A(a1),d1			;address
+			jmp	VRamFree			;free it up
+
+			
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ Misc. OBJECT routines						   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ Entry: n/a								   บ
+; บ  Exit: n/a								   บ
+; บ  Used: n/a								   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ Lots of useful routines for manipulating objects			   บ
+; บ in various ways (ooeerr!)						   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+
+ResidentObjectDMA	move.l	4(a1),d3			;pull vec to char data in ROM (base for this anim)
+			lsr.l	#1,d3				;/2
+			lsr.w	#1,d2				;devide length by 2 (.w)
+			move.l	DMA_Stack,a6			;place entry in DMA Stack
+			move.w	d1,-(a6)			;d1=destination of DMA data	
+			move.l	d3,-(a6)			;d3=source of data to DMA / 2
+			move.w	d2,-(a6)			;d2=length of data to DMA (.w)
+			move.w	#_DMATransfer,-(a6)		;flag this data package is a dma transfer
+			move.l	a6,DMA_Stack
+			rts
+			
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ Trajectory Object Mover (Breshnam)					   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+TrajectoryMove		move.w	d1,d6
+		
+			move.w	OB_Var2(a0),d1		;tdy
+			cmp.w	OB_Var1(a0),d1		;tdx
+			bcc.s	.100
+
+.200			tst.w	OB_Var3(a0)		;td
+			bpl.s	.3
+			bsr	tadd_xxx
+			bsr	tadd_dy
+			bra	.10
+.3			bsr	tadd_yyy
+			bsr	tsub_dx
+.10			dbra	d6,.200
+			rts
+
+.100			tst.w	OB_Var3(a0)		;td
+			bmi.s	.4
+			bsr	tadd_yyy
+			bsr	tsub_dx
+			bra	.11
+.4			bsr	tadd_xxx
+			bsr	tadd_dy
+.11			dbra	d6,.100
+			rts
+
+tadd_xxx		tst.b	OB_Var4(a0)		;txdir
+			bmi.s	.2
+			addq.w	#1,OB_Xpos(a0)		;txd
+			rts
+.2			subq.w	#1,OB_Xpos(a0)
+			rts
+tadd_yyy		tst.b	OB_Var4a(a0)		;tydir
+			bmi.s	.2
+			addq.w	#1,OB_Ypos(a0)		;tyd
+			rts
+.2			subq.w	#1,OB_Ypos(a0)
+			rts
+
+tadd_dy			move.w	OB_Var2(a0),d1		;tdy
+			add.w	d1,OB_Var3(a0)		;td
+			rts
+tsub_dx			move.w	OB_Var1(a0),d1		;tdx
+			sub.w	d1,OB_Var3(a0)		;td
+			rts
+		
+
+TrajectorySetup		move.w	TargetY,d1		;dy=d2-d1
+			sub.w	OB_Ypos(a0),d1
+			move.w	d1,OB_Var2(a0)
+			beq.s	.3
+			bmi.s	.4
+			move.w	#0,OB_Var3(a0)
+			moveq	#0,d1
+			bra	.5
+.3			move.w	#-1,OB_Var3(a0)
+			moveq	#0,d1
+			bra	.5
+.4			neg.w	d1
+			move.w	d1,OB_Var2(a0)
+			move.w	#0,OB_Var3(a0)
+			move.b	#-1,d1
+.5			move.b	d1,OB_Var4a(a0)
+
+			move.w	TargetX,d1
+			sub.w	OB_Xpos(a0),d1
+			bmi.s	.1
+			move.w	d1,OB_Var1(a0)
+			clr.b	OB_Var4(a0)
+			rts
+.1			neg.w	d1
+			move.w	d1,OB_Var1(a0)
+			st.b	OB_Var4(a0)
+			rts
+		
+
+TrajectoryHit2		move.w	OB_Var6(a0),d1
+			move.w	OB_Var7(a0),d2
+			bra	TH2
+
+TrajectoryHit		move.w	TargetX,d1
+			move.w	TargetY,d2
+			
+TH2			tst.b	OB_Var5(a0)
+			bne.s	.yy
+			tst.b	OB_Var4(a0)		;txdir
+			bmi.s	.2
+			cmp.w	OB_Xpos(a0),d1
+			ble.s	.okx
+			bra	.yy
+.2			cmp.w	OB_Xpos(a0),d1
+			blt.s	.yy
+.okx			st.b	OB_Var5(a0)
+
+.yy			tst.b	OB_Var5a(a0)
+			bne.s	.x
+			tst.b	OB_Var4a(a0)		;tydir
+			bmi.s	.3
+			cmp.w	OB_Ypos(a0),d2
+			ble.s	.oky
+			rts
+.3			cmp.w	OB_Ypos(a0),d2
+			blt.s	.x
+.oky			st.b	OB_Var5a(a0)
+.x			rts
+
+			
+MakeNmeFacePlayer	move.w	Plr_XPos,d1
+			sub.w	OB_Xpos(a0),d1
+			bpl.s	.1
+			bset.b	#ob_xflp,OB_Flag1(a0)
+			rts
+.1			bclr.b	#ob_xflp,OB_Flag1(a0)
+			rts
+
+MakeNmeFacePlayerNOT	move.w	Plr_XPos,d1
+			sub.w	OB_Xpos(a0),d1
+			bmi.s	.1
+			bset.b	#ob_xflp,OB_Flag1(a0)
+			rts
+.1			bclr.b	#ob_xflp,OB_Flag1(a0)
+			rts
+
+
+SnapX			and.w	#$fff0,OB_Xpos(a0)
+			rts
+SnapY			and.w	#$fff0,OB_Ypos(a0)
+			rts
+SnapXY			and.w	#$fff0,OB_Xpos(a0)
+			and.w	#$fff0,OB_Ypos(a0)
+			rts
+
+SetFlipFromMother	move.b	OB_Flag1(a0),d1
+			and.b	#_ob_xflp!_ob_yflp,d1
+			or.b	d1,OB_Flag1(a1)
+			rts
+
+SetFlipXFromMother	move.b	OB_Flag1(a0),d1
+			and.b	#_ob_xflp,d1
+			or.b	d1,OB_Flag1(a1)
+			rts
+SetFlipYFromMother	move.b	OB_Flag1(a0),d1
+			and.b	#_ob_yflp,d1
+			or.b	d1,OB_Flag1(a1)
+			rts
+
+SetXFlipFromMother	move.b	OB_Flag1(a0),d1
+			and.b	#_ob_xflp!_ob_yflp,d1
+			eor.b	#-1,d1
+			and.b	d1,OB_Flag1(a1)
+			rts
+
+TestProxX		bsr	TestProxX_Left
+			bpl.s	.n
+			bra	TestProxX_Right
+.n			rts
+
+TestProxX_Left		move.w	OB_Xpos(a0),d2
+			sub.w	d1,d2
+			cmp.w	Plr_XPos,d2
+			bgt	FlagNO
+			bra	FlagYES
+			
+TestProxX_Right		move.w	OB_Xpos(a0),d2
+			add.w	d1,d2
+			cmp.w	Plr_XPos,d2
+			blt	FlagNO
+			bra	FlagYES
+
+TestProxY		bsr	TestProxY_Above
+			bpl.s	.n
+			bra	TestProxY_Below
+.n			rts
+
+TestProxY_Above		move.w	OB_Ypos(a0),d2
+			sub.w	d1,d2
+			cmp.w	Plr_YPos,d2
+			bgt	FlagNO
+			bra	FlagYES
+			
+TestProxY_Below		move.w	OB_Ypos(a0),d2
+			add.w	d1,d2
+			cmp.w	Plr_YPos,d2
+			blt	FlagNO
+			bra	FlagYES
+			
+
+ObjectOffBottom		move.w	bot_lim,d1
+			add.w	#(32*8)+$40,d1
+			cmp.w	OB_Ypos(a0),d1
+			rts
+
+		
+DecayXSpd		tst.w	OB_Xspd(a0)
+			beq.s	.x
+			sub.w	#$0030,OB_Xspd(a0)
+			bpl.s	.x
+			clr.w	OB_Xspd(a0)
+.x			rts
+
+UpParabola		addq.b	#1,OB_Var1a(a0)				;do variable height jumping
+			and.b	#3,OB_Var1a(a0)				;depending on length of jump button
+			bne.s	.2					;depression
+			subq.w	#1,OB_Var2(a0)				;decrease upward velocity				
+			beq	FlagYES
+.2			move.w	OB_Var2(a0),d1				;get speed
+			bsr	MoveGolUp_Smooth			;move up
+			bra	FlagNO
+DownParabola		addq.b	#1,OB_Var1a(a0)				;do variable height jumping
+			and.b	#3,OB_Var1a(a0)				;depending on length of jump button
+			bne.s	.2					;depression
+			cmp.w	#GolMaxFallSPD,OB_Var2(a0)
+			bge.s	.2
+			addq.w	#1,OB_Var2(a0)				;increase downward velocity				
+.2			move.w	OB_Var2(a0),d1				;get speed
+			bsr	MoveGolDown_Smooth			;move down
+			bra	FlagNO
+
+ClrHitStuff		move.b	OB_Flag1(a0),d1
+			and.b	#((_ob_hitting!_ob_beinghit)^$ff),d1
+			move.b	d1,OB_Flag1(a0)
+			move.b	OB_Flag6(a0),d1
+			and.b	#((_ob_hit_small!_ob_hit_med!_ob_hit_big)^$ff),d1
+			move.b	d1,OB_Flag6(a0)
+;			clr.b	OB_HitPower(a0)
+			rts
+
+			
+CheckIfHitSomething	btst.b	#ob_hitting,OB_Flag1(a0)
+			beq	FlagNO
+			bra	FlagYES
+
+SetPlrHitSide		move.b	OB_Flag6(a0),d7			;get nmes attack
+			and.b	#obattk_mask,d7
+			asl.b	#3,d7				;mod it
+			or.b	d7,OB_Flag6(a3)			;set plrs hit
+
+			bset.b	#ob_beinghit,OB_Flag1(a3)	;flag ob being hit	
+			move.b	#$6,OB_HitWait(a3)
+
+			tst.w	GolInvincibleFLG
+			bne.s	.a1
+			btst	#blokmode,OB_MasterMode(a3)	;get plrs master mode 
+			bne.s	.a1
+			if	disab_plrhit=NO
+			bsr	HitPlayer
+			bmi	SetPlayerDead
+			else
+			nop
+			endif
+
+.a1			move.l	a0,OB_Interact(a3)		;save offending objects # for plr useage
+			move.w	Plr_XPos,d7
+			cmp.w	OB_Xpos(a0),d7
+			bgt.s	.l
+			bset.b	#ob_hitside,OB_Flag1(a3)
+			rts
+.l			bclr.b	#ob_hitside,OB_Flag1(a3)
+			rts
+
+HitPlayer		moveq	#0,d1
+			move.b	OB_HitPower(a0),d1
+			beq	FlagNO
+			bsr	DoDifficultyMod
+			sub.w	d1,PlrEnergy
+			beq.s	.y
+			bpl	FlagNO
+.y			clr.w	PlrEnergy
+			clr.w	OB_Nrg(a3)
+			bra	FlagYES
+
+GenericHitPlayer	tst.w	GolInvincibleFLG
+			bne	FlagNO
+			btst	#blokmode,OB_MasterMode(a0)
+			bne	FlagNO
+			bsr	DoDifficultyMod
+			sub.w	d1,PlrEnergy
+			beq.s	.y
+			bpl	FlagNO
+.y			clr.w	PlrEnergy
+			clr.w	OB_Nrg(a0)
+			bra	FlagYES
+
+DoDifficultyMod		tst.b	difficulty
+			beq.s	.easy
+			cmp.b	#1,difficulty
+			beq.s	.norm
+.hard			asl.w	#HardModeMUL,d1
+			bra	.norm
+.easy			lsr.w	#EasyModeDIV,d1
+.norm			rts
+
+SetNmeHitSide		move.l	Plr_Database,a1				;flag player has hit summat
+			bset.b	#ob_hitting,OB_Flag1(a1)			
+			move.l	a0,OB_Interact2(a1)			;save objects # for plr useage
+			
+			move.b	OB_Flag6(a1),d7				;get plr attack
+			and.b	#obattk_mask,d7				
+			asl.b	#3,d7					;roll it
+			or.b	d7,OB_Flag6(a0)				;becomes nmes hit
+
+			bset.b	#ob_beinghit,OB_Flag1(a0)		;flag nme being hit	
+			move.w	Plr_XPos,d7				;flag side nme was hit on
+			cmp.w	OB_Xpos(a0),d7
+			blt.s	.l
+			bset.b	#ob_hitside,OB_Flag1(a0)
+			bra	.o1
+.l			bclr.b	#ob_hitside,OB_Flag1(a0)
+
+.o1			move.b	#6,OB_HitWait(a0)
+
+			tst.w	GolStrongFLG
+			beq.s	.o2
+			tst.b	PlayingBOSS
+			bne.s	.o2
+			bra	SetEnemyDead
+.o2			bsr	HitEnemy
+			bmi	SetEnemyDead
+
+			if	super_punch
+			bra	SetEnemyDead
+			endif
+			rts
+
+			
+HitEnemy		tst.b	PlayingBOSS
+			beq.s	.norm
+
+.boss			cmp.l	Boss_Database,a0
+			bne.s	.norm
+			moveq	#0,d5
+			move.b	OB_HitPower(a1),d5			;plr hit power
+			sub.w	d5,BossEnergy				;subtract from enemy health
+			beq.s	.y2
+			bpl	FlagNO
+.y2			clr.w	BossEnergy
+			bra	FlagYES
+
+.norm			tst.w	OB_Nrg(a0)
+			beq	FlagNO
+			moveq	#0,d5
+			move.b	OB_HitPower(a1),d5			;plr hit power
+			sub.w	d5,OB_Nrg(a0)				;subtract from enemy health
+			beq.s	.y
+			bpl	FlagNO
+.y			clr.w	OB_Nrg(a0)
+			bra	FlagYES
+
+SetEnemyDead		bset.b	#ob_dead,OB_Flag2(a0)			;flag object dead
+			move.w	OB_State(a1),OB_Var5(a0)		;save plrs state
+			move.b	OB_MasterMode(a1),OB_Var6(a0)		;save plrs mastermode
+			rts
+
+
+HandleEnemyKilled	move.w	OB_ObNum(a0),d1
+			beq.s	.not_triggered
+			subq.w	#1,d1
+			lea	OBIsKilled,a1			
+			btst.b	#ob_retrig,OB_Flag4(a0)
+			beq.s	.retrigger
+.no_retrigger		st.b	0(a1,d1.w)
+			bra	.not_triggered
+.retrigger		move.b	#2,0(a1,d1.w)
+			bra	SwitchObjectOff
+.not_triggered		bsr	SwitchObjectOff
+			bra	DropItems
+
+HandleEnemyKilled_NOFF	move.w	OB_ObNum(a0),d1
+			beq.s	.x
+			subq.w	#1,d1
+			lea	OBIsKilled,a1			
+			btst.b	#ob_retrig,OB_Flag4(a0)
+			beq.s	.retrigger
+.no_retrigger		st.b	0(a1,d1.w)
+			bra	DropItems
+.retrigger		move.b	#2,0(a1,d1.w)
+.x			rts
+
+
+ValidObjectsTAB		dc.w	RaptorBot_OB		
+			dc.w	SniperBot_OB		
+			dc.w	SpiderBot_OB
+			dc.w	PlasmaBot_OB
+			dc.w	MorningStar_OB
+			dc.w	Archer_OB
+			dc.w	Valkyrie_OB
+			dc.w	WeaponExp_OB
+			dc.w	-1
+
+ValidAlternateTAB	dc.w	RaptorBot_OB		
+			dc.w	PlasmaBot_OB
+			dc.w	MorningStar_OB
+			dc.w	Valkyrie_OB
+			dc.w	-1
+
+RaptorBot_Choice	dc.l	DropSTRENGTH,DropINVINCIBILITY,DropSTRENGTH,DropINVINCIBILITY
+			dc.l	DropSTRENGTH,DropINVINCIBILITY,DropSTRENGTH,DropINVINCIBILITY
+
+PlasmaBot_Choice	dc.l	DropLIFE,DropFULLHEALTH,DropLIFE,DropFULLHEALTH
+			dc.l	DropLIFE,DropFULLHEALTH,DropLIFE,DropFULLHEALTH
+
+MorningStar_Choice	dc.l	DropSTRENGTH,DropINVINCIBILITY,DropSTRENGTH,DropINVINCIBILITY
+			dc.l	DropSTRENGTH,DropINVINCIBILITY,DropSTRENGTH,DropINVINCIBILITY
+
+Valkyrie_Choice		dc.l	DropLIFE,DropFULLHEALTH,DropLIFE,DropFULLHEALTH
+			dc.l	DropLIFE,DropFULLHEALTH,DropLIFE,DropFULLHEALTH
+
+ValidChoiceTAB	 	dc.l	RaptorBot_Choice,PlasmaBot_Choice,MorningStar_Choice,Valkyrie_Choice		
+
+DropItems		lea	ValidObjectsTAB,a1		;see if this object is a valid object
+.l1			move.w	(a1)+,d2
+			bmi.s	.no				;nope: so drop out
+			cmp.w	OB_Type(a0),d2
+			bne.s	.l1
+			
+			jsr	Randy
+			and.w	#$3,d6
+			bne.s	DropPARTHEALTH
+
+			lea	ValidAlternateTAB,a1		;is this object able to drop any other icon?
+			moveq	#0,d3
+.l2			move.w	(a1)+,d2
+			bmi.s	DropPARTHEALTH			;nope: so drop the default health
+			cmp.w	OB_Type(a0),d2
+			beq.s	.yes
+			addq.w	#1,d3
+			bra.s	.l2
+
+.yes			asl.w	#2,d3				;yes: get the vector to this objects choices
+			lea	ValidChoiceTAB,a1
+			move.l	0(a1,d3.w),a1
+			jsr	Randy	     			;randomized chance
+			and.w	#7,d6
+			asl.w	#2,d6
+			move.l	0(a1,d6.w),a1			;get vec to alternative choice
+			jmp	(a1)				;execute	
+.no			rts
+			
+
+DropCONTINUE		moveq	#0,d1
+			jmp	SetupDroppedIcon
+DropLIFE		moveq	#1,d1
+			jmp	SetupDroppedIcon
+DropFULLHEALTH		moveq	#2,d1
+			jmp	SetupDroppedIcon
+DropPARTHEALTH		moveq	#3,d1
+			jmp	SetupDroppedIcon
+DropSTRENGTH		moveq	#4,d1
+			jmp	SetupDroppedIcon
+DropINVINCIBILITY	moveq	#5,d1
+			jmp	SetupDroppedIcon
+
+
+HitSlideObject		tst.w	OB_Var1(a0)
+			beq	.1
+			btst.b	#ob_hitside,OB_Flag1(a0)
+			beq.s	.2
+			jsr	GetUnderLEFTFEET
+			bsr	PullContourUnder
+			beq	FlagYES
+			jsr	GetUnderLEFTLEFT
+			jsr	TestLevelWalls
+			bmi.s	.3
+			jsr	GetUnderLEFTBOT
+			jsr	TestLevelWalls
+			bmi.s	.3
+			move.w	OB_Var1(a0),d1
+			bsr	MoveGolLeft_NF_Smooth
+			clr.b	walking_right
+			st.b	walking_left
+			bra	.3
+.2			jsr	GetUnderRIGHTFEET
+			bsr	PullContourUnder
+			beq	FlagYES
+			jsr	GetUnderRIGHTRIGHT
+			jsr	TestLevelWalls
+			bmi.s	.3
+			jsr	GetUnderRIGHTBOT
+			jsr	TestLevelWalls
+			bmi.s	.3
+			move.w	OB_Var1(a0),d1
+			bsr	MoveGolRight_NF_Smooth
+			st.b	walking_right
+			clr.b	walking_left
+.3			addq.b	#1,OB_Var2(a0)
+			and.b	#3,OB_Var2(a0)
+			bne.s	.1
+  			subq.w	#1,OB_Var1(a0)
+.1			bra	FlagNO
+
+SetSmallAttack		move.b	#_ob_attk_small,d2
+			bra	SetAttack
+SetMediumAttack		move.b	#_ob_attk_med,d2
+			bra	SetAttack
+SetBigAttack		move.b	#_ob_attk_big,d2
+SetAttack		move.b	OB_Flag6(a0),d1
+			and.b	#%11111000,d1
+			or.b	d2,d1
+			move.b	d1,OB_Flag6(a0)
+			rts
+
+SetSmallAttackA1	move.b	#_ob_attk_small,d2
+			bra	SetAttackA1
+SetMediumAttackA1	move.b	#_ob_attk_med,d2
+			bra	SetAttackA1
+SetBigAttackA1		move.b	#_ob_attk_big,d2
+SetAttackA1		move.b	OB_Flag6(a1),d1
+			and.b	#%11111000,d1
+			or.b	d2,d1
+			move.b	d1,OB_Flag6(a1)
+			rts
+
+BeenHit			move.b	OB_Flag6(a0),d1
+			and.b	#obhit_mask,d1
+			rts
+			
+CheckScreenBoundsX	move.w	SCenterX,d1			;get center of screen
+			move.w	d1,d3				;check if x is out of bounds
+			sub.w	#(OffLeftRight-$20),d1
+			add.w	#(OffLeftRight-$20),d3
+			cmp.w	OB_Xpos(a0),d1
+			bgt	FlagYES
+			cmp.w	OB_Xpos(a0),d3
+			blt	FlagYES
+			bra	FlagNO
+CheckScreenBoundsY	move.w	SCenterY,d1			;get center of screen
+			move.w	d1,d3				;check if x is out of bounds
+			sub.w	#(OffTopBot-$20),d1
+			add.w	#(OffTopBot-$20),d3
+			cmp.w	OB_Ypos(a0),d1
+			bgt	FlagYES
+			cmp.w	OB_Ypos(a0),d3
+			blt	FlagYES
+			bra	FlagNO
+
+
+TestLand		jsr	GetUnderFEET				;land proper
+			bra	SetHeight
+
+
+HandleContours		jsr	GetUnderFEET
+			bsr	SetHeight
+			bpl.s	.1
+			rts
+			
+.1			moveq	#0,d3
+			move.w	#-$10,d4
+			jsr	GetUnderGENERIC
+			moveq	#8,d1
+			bsr	MoveGolUp_Smooth
+			jsr	GetXInBlock
+			move.b	0(a1,d7.w),d1	
+			ext.w	d1
+			beq.s	.2
+			subq.w	#1,d1
+			and.w	#$fff0,OB_Ypos(a0)
+			or.w	d1,OB_Ypos(a0)
+			bra	FlagYES
+
+.2			addq.w	#8,OB_Ypos(a0)	
+			moveq	#0,d3
+			moveq	#$10,d4
+			jsr	GetUnderGENERIC
+			moveq	#8,d1
+			bsr	MoveGolDown_Smooth
+			jsr	GetXInBlock
+			move.b	0(a1,d7.w),d1	
+			ext.w	d1
+			beq	FlagNO
+			subq.w	#1,d1
+			and.w	#$fff0,OB_Ypos(a0)
+			or.w	d1,OB_Ypos(a0)
+			bra	FlagYES
+
+
+GetFreeOBJECT_HI	moveq	#0,d0
+			lea	OBJECT_RAM,a0
+.loop			btst.b	#ob_active,OB_Flag1(a0)
+			beq	FlagYES
+.nxt			lea	OB_DATA_SIZE(a0),a0
+			addq.w	#1,d0
+			cmp.w	#GoliathObjectNumber,d0
+			bne.s	.loop
+			bra	FlagNO
+
+GetFreeOBJECT_LO	moveq	#LO_ObjectNumber,d0
+			lea	OBJECT_RAM+(LO_ObjectNumber*128),a0
+.loop			btst.b	#ob_active,OB_Flag1(a0)
+			beq	FlagYES
+.nxt			lea	OB_DATA_SIZE(a0),a0
+			addq.w	#1,d0
+			cmp.w	#LOLO_ObjectNumber,d0
+			bne.s	.loop
+			bra	FlagNO
+
+GetFreeOBJECT_LOLO	moveq	#LOLO_ObjectNumber,d0
+			lea	OBJECT_RAM+(LOLO_ObjectNumber*128),a0
+.loop			btst.b	#ob_active,OB_Flag1(a0)
+			beq	FlagYES
+.nxt			lea	OB_DATA_SIZE(a0),a0
+			addq.w	#1,d0
+			cmp.w	#MaxObs,d0
+			bne.s	.loop
+			bra	FlagNO
+
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ SetupObjectFLY_ROM - Setup a RAW object thats FLOWN from ROM	   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ Entry: d3 = Max Size (in bytes) of object (XChar*YChar*32)		   บ
+; บ  Exit: _WRAM_A(RamTab) = ROM address of Source data			   บ
+; บ  	   _VRAM_A(RamTab) = VRAM address of Destination		   บ
+; บ  	   _VRAM_Adiv32(RamTab) = VRAM address of Destination / 32	   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+
+SetupObjectFLY_ROM	jsr	VRamAlloc_BF			;allocate the VRAM
+			bpl	FlagNO
+			bsr	GetObRAMTab			;get table for objects RAM info (a2)
+			move.w	d3,_VRAM_L(a2)			;save length of block
+			move.w	d1,_VRAM_A(a2)			;save address of block
+			lsr.w	#5,d1				;/32
+			move.w	d1,_VRAM_Adiv32(a2)		;save address/32 of block
+	   		bsr	SetupObject
+			bset.b	#ob_flown,OB_Flag3(a0)		;set this object flown
+			bra	FlagYES				;object setup okay
+
+
+SetupObjectRES		bsr	GetObjectRAM			;set Database Ram Addrs
+			bsr	GetObRAMTab
+			bclr.b	#ob_flown,OB_Flag3(a0)		;set this object resident
+
+SetupObject		move.l	#-1,OB_OffRoutine(a0)		;null object off routine (default)
+			move.l	#-1,OB_HitRoutine(a0)		;null object hit routine (default)
+			clr.b	OB_HitPower(a0)
+			clr.b	OB_HitWait(a0)
+			clr.b	OB_MoveFlags(a0)
+			clr.w	OB_Xspd(a0)
+			clr.w	OB_Yspd(a0)
+			clr.w	OB_Xacc(a0)
+			clr.w	OB_Yacc(a0)
+			clr.b	OB_State(a0)
+			move.b	#_ob_active,OB_Flag1(a0)
+			clr.b	OB_Flag2(a0)
+			clr.b	OB_Flag3(a0)	
+			clr.b	OB_Flag4(a0)	
+			clr.b	OB_Flag5(a0)	
+			clr.b	OB_Flag6(a0)
+			clr.l	OB_Task(a0)	
+			clr.l	OB_Var1(a0)
+			clr.l	OB_Var3(a0)
+			clr.l	OB_Var5(a0)
+			clr.w	OB_Var7(a0)
+			clr.w	OB_Var9(a0)
+			clr.w	OB_ObNum(a0)
+			lea	NullAnim,a1
+			bra	SetNewAnim
+
+SpawnBasicOBJECT_LOLO	bsr	GetFreeOBJECT_LOLO 			;get a free object
+			bpl	FlagNO					;no free objects
+			bsr	SetupObjectFLY_ROM			;setup object as a raw ROM flown object
+			bpl	FlagNO					;no free VRAM
+			bra	FlagYES
+
+SpawnBasicOBJECT_LO	bsr	GetFreeOBJECT_LO 			;get a free object
+			bpl	FlagNO					;no free objects
+			bsr	SetupObjectFLY_ROM			;setup object as a raw ROM flown object
+			bpl	FlagNO					;no free VRAM
+			bra	FlagYES
+
+SpawnBasicOBJECT_HI	bsr	GetFreeOBJECT_HI 			;get a free object
+			bpl	FlagNO					;no free objects
+			bsr	SetupObjectFLY_ROM			;setup object as a raw ROM flown object
+			bpl	FlagNO					;no free VRAM
+			bra	FlagYES
+
+PosOnContour		jsr	GetXInBlock
+			moveq	#0,d1
+			move.b	0(a1,d7.w),d1	
+			beq	FlagNO
+			subq.b	#1,d1
+			ext.w	d1
+			and.w	#$fff0,OB_Ypos(a0)
+			add.w	d1,OB_Ypos(a0)
+			bra	FlagYES
+
+WipeObjects		lea	OBJECT_RAM,a0
+			move.w	#((object_ram_end-OBJECT_RAM)/4)-1,d0
+.l1			clr.l	(a0)+
+			dbra	d0,.l1
+			rts
+
+
+			;Wipe unused sprs off scrn
+ClrSprend		lea	SprtAttr_RAM,a0		;sprt attribute RAM
+			moveq	#0,d0			;get number of sprites used this frame
+			move.b	linker,d0
+			subq.b	#1,d0	 		;- 1
+			move.w	#80,d1			;max # of h/w sprts
+			sub.w	d0,d1			;- number used = number of sprts to clear
+			asl.w	#3,d0			;* 8 to get offset into sprt attribute RAM
+			add.w	d0,a0			;add to pointer
+.loop			clr.b	attr(a0)		;clr attribute byte
+			addq.w	#8,a0			;bump pointer
+			dbra	d1,.loop		;loop 
+			rts
+
+
+GetObRAMTab		lea	ObjectCollisionRAM,a2
+			move.w	d0,d2
+			asl.w	#5,d2
+			add.w	d2,a2
+			move.l	a2,OB_CollisionRAM(a0)
+			move.l	#$88888888,OB_CBox1X1(a2)		;clr collision boxes
+			move.l	#$88888888,OB_CBox1X2(a2)
+			move.l	#$88888888,OB_CBox2X1(a2)		
+			move.l	#$88888888,OB_CBox2X2(a2)
+			move.l	#$88888888,OB_CBox3X1(a2)		
+			move.l	#$88888888,OB_CBox3X2(a2)
+			lea	ObjectRAMTab,a2
+			move.w	d0,d2
+			asl.w	#3,d2
+			add.w	d2,a2
+			move.l	a2,OB_RefAnRam(a0)
+			rts			
+			
+NullAnim		ds.b	16
+
+SetNewAnim_Q		move.l	0(a1),OB_AnSequence(a0)
+			move.l	4(a1),OB_AnChrData(a0)
+			move.l	8(a1),OB_AnPatch(a0)				
+			move.w	12(a1),OB_AnDex(a0)	
+			move.b	15(a1),OB_AnFlags(a0)	
+			rts
+
+SetNewAnimFREE		tst.l	OB_AnSequence(a0)		;set new anim ONLY if old one has finished
+			beq.s	SetNewAnim
+			rts
+SetNewAnim		move.l	0(a1),OB_AnSequence(a0)
+			move.l	4(a1),OB_AnChrData(a0)
+			move.l	8(a1),OB_AnPatch(a0)				
+			move.w	12(a1),OB_AnDex(a0)	
+			move.b	NewAnCnt,OB_AnCnt(a0)	
+			move.b	#4,OB_AnCmp(a0)
+			move.b	15(a1),OB_AnFlags(a0)	
+			clr.l	OB_AnSeqTemp(a0)	
+			clr.w	OB_AnDexTemp(a0)
+			addq.b	#1,NewAnCnt
+			and.b	#3,NewAnCnt
+			rts
+
+ForceNewAnim		clr.b	OB_AnCmp(a0)
+			rts
+
+SetNewAnimA1		move.l	0(a2),OB_AnSequence(a1)
+			move.l	4(a2),OB_AnChrData(a1)
+			move.l	8(a2),OB_AnPatch(a1)				
+			move.w	12(a2),OB_AnDex(a1)	
+			move.b	NewAnCnt,OB_AnCnt(a1)	
+			move.b	#4,OB_AnCmp(a1)
+			move.b	15(a2),OB_AnFlags(a1)	
+			clr.l	OB_AnSeqTemp(a1)	
+			clr.w	OB_AnDexTemp(a1)
+			addq.b	#1,NewAnCnt
+			and.b	#3,NewAnCnt
+			rts
+
+ForceNewAnimA1		clr.b	OB_AnCmp(a1)
+			rts
+
+
+ForceNextAnimFrame	clr.b	OB_AnCnt(a0)
+			clr.b	OB_AnCmp(a0)
+			rts
+
+
+			;NOTE: This routine uses a arithmetic shift operation to multiply
+			;the object # by 128.  If the OB_DATA_SIZE is changed, then this
+			;asl.w	#7,d2 must be changed to mulu	#OB_DATA_LEN,d2
+			;
+GetObjectRAM		lea	OBJECT_RAM,a0		;point to objects RAM
+			move.w	d0,d2
+			asl.w	#7,d2			;<<<<< HERE
+			add.w	d2,a0
+			rts
+
+FindObject		lea	ActiveObjectRam,a5
+			move.w	ActiveObjectCnt,d0
+.l1			move.l	(a5),a1
+			cmp.w	OB_Type(a1),d2
+			beq	FlagYES
+			addq.l	#4,a5
+			dbra	d0,.l1
+			bra	FlagNO
+			
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ SETUP THIS OBJECT							   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ Entry: d3 = OBJECT Entry from 4th Layer of TUME map.		   บ
+; บ  Exit: mi = Object setup OK.					   บ
+; บ        pl = Object NOT setup OK.					   บ
+; บ  Used: n/a								   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ Sets up an OBJECT using the Entry from 4th layer of TUME map.	   บ
+; บ T`his value (-1) is used as an index to access the objects,		   บ
+; บ unique setup, config data.						   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+SetupThisObject		lea	OBOnOffFlags,a1			;check if this object is flagged on 
+			tst.b	0(a1,d3.w)			
+			bne	FlagNO
+			lea	OBIsKilled,a1			;check if this object is dead already
+			tst.b	0(a1,d3.w)			
+			bmi	FlagNO				;dead for ever!
+			
+			move.l	OBJECTDataLVec,a1		;vec to object data tab vecs
+			asl.w	#2,d3				;*4 = index .l
+			move.l	0(a1,d3.w),a2			;pull pointer to data tab
+			cmp.l	#-1,a2				;null entry
+			beq	FlagNO
+			
+			cmp.b	#LO,$1b(a2)			;spawn hi or lo?
+			beq.s	.lo
+			cmp.b	#LOLO,$1b(a2)			;spawn hi or lo?
+			bne.s	.hi
+.lolo			bsr	GetFreeOBJECT_LOLO		;get a free object
+			bpl	FlagNO				;didn't find one so exit
+			bra	.ok	
+.lo			bsr	GetFreeOBJECT_LO		;get a free object
+			bpl	FlagNO				;didn't find one so exit
+			bra	.ok	
+.hi			bsr	GetFreeOBJECT_HI		;get a free object
+			bpl	FlagNO				;didn't find one so exit
+			
+.ok			lsr.w	#2,d3
+			move.w	d3,OB_ObNum(a0)
+			
+			move.l	a2,-(sp)
+			bsr	GetObRAMTab			;get table for objects RAM info (a2)
+			move.l	(sp)+,a2
+			
+			move.b	8(a2),OB_Flag3(a0)		
+			
+			btst.b	#ob_flown,OB_Flag3(a0)		;is this object resident or flown?
+			beq.s	.skp				;resident, so skip the allocation
+			move.w	4(a2),d3			;size of block to allocate
+			jsr	VRamAlloc_BF			;allocate the VRAM
+			bpl	FlagNO				;didn't find enough VRAM so exit
+
+;			bmi.s	.yok
+;			jmp	bang
+
+.yok			move.l	OB_RefAnRam(a0),a1		;get table for objects RAM info (a2)
+			move.w	d3,_VRAM_L(a1)			;save length of block
+			move.w	d1,_VRAM_A(a1)			;save address of block
+			lsr.w	#5,d1				;/32
+			move.w	d1,_VRAM_Adiv32(a1)		;save address/32 of block
+
+.skp			move.w	0(a2),OB_Type(a0)		;set type	
+			move.w	2(a2),OB_Nrg(a0)		;set energy
+			move.b	6(a2),OB_Flag1(a0)		;set flags
+			move.b	7(a2),OB_Flag2(a0)		
+			move.b	9(a2),OB_Flag4(a0)		
+			move.b	$0a(a2),OB_Flag5(a0)		
+			move.b	$0b(a2),OB_Flag6(a0)		
+			move.w	$0c(a2),OB_Var1(a0)		;set variables
+			move.w	$0e(a2),OB_Var2(a0)
+			move.w	$10(a2),OB_Var3(a0)
+			move.w	$12(a2),OB_Var4(a0)
+			move.w	$14(a2),OB_Var5(a0)
+			move.w	$16(a2),OB_Var6(a0)
+			move.w	$18(a2),OB_Var7(a0)
+			moveq	#0,d1
+			move.b	$1a(a2),d1
+			move.w	d1,OB_State(a0)			;set starting state
+			cmp.l	#-1,$1c(a2)			;does this object need a new palette
+			beq.s	.1
+			move.l	$1c(a2),a1			;drop in the new palette
+			jsr	SetSinglePalette
+
+.1			move.l	#-1,OB_OffRoutine(a0)		;null object off routine (default)
+			bset.b	#ob_tidy,OB_Flag5(a0)
+			clr.b	OB_MoveFlags(a0)		;wipe movement vars
+			clr.b	OB_HitPower(a0)
+			clr.b	OB_HitWait(a0)
+			clr.w	OB_Xspd(a0)
+			clr.w	OB_Yspd(a0)
+			clr.w	OB_Xacc(a0)
+			clr.w	OB_Yacc(a0)
+			clr.l	OB_Task(a0)	
+			lea	NullAnim,a1
+			bsr	SetNewAnim
+			move.w	OBPOS_X,OB_Xpos(a0)
+			and.w	#$fff0,OB_Xpos(a0)
+			move.w	OBPOS_Y,OB_Ypos(a0)
+			add.w	#$10,OB_Ypos(a0)
+			and.w	#$fff0,OB_Ypos(a0)
+			add.w	#$8,OB_Ypos(a0)
+	
+			move.w	OB_ObNum(a0),d3			;flag this object on
+			addq.w	#1,OB_ObNum(a0)			;+1=trappable value
+			lea	OBOnOffFlags,a1
+			st.b	0(a1,d3.w)			;flag on
+			lea	OBObNumbers,a1			;save this objects number
+			move.b	d0,0(a1,d3.w)
+			bra	FlagYES
+
+
+CheckIfOnAlready	lea	OBOnOffFlags,a1			;check if this object is flagged on 
+			tst.b	0(a1,d3.w)			
+			bne	FlagYES				;mi if on
+			bra	FlagNO				;pl if off
+
+
+InitOBJECTS		lea	OBIsKilled,a1			;clear onject on flags
+			moveq	#(256/4)-1,d1
+.l1			clr.l	(a1)+
+			dbra	d1,.l1
+InitOBJECTS2		bsr	WipeObjects
+			lea	OBOnOffFlags,a1			;clear onject on flags
+			moveq	#(256/4)-1,d1
+.l1			clr.l	(a1)+
+			dbra	d1,.l1
+			rts
+
+
+; - OBJECT LOGIC ROUTINES --------------------------------------------------
+
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ OBJECT Routines							   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ Entry: n/a								   บ
+; บ  Exit: n/a								   บ
+; บ  Used: n/a								   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ These are all the individual "enemy" routines			   บ
+; บ including the PLAYER (Goliath)					   บ
+; บ Logic, logic, logic and more logic ...				   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+; - Object Maximum sizes ---------------------------------------------------
+
+Goliath_MAX_Size	equ	70*32
+Burn_MAX_Size		equ	32*32
+RaptorBot_MAX_Size	equ	48*32		
+SniperBot_MAX_Size	equ	44*32
+SignPiece_MAX_Size	equ	6*32
+SteamVent_MAX_Size	equ	35*32
+BreakWall_MAX_Size	equ	24*32	
+SkyLight_MAX_Size	equ	26*32		
+BreakLight_MAX_Size	equ	18*32		
+ThrowCrate_MAX_Size	equ	21*32	
+BreakEdgeL_MAX_Size	equ	14*32	
+BreakEdgeR_MAX_Size	equ	7*32	
+BigFlrExplode_MAX_Size	equ	42*32	
+BigAirExplode_MAX_Size	equ	48*32	
+SmallAirExplode_MAX_Size	equ	3*3*32
+Fireball_MAX_Size	equ	1*32
+BigFireball_MAX_Size	equ	4*32
+Spark_MAX_Size		equ	2*32	
+Sparks_MAX_Size		equ	4*4*32
+Sparks2_MAX_Size	equ	4*4*32
+Debris_MAX_Size		equ	3*3*32
+GlassDebris_MAX_Size	equ	12*32
+WoodDebris_MAX_Size	equ	4*32
+HomingProj1_MAX_Size	equ	1*32
+HorzProj1_MAX_Size	equ	4*32
+VertProj1_MAX_Size	equ	4*32
+DirProj1_MAX_Size	equ	8*32
+DirProj2_MAX_Size	equ	4*32
+WallDebris_MAX_Size	equ	3*3*32
+BrickDebris_MAX_Size	equ	4*32
+Scratch1_MAX_Size	equ	19*32
+Scratch2_MAX_Size	equ	43*32
+Scratch3_MAX_Size	equ	36*32
+Scratch4_MAX_Size	equ	35*32
+Icon_MAX_Size		equ	4*32
+SpiderBot_MAX_Size	equ	31*32
+WaspBot_MAX_Size	equ	48*32
+Xanatos_MAX_Size	equ	60*32
+MorningStar_MAX_Size	equ	51*32
+Archer_MAX_Size		equ	27*32
+Arrow_MAX_Size		equ	5*32
+Valkyrie_MAX_Size	equ	41*32
+Axe_MAX_Size		equ	9*32
+WeaponExp_MAX_Size	equ	23*32
+Couldron_MAX_Size	equ	11*32
+FireballTrail_MAX_Size	equ	1*32
+BigFireballTrail_MAX_Size	equ	2*32
+Oil_MAX_Size		equ	16*32
+Claw_MAX_Size		equ	28*32
+Stump_MAX_Size		equ	1*32
+StumpBubble_MAX_Size	equ	18*32
+StumpFire_MAX_Size	equ	31*32
+ClawStump_MAX_Size	equ	28*32
+Vent_MAX_Size		equ	37*32	
+VentSparks_MAX_Size	equ	14*32	
+Chain_MAX_Size		equ	12*32
+FlameLick_MAX_Size	equ	5*32
+Floor_MAX_Size		equ	135*32
+MutVikBody_MAX_Size	equ	78*32
+MutVikHead_MAX_Size	equ	8*32
+MutVikHammer_MAX_Size	equ	14*32
+EyeOfOdin_MAX_Size	equ	26*32
+EyeOfOdinTrail_MAX_Size	equ	21*32
+
+L1BreakWall_MAX_Size	equ	40*32
+Catapult_MAX_Size	equ	34*32
+L1BreakFloor_MAX_Size	equ	16*32
+Gate_MAX_Size		equ	42*32
+Weight_MAX_Size		equ	62*32
+WeightCrush_MAX_Size	equ	62*32
+WallFire_MAX_Size	equ	12*32
+Balista_MAX_Size	equ	30*32
+BalistaLog_MAX_Size	equ	22*32
+PasteWall_MAX_Size	equ	45*32
+FlameBoulder_MAX_Size	equ	15*32
+CastlePiece1_MAX_Size	equ	102*32
+CastlePiece2_MAX_Size	equ	50*32
+CastlePiece3_MAX_Size	equ	89*32
+CastlePiece4_MAX_Size	equ	50*32
+
+MutSpiLegs_MAX_Size	equ	13*32
+MutSpiHead_MAX_Size	equ	13*32
+MutSpiHeadFlm_MAX_Size	equ	4*32
+MutSpiProj_MAX_Size	equ	4*32
+MutSpiElecV_MAX_Size	equ	59*32
+MutSpiElecH_MAX_Size	equ	42*32
+
+PlasmaBot_MAX_Size	equ	60*32
+PlasmaBall_MAX_Size	equ	4*32
+PlasmaBallTail_MAX_Size	equ	9*32
+PlasmaHead_MAX_Size	equ	31*32
+RabidHH_MAX_Size	equ	85*32
+VertFlame_MAX_Size	equ	17*32
+WallFlame_MAX_Size	equ	29*32
+FloorFlame_MAX_Size	equ	29*32
+RobotGen_MAX_Size	equ	48*32
+OPPlatform_MAX_Size	equ	18*32
+OPLink_MAX_Size		equ	1*32
+OPOrb_MAX_Size		equ	6*32
+Furnace_MAX_Size	equ	39*32
+BigRock_MAX_Size	equ	9*32
+MediumRock_MAX_Size	equ	4*32
+SmallRock_MAX_Size	equ	1*32
+BigCouldron_MAX_Size	equ	81*32
+Trough_MAX_Size		equ	42*32
+Energizer_MAX_Size	equ	12*32
+
+Demona_MAX_Size		equ	75*32
+WallPaste_MAX_Size	equ	16*32
+EdgePaste_MAX_Size	equ	30*32
+Tentacle_MAX_Size	equ	40*32
+Infuser_MAX_Size	equ	48*32
+BigGuns_MAX_Size	equ	134*32
+BigGunsProj_MAX_Size	equ	9*32
+
+HighSignPole_MAX_Size	equ	10*32
+HighSign_MAX_Size	equ	17*32
+LowLight_MAX_Size	equ	6*32
+HighSignPiece_MAX_Size	equ	9*32
+L5Skylight_MAX_Size	equ	16*32
+L5Wall_MAX_Size		equ	18*32
+Electricity_MAX_Size	equ	4*32
+TunnelEdge_MAX_Size	equ	8*32
+ForegroundPost_MAX_Size	equ	8*32
+
+Sorcerer_MAX_Size	equ	57*32
+LightningTop_MAX_Size	equ	73*32
+LightningBot_MAX_Size	equ	43*32
+
+Health1NME_MAX_Size	equ	22*32
+Health2NME_MAX_Size	equ	32
+
+MDemWallFire_MAX_Size	equ	12*32
+MDemFloorFire_MAX_Size	equ	20*32
+	
+
+			ObRESET			
+			ObDEF	Goliath_OB				;GOLIATH (player)
+			ObDEF	Test_OB					;testbed
+			ObDEF	Orb_OB					;vector ball
+			ObDEF	Health1PLR_OB				;health meter
+			ObDEF	Health2PLR_OB				;health meter slider
+			ObDEF	Health1NME_OB				;health meter
+			ObDEF	Health2NME_OB				;health meter slider
+			ObDEF	Numeral_OB		
+			if	1=0
+			ObDEF	Burn_OB			
+			endif
+			if	show_tect
+			ObDEF	Corner_OB		
+			endif
+			ObDEF	BigExplode_OB		
+			ObDEF	SmallExplode_OB		
+			ObDEF	GlassDebris_OB		
+			ObDEF	MetalDebris_OB		
+			ObDEF	WoodDebris_OB		
+			ObDEF	WallDebris_OB		
+			ObDEF	SignPiece_OB		
+			ObDEF	SteamVent_OB		
+			ObDEF	BreakWall_OB		
+			ObDEF	SkyLight_OB		
+			ObDEF	BreakLight_OB		
+			ObDEF	ThrowCrate_OB		
+			ObDEF	BreakEdgeLeft_OB		
+			ObDEF	BreakEdgeRight_OB		
+			ObDEF	Spark_OB		
+			ObDEF	Spark2_OB		
+			ObDEF	Sparks_OB		
+			ObDEF	Sparks2_OB		
+			ObDEF	Fireball_OB
+			ObDEF	HomingProj1_OB
+			ObDEF	HorzProj1_OB
+			ObDEF	VertProj1_OB
+			ObDEF	DirProj1_OB
+			ObDEF	DirProj2_OB
+			ObDEF	DropMine_OB
+			ObDEF	Scratch_OB
+			ObDEF	Icon_OB
+			
+			ObDEF	RaptorBot_OB		
+			ObDEF	SniperBot_OB		
+			ObDEF	SpiderBot_OB
+			ObDEF	WaspBot_OB
+			ObDEF	Xanatos_OB
+			ObDEF	PlasmaBot_OB
+			ObDEF	RabidHH_OB
+			
+			ObDEF	MorningStar_OB
+			ObDEF	Archer_OB
+			ObDEF	Arrow_OB
+			ObDEF	Valkyrie_OB
+			ObDEF	Axe_OB
+			ObDEF	WeaponExp_OB
+			ObDEF	Couldron_OB
+			ObDEF	SpittingCouldron_OB
+			ObDEF	FireballHead_OB
+			ObDEF	FireballTrail_OB
+			ObDEF	BigFireballHead_OB
+			ObDEF	BigFireballTrail_OB
+			ObDEF	Oil_OB
+			ObDEF	OilGenerator_OB	
+			ObDEF	Claw_OB
+			ObDEF	Stump_OB
+			ObDEF	StumpBubble_OB
+			ObDEF	StumpFire_OB
+			ObDEF	ClawStump_OB
+			ObDEF	StumpFireGen_OB
+			ObDEF	Vent_OB
+			ObDEF	VentSparks_OB
+			ObDEF	Chain_OB
+			ObDEF	FlameLick_OB
+			ObDEF	Floor_OB
+			ObDEF	MutVikBody_OB
+			ObDEF	MutVikHead_OB
+			ObDEF	MutVikHammer_OB
+			ObDEF	EyeOfOdin_OB
+			ObDEF	EyeOfOdinTrail_OB
+		   
+			ObDEF	L1BreakWall_OB
+			ObDEF	Catapult_OB	
+			ObDEF	L1BreakFloor_OB	
+			ObDEF	Gate_OB		
+			ObDEF	GateCrusher_OB		
+			ObDEF	Weight_OB		
+			ObDEF	WeightCrusher_OB		
+			ObDEF	WallFire_OB	
+			ObDEF	Balista_OB	
+			ObDEF	BalistaLog_OB	
+			ObDEF	PasteWall_OB	
+			ObDEF	FlameBoulder_OB	
+			ObDEF	CastlePiece_OB	
+			
+			ObDEF	MutantSpiderBot_OB	
+			ObDEF	MutSpiLegs_OB	
+			ObDEF	MutSpiHead_OB	
+			ObDEF	MutSpiHeadFlame_OB	
+			ObDEF	MutSpiProj_OB
+			ObDEF	MutSpiElecV_OB
+			ObDEF	MutSpiElecH_OB
+			
+			ObDEF	PlasmaBall_OB
+			ObDEF	PlasmaBallTail_OB
+			ObDEF	PlasmaDeadHead_OB
+			ObDEF	VertFlame_OB
+			ObDEF	WallFlame_OB
+			ObDEF	FloorFlame_OB
+			ObDEF	OPPlatform_OB
+			ObDEF	OPLink_OB
+			ObDEF	OPOrb_OB
+			ObDEF	Furnace_OB
+			ObDEF	RobotGenerator_OB
+			ObDEF	RockGenerator_OB
+			ObDEF	BigRock_OB
+			ObDEF	MediumRock_OB
+			ObDEF	SmallRock_OB
+			ObDEF	BigCouldronGen_OB
+			ObDEF	BigCouldron_OB
+			ObDEF	Trough_OB
+			ObDEF	TroughGen_OB
+			ObDEF	Energizer_OB
+
+			ObDEF	Demona_OB
+			ObDEF	TrajectoryProj_OB
+			ObDEF	WallPaste_OB
+			ObDEF	EdgePaste_OB
+			ObDEF	Tentacle_OB
+			ObDEF	Infuser_OB
+			ObDEF	BigGuns_OB
+			ObDEF	BigGunsProj_OB
+
+			ObDEF	HighSignPole_OB
+			ObDEF	HighSign_OB
+			ObDEF	LowLight_OB
+			ObDEF	L5Skylight_OB
+			ObDEF	L5Wall_OB
+			ObDEF	ElecGenerator_OB
+			ObDEF	Electricity_OB
+			ObDEF	WaspGenerator_OB
+			ObDEF	TunnelEdge_OB
+			ObDEF	ForegroundPost_OB
+
+			ObDEF	Sorcerer_OB
+			ObDEF	LightningTop_OB
+			ObDEF	LightningBot_OB
+
+			ObDEF	MDemonaWallFire_OB
+			ObDEF	MDemonaFloorFire_OB
+
+			ObDEF	EyeRooftopUp_OB
+			ObDEF	EyeRooftopDn_OB
+			ObDEF	EyeRaptor_OB
+
+Child_OB		equ	-1			
+
+lobx			rts
+LogicOb			move.w	OB_Type(a0),d1		;use type to jump to handler
+			tst.w	d1
+			bmi.s	lobx
+			jmp	OB_JUMP_TAB(pc,d1.w)
+
+
+; NEVER! EVER!! use A0 & D0 in the logic routines (unless you stack them)
+
+OB_JUMP_TAB		jmp	Goliath_Logic			;Goliath (player) control
+			jmp	Test2				;Test bed	
+			jmp	Orb_Logic			;vector ball
+			jmp	Health1PLR_Logic		;Static health meter
+			jmp	Health2PLR_Logic		;Dynamic health meter
+			jmp	Health1NME_Logic		;Static health meter
+			jmp	Health2NME_Logic		;Dynamic health meter
+			jmp	Numeral_Logic			;Numeral Life counter
+			if	1=0
+			jmp	Burn_Logic			;burn
+			endif
+			if	show_tect
+			jmp	Corner_Logic			;debug corners
+			endif
+			jmp	BigExplode_Logic		;Big Explosion
+			jmp	SmallExplode_Logic		;Big Explosion
+			jmp	GlassDebris_Logic		;Misc Debris
+			jmp	MetalDebris_Logic		;Misc Debris
+			jmp	WoodDebris_Logic		;Misc Debris
+			jmp	WallDebris_Logic		;Misc Debris
+			jmp	SignPiece_Logic			;sign piece
+			jmp	SteamVent_Logic			;steam vent
+			jmp	BreakWall_Logic			;breakable wall
+			jmp	SkyLight_Logic			;skylight
+			jmp	BreakLignt_Logic		;breakable light
+			jmp	ThrowCrate_Logic		;throwable crate
+			jmp	BreakEdgeLeft_Logic		;breakable edge
+			jmp	BreakEdgeRight_Logic		;breakable edge
+			jmp	Spark_Logic			;single spark
+			jmp	Spark2_Logic			;single spark
+			jmp	Sparks_Logic			;sparks anim
+			jmp	Sparks2_Logic			;sparks anim
+ 			jmp	Fireball_Logic
+ 			jmp	HomingProj1_Logic		;homing, non-directional projectile
+ 			jmp	HorzProj1_Logic			;horizontal directional projectile
+ 			jmp	VertProj1_Logic			;vertical directional projectile
+ 			jmp	DirProj1_Logic			;directional projectile
+ 			jmp	DirProj2_Logic			;directional projectile
+ 			jmp	DropMine_Logic			;Xanatos dropped mine
+ 			jmp	Scratch_Logic			;Titlepage scratch
+			jmp	Icon_Logic			;pickup powerup icons
+			
+			jmp	RaptorBot_Logic			;RaptorBot 
+			jmp	SniperBot_Logic			;SniperBot
+			jmp	SpiderBot_Logic			;spider robot
+			jmp	WaspBot_Logic			;wasp robot
+			jmp	Xanatos_Logic			;xanatos/steelclan robot
+			jmp	PlasmaBot_Logic			;plasma hammer robot
+			jmp	RabidHH_Logic			;rabid hell hound robot
+			
+			jmp	MorningStar_Logic		;morningstar viking
+			jmp	Archer_Logic			;archer viking
+			jmp	Arrow_Logic			;archer viking arrow
+			jmp	Valkyrie_Logic			;valkyrie
+			jmp	Axe_Logic			;valkyrie axe
+			jmp	WeapExp_Logic			;weapons expert
+			jmp	Couldron_Logic			;weapons experts couldron
+			jmp	SpittingCouldron_Logic		;fireball spitting couldron
+			jmp	FireballHead_Logic		;fireball from spitting couldron
+			jmp	FireballTrail_Logic		;fireball from spitting couldron
+			jmp	BigFireballHead_Logic		;big fireball
+			jmp	BigFireballTrail_Logic		;big fireball
+			jmp	Oil_Logic			;weapons experts couldrons oil
+			jmp	OilGenerator_Logic		;oil drip generator
+			jmp	Claw_Logic			;claw
+			jmp	Stump_Logic			;stump
+			jmp	StumpBubble_Logic		;stump bubble
+			jmp	StumpFire_Logic			;stump fireball
+			jmp	ClawStump_Logic			;combo
+			jmp	StumpFireGen_Logic		;stump fire generator
+			jmp	Vent_Logic			;vents
+			jmp	VentSparks_Logic		;vents sparks
+			jmp	Chain_Logic			;vent chains
+			jmp	FlameLick_Logic			;lick o' flame
+			jmp	Floor_Logic			;mutant viking boss room floor
+			jmp	MutVikBody_Logic		; "       "    body
+			jmp	MutVikHead_Logic		; "       "    head	
+			jmp	MutVikHammer_Logic		; "       "    hammer
+			jmp	EyeOfOdin_Logic			;eye of odin
+			jmp	EyeOfOdinTrail_Logic		;eye of odin trail
+
+			jmp	L1BreakWall_Logic		;breakaway wall
+			jmp	Catapult_Logic			;catapult
+			jmp	BreakFloor_Logic		;breakaway floor
+			jmp	Gate_Logic			;gate
+			jmp	GateCrusher_Logic		;gate crusher
+			jmp	Weight_Logic			;counter weight
+			jmp	WeightCrusher_Logic		;counter weight crusher
+			jmp	WallFire_Logic			;wall fire
+			jmp	Balista_Logic			;balista mechanism
+			jmp	BalistaLog_Logic		;balista log
+			jmp	PasteWall_Logic			;pasteover wall
+			jmp	FlameBoulder_Logic		;flaming boulder
+			jmp	CastlePiece_Logic		;big honking piece of castle
+
+			jmp	MutantSpider_Logic		;mutant spider bot 
+			jmp	MutSpiLegs_Logic		; "  "   "  "   "  legs 
+			jmp	MutSpiHead_Logic		; "  "   "  "   "  head
+			jmp	MutSpiHeadFlame_Logic		; "  "   "  "   "  head flame
+			jmp	MutSpiProj_Logic		; "  "   "  "   "  funky projectile
+			jmp	MutSpiElecV_Logic		; "  "   "  "   "  electric defence
+			jmp	MutSpiElecH_Logic		; "  "   "  "   "   "   "     "  "
+
+			jmp	PlasmaBall_Logic    		;plasma hammer robot plasma balls
+			jmp	PlasmaBallTail_Logic		;plasma hammer robot plasma balls trail
+			jmp	PlasmaDeadHead_Logic		;plasma hammer robot dead head
+			jmp	VertFlame_Logic			;verticle flame thrower
+			jmp	WallFlame_Logic			;hatch wall flame
+			jmp	FloorFlame_Logic		;hatch floor/ceiling flame
+			jmp	OPPlatform_Logic		;platform for platfor/orb combo
+			jmp	OPLink_Logic			;link for platform/orb combo
+			jmp	OPOrb_Logic			;orb for platform/orb combo
+			jmp	Furnace_Logic			;furnace blast
+			jmp	RobotGenerator_Logic		;robot generator
+			jmp	RockGenerator_Logic		;rock generator
+			jmp	BigRock_Logic			;generated big rock
+			jmp	MediumRock_Logic		; "     "  medium rock
+			jmp	SmallRock_Logic			; "     "  small rock
+			jmp	BigCouldronGen_Logic		;big couldron generator (elevator)
+			jmp	BigCouldron_Logic		;big couldron (elevator)
+			jmp	Trough_Logic			;big trough (elevator)
+			jmp	TroughGen_Logic			;big trough (elevator)
+			jmp	Energizer_Logic			;Energizer thingy
+
+			jmp	Demona_Logic			;Demona boss
+			jmp	TrajectoryProj_Logic		;generic trajectory projectile
+			jmp	WallPaste_Logic			;paste over walls
+			jmp	EdgePaste_Logic			;paste over edges
+			jmp	Tentacle_Logic			;tentacles
+			jmp	Infuser_Logic			;eye energy infuser
+			jmp	BigGuns_Logic			;big wall guns
+			jmp	BigGunsProj_Logic		;big wall guns projectile
+
+			jmp	HighSignPole_Logic		;ducking signs pole	
+			jmp	HighSign_Logic			;ducking sign	
+			jmp	LowLight_Logic			;jumping light
+			jmp	L5Skylight_Logic		;breakthru skylight
+			jmp	L5Wall_Logic			;breakthru door
+			jmp	ElecGenerator_Logic		;electricity generator
+			jmp	Electricity_Logic		;electricity
+			jmp	WaspGenerator_Logic		;wasp generator
+			jmp	TunnelEdge_Logic		;leading/trailing edge of tunnel swipe
+			jmp	ForegroundPost_Logic		;fluff foreground post
+
+			jmp	Sorcerer_Logic			;viking sorcerer boss
+			jmp	LightningTop_Logic		;viking sorcerers lightning
+			jmp	LightningBot_Logic		;viking sorcerers lightning
+	
+			jmp	MDemonaWallFire_Logic		;mutand demonas wall fire
+			jmp	MDemonaFloorFire_Logic		;mutand demonas floor fire
+
+			jmp	EyeRooftopUp_Logic		;rooftop eye sequence
+			jmp	EyeRooftopDn_Logic		;rooftop eye sequence
+			jmp	EyeRaptor_Logic			;rooftop eye raptor generator
+			
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ ENEMY/OBJECT AI Routine						   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ This Routine will scan through an AI Table that's made up of a number  บ
+; บ of entries.  Each entry will be scanned and ALL flagged conditions 	   บ
+; บ will be tested.  If all flagged conditions are satisfied, the AI	   บ
+; บ routine will return the new AI Logic setup routine address in A1 and   บ
+; บ the passable data in d1 (3 bytes).  The Enemy control routine can then บ
+; บ process this however it needs to.					   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+
+AI_Tables		include	aidata.inc
+			even
+
+; 1f 1e 1d 1c 1b 1a 19 18 17 16 15 14 13 12 11 10 0f 0e 0d 0c 0b 0a 09 08 07 06 05 04 03 02 01 00
+; T  ?  ?  ?  ?  ?  ?  ?  ?  ?  b  g  a  f  J  D  H  I  W  C  A  G  B  F  R  L  Y  Y  ~Y X  X  ~X
+
+; ~X -	1=Negate X proximity test.  (player must be outside of X proximity area)
+; XX -	00=Ignore X Proximity test : 01=Check Right : 10=Check Left : 11=Check Right AND Left.		
+; ~Y -	1=Negate Y proximity test.  (player must be outside of Y proximity area)
+; YY -	00=Ignore Y Proximity test : 01=Check Below : 10=Check Above : 11=Check Below AND Above.
+; L  -	1=Player must be to LEFT of Enemy : 0=n/a.
+; R  -	1=Player must be to RIGHT of Enemy : 0=n/a.
+; F  -	1=Player must be FACING the Enemy : 0=n/a.
+; B  -	1=Player must NOT be facing Enemy (Player must have back to Enemy) : 0=n/a.
+; G  -	1=Player must be on the GROUND : 0=n/a.
+; A  -	1=Player must be in the AIR : 0=n/a.
+; C  -	1=Player must be on a CEILING : 0=n/a.
+; W  -	1=Player must be on a WALL : 0=n/a.
+; I  -	1=Player must be IDLING : 0=n/a.
+; H  -	1=Player must be BEING HIT : 0=n/a.
+; D  -	1=Player must be DIEING : 0=n/a.
+; J  -	1=Player must be JUMPING : 0=n/a.
+; f  -	1=Player must be FALLING : 0=n/a.
+; a  -	1=Player must be ATTACKING : 0=n/a.
+; g  -	1=Player must be GRABBING : 0=n/a.
+; b  -	1=Player must be BLOCKING : 0=n/a.
+; ?  -  Not Used
+; T  -  1=Table Terminator : 0=New Entry
+
+; EXAPLE AI TABLE ENTRY :
+
+; RAPTOR_AI	AI_CB &		;Condition bits macro.
+; 	  	NO,&		;Player must NOT be within X Proximity distance.
+; 	  	YES,&		;Proximity test check RIGHT/LEFT.
+; 	  	NO,&		;Player must NOT be within Y Proximity distance.
+;		YES,&		;Proximity test check ABOVE/BELOW.
+;		NO,&		;Player must be to the LEFT of the enemy.
+;		NO,&		;Player must be to the RIGHT of the enemy.
+;		YES,&		;Player must be FACING the enemy.
+;		NO,&		;Player must have BACK towards enemy.
+;		YES,&		;Player must be on the GROUND.
+;		NO,&		;Player must be in the AIR.
+;		NO,&		;Player must be on the CEILING.
+;		NO,&		;Player must be on the WALL.
+;		NO,&		;Player must be IDLING.
+;		NO,&		;Player must be BEING HIT.
+;		NO,&		;Player must be DIEING.
+;		NO,&		;Player must be JUMPING.
+;		NO,&		;Player must be FALLING.
+;		NO,&		;Player must be ATTACKING.
+;		NO,&		;Player must be GRABBING.
+;		NO,&		;Player must be BLOCKING.
+;		NO,&		;Player must be ABOVE enemy.
+;		NO,&		;Player must be BELOW enemy.
+;		NO,&		;Player must be CROUCHING.
+;		NO,&		;Player must NOT be CROUCHING.
+;		NO,&		;Unused.
+;		NO,&		;Unused.
+;		NO,&		;Unused.
+;		NO,&		;Unused.
+;		NO,&		;Unused.
+;		NO,&		;Unused.
+;		NO		;Unused.	
+;		AI_DATA	&	;AI Data macro.
+;		$40,&		;Proximity to Player in X.
+;		$20,&		;Proximity to Player in Y.
+;		HALF_CHANCE,&	;Chance that called routine will NOT be called.
+;		1,&		;Enemy data #1.
+;		2,&		;Enemy data #1.
+;		3,&		;Enemy data #1.
+;		0,&		;Future expansion.
+;		RaptorBot_INIT	;This routine is called if all conditions are met.	
+;		AI_END_LIST	;End of AI list.		
+
+
+			RSRESET
+AI_Bits			rs.l	1
+AI_XProx		rs.w	1
+AI_YProx		rs.w	1
+AI_Rand			rs.b	1
+AI_Data1		rs.b	1
+AI_Data2		rs.b	1
+AI_Data3		rs.b	1
+AI_Exp			rs.l	1
+AI_Rout			rs.l	1
+AI_EntryLen		rs.b	0
+
+AI_Routine		move.l	Plr_Database,a6			;a6 points to plr database
+			
+.AILoop			move.l	0(a1),a2
+			cmp.l	#-1,a2
+			beq.s	.NotSatisfied			;end of AI List
+
+			move.l	AI_Bits(a2),d1			;get Condition BIT DATA
+  			bmi.s	.NotSatisfied			;end of table
+			
+			moveq	#0,d3				;index for condition jump table
+			moveq	#31-1,d2			;got to test 31 condition codes
+.l1			lsr.l	#1,d1				;roll next bit into carry flag
+			bcc.s	.NextBIT			;bit=0 so ignore
+			jsr	AIConditionTests(pc,d3.w)	;do condition test
+			bpl.s	.NextENTRY			;condition wasn't met so exit
+
+.NextBIT		addq.w	#4,d3				;bump index
+			dbra	d2,.l1				;next bit
+			bra	.Satisfied
+
+.NextENTRY		addq.l	#4,a1				;next entry
+			bra	.AILoop				;loop
+
+.Satisfied		move.l	AI_Exclude,d2			;Routine address
+			cmp.l	AI_Rout(a2),d2
+			beq.s	.NextENTRY
+			jsr	Randy 				;do the random test
+			and.b	AI_Rand(a2),d6
+			bne.s	.NextENTRY			;ohoh didn't make it after all that
+			move.b	AI_Data1(a2),d1			;data #1	
+			asl.w	#8,d1
+			move.b	AI_Data2(a2),d1			;data #2	
+			swap	d1			
+			move.b	AI_Data3(a2),d1			;data #3
+			move.l	AI_Rout(a2),a1
+			bra	FlagYESn
+
+.NotSatisfied		bra	FlagNOn
+
+AIConditionTests	bra	AITestNotProxRightLeft
+			bra	AITestProxRightLeft
+			bra	AITestNotProxAboveBelow
+			bra	AITestProxAboveBelow
+			bra	AITestPlrOnLeft
+			bra	AITestPlrOnRight
+			bra	AITestPlrIsFacing
+			bra	AITestPlrIsNotFacing
+			bra	AITestPlrOnGround
+			bra	AITestPlrInAir
+			bra	AITestPlrOnCeiling
+			bra	AITestPlrOnWall
+			bra	AITestPlrIsIdling
+			bra	AITestPlrBeingHit
+			bra	AITestPlrIsDieing
+			bra	AITestPlrIsJumping
+			bra	AITestPlrIsFalling
+			bra	AITestPlrIsAttacking								
+			bra	AITestPlrIsGrabbing
+			bra	AITestPlrIsBlocking
+			bra	AITestPlrIsAbove
+			bra	AITestPlrIsBelow
+			bra	AITestPlrIsCrouching
+			bra	AITestPlrIsNotCrouching
+			
+
+AITestNotProxRightLeft	bsr	AITNPR
+     			bmi	FlagYESn
+			bra	AITNPL
+
+AITNPR			move.w	OB_Xpos(a0),d6				;nme x pos
+			add.w	AI_XProx(a2),d6
+			cmp.w	Plr_XPos,d6
+			blt	FlagYESn
+			rts
+
+AITNPL			move.w	OB_Xpos(a0),d6				;nme x pos
+			sub.w	AI_XProx(a2),d6
+			cmp.w	Plr_XPos,d6
+			bgt	FlagYESn
+			bra	FlagNOn
+
+AITestProxRightLeft	bsr	AITPR
+     			bpl	FlagNOn
+			bra	AITPL
+
+AITPR			move.w	OB_Xpos(a0),d6				;nme x pos
+			add.w	AI_XProx(a2),d6
+			cmp.w	Plr_XPos,d6
+			blt	FlagNOn
+			bra	FlagYESn
+
+AITPL			move.w	OB_Xpos(a0),d6				;nme x pos
+			sub.w	AI_XProx(a2),d6
+			cmp.w	Plr_XPos,d6
+			bgt	FlagNOn
+			bra	FlagYESn
+
+AITestNotProxAboveBelow	bsr	AITNPA
+			bmi	FlagYESn
+			bra	AITNPB
+
+AITNPA			move.w	OB_Ypos(a0),d6				;nme x pos
+			sub.w	AI_YProx(a2),d6
+			cmp.w	Plr_YPos,d6
+			bgt	FlagYESn
+			bra	FlagNOn
+
+AITNPB			move.w	OB_Ypos(a0),d6				;nme x pos
+			add.w	AI_YProx(a2),d6
+			cmp.w	Plr_YPos,d6
+			blt	FlagYESn
+			bra	FlagNOn
+
+AITestProxAboveBelow	bsr	AITPA
+			bpl	FlagNOn
+			bra	AITPB
+
+AITPA			move.w	OB_Ypos(a0),d6				;nme x pos
+			sub.w	AI_YProx(a2),d6
+			cmp.w	Plr_YPos,d6
+			bgt	FlagNOn
+			bra	FlagYESn
+
+AITPB			move.w	OB_Ypos(a0),d6				;nme x pos
+			add.w	AI_YProx(a2),d6
+			cmp.w	Plr_YPos,d6
+			blt	FlagNOn
+			bra	FlagYESn
+
+AITestPlrOnLeft		move.w	OB_Xpos(a0),d6
+			cmp.w	Plr_XPos,d6
+			bgt	FlagYESn
+			bra	FlagNOn
+
+AITestPlrOnRight	move.w	OB_Xpos(a0),d6
+			cmp.w	Plr_XPos,d6
+			blt	FlagYESn
+			bra	FlagNOn
+
+AITestPlrIsFacing	bsr	AITestPlrOnLeft			;is plr on left of nme?
+			bpl.s	.r
+			btst.b	#ob_xflp,Plr_Flag1		;yes: so plr must be facing right >
+			beq	FlagYESn
+			bra	FlagNOn
+.r			btst.b	#ob_xflp,Plr_Flag1		;no: so plr must be facing left <
+			bne	FlagYESn
+			bra	FlagNOn
+
+AITestPlrIsNotFacing	bsr	AITestPlrOnLeft			;is plr on left of nme?
+			bpl.s	.r
+			btst.b	#ob_xflp,Plr_Flag1		;yes: so plr must be facing left <
+			bne	FlagYESn
+			bra	FlagNOn
+.r			btst.b	#ob_xflp,Plr_Flag1		;no: so plr must be facing right >
+			beq	FlagYESn
+			bra	FlagNOn
+
+AITestPlrOnGround	btst.b	#grndmode,OB_MasterMode(a6)
+			bne	FlagYESn
+			bra	FlagNOn
+
+AITestPlrInAir		btst.b	#airmode,OB_MasterMode(a6)
+			bne	FlagYESn
+			bra	FlagNOn
+
+AITestPlrOnCeiling	btst.b	#ceilmode,OB_MasterMode(a6)
+			bne	FlagYESn
+			bra	FlagNOn
+
+AITestPlrOnWall		btst.b	#wallmode,OB_MasterMode(a6)
+			bne	FlagYESn
+			bra	FlagNOn
+
+AITestPlrIsIdling	rts
+
+AITestPlrBeingHit	btst.b	#hitmode,OB_MasterMode(a6)
+			bne	FlagYESn
+			bra	FlagNOn
+
+AITestPlrIsDieing	rts
+
+AITestPlrIsJumping	tst.b	GolJumpFLG
+			bne	FlagYESn
+			bra	FlagNOn
+
+AITestPlrIsFalling	tst.b	GolFallFLG
+			bne	FlagYESn
+			bra	FlagNOn
+
+AITestPlrIsAttacking	btst.b	#attkmode,OB_MasterMode(a6)
+			bne	FlagYESn
+			bra	FlagNOn
+
+AITestPlrIsGrabbing	btst.b	#grabmode,OB_MasterMode(a6)
+			bne	FlagYESn
+			bra	FlagNOn
+
+AITestPlrIsBlocking	btst.b	#blokmode,OB_MasterMode(a6)
+			bne	FlagYESn
+			bra	FlagNOn
+
+AITestPlrIsAbove	move.w	OB_Ypos(a0),d6
+			cmp.w	Plr_YPos,d6
+			bge	FlagYESn
+			bra	FlagNOn
+
+AITestPlrIsBelow	move.w	OB_Ypos(a0),d6
+			cmp.w	Plr_YPos,d6
+			ble	FlagYESn
+			bra	FlagNOn
+
+AITestPlrIsCrouching	cmp.w	#GolCrouchSTATE,OB_State(a6)
+			beq	FlagYESn
+			cmp.w	#GolCrouchKickSTATE,OB_State(a6)
+			beq	FlagYESn
+			bra	FlagNOn
+
+AITestPlrIsNotCrouching	cmp.w	#GolCrouchSTATE,OB_State(a6)
+			beq	FlagNOn
+			cmp.w	#GolCrouchKickSTATE,OB_State(a6)
+			beq	FlagNOn
+			bra	FlagYESn
+
+
+
+

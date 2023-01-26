@@ -1,0 +1,233 @@
+chop SpiderBot animations : 2 secs/frame : palette 4
+GOLIATH ANIMATION CONVERTION ...
+rem ** CHOP the animations **
+call spr gr90101 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gr90101.anm
+Used 3 sprites, with a total of 23 characters, in 0.0 seconds
+Used 5 sprites, with a total of 23 characters, in 0.0 seconds
+Used 5 sprites, with a total of 21 characters, in 0.0 seconds
+Used 4 sprites, with a total of 21 characters, in 0.0 seconds
+Used 4 sprites, with a total of 22 characters, in 0.0 seconds
+Used 5 sprites, with a total of 23 characters, in 0.0 seconds
+Used 5 sprites, with a total of 23 characters, in 0.0 seconds
+Used 3 sprites, with a total of 22 characters, in 0.0 seconds
+Used 3 sprites, with a total of 22 characters, in 0.0 seconds
+Used 3 sprites, with a total of 23 characters, in 0.0 seconds
+call spr gr90102 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gr90102.anm
+Used 5 sprites, with a total of 23 characters, in 0.1 seconds
+Used 6 sprites, with a total of 24 characters, in 0.3 seconds
+Used 4 sprites, with a total of 20 characters, in 0.0 seconds
+Used 4 sprites, with a total of 20 characters, in 0.0 seconds
+Used 6 sprites, with a total of 21 characters, in 0.1 seconds
+Used 5 sprites, with a total of 23 characters, in 0.1 seconds
+Used 6 sprites, with a total of 23 characters, in 0.2 seconds
+Used 4 sprites, with a total of 20 characters, in 0.0 seconds
+Used 4 sprites, with a total of 21 characters, in 0.0 seconds
+Used 4 sprites, with a total of 23 characters, in 0.0 seconds
+call spr gr90103 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gr90103.anm
+Used 6 sprites, with a total of 23 characters, in 0.1 seconds
+Used 3 sprites, with a total of 20 characters, in 0.0 seconds
+Used 5 sprites, with a total of 21 characters, in 0.0 seconds
+Used 6 sprites, with a total of 24 characters, in 0.1 seconds
+Used 5 sprites, with a total of 21 characters, in 0.0 seconds
+Used 4 sprites, with a total of 21 characters, in 0.0 seconds
+Used 4 sprites, with a total of 20 characters, in 0.0 seconds
+call spr gr90104 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gr90104.anm
+Used 6 sprites, with a total of 23 characters, in 0.1 seconds
+Used 3 sprites, with a total of 20 characters, in 0.0 seconds
+Used 5 sprites, with a total of 23 characters, in 0.1 seconds
+Used 6 sprites, with a total of 26 characters, in 0.1 seconds
+Used 5 sprites, with a total of 20 characters, in 0.0 seconds
+Used 4 sprites, with a total of 20 characters, in 0.0 seconds
+Used 4 sprites, with a total of 21 characters, in 0.0 seconds
+call spr gr90105 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gr90105.anm
+Used 6 sprites, with a total of 26 characters, in 0.2 seconds
+Used 7 sprites, with a total of 24 characters, in 0.4 seconds
+Used 10 sprites, with a total of 30 characters, in 1.0 seconds
+Used 11 sprites, with a total of 29 characters, in 1.0 seconds
+Used 8 sprites, with a total of 31 characters, in 1.0 seconds
+Used 7 sprites, with a total of 30 characters, in 0.2 seconds
+Used 6 sprites, with a total of 28 characters, in 0.3 seconds
+Used 5 sprites, with a total of 29 characters, in 0.1 seconds
+Used 7 sprites, with a total of 27 characters, in 1.0 seconds
+Used 8 sprites, with a total of 28 characters, in 1.0 seconds
+Used 7 sprites, with a total of 22 characters, in 0.0 seconds
+Used 7 sprites, with a total of 23 characters, in 0.6 seconds
+call spr gr90106 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gr90106.anm
+Used 4 sprites, with a total of 22 characters, in 0.0 seconds
+Used 4 sprites, with a total of 22 characters, in 0.0 seconds
+Used 4 sprites, with a total of 22 characters, in 0.0 seconds
+Used 4 sprites, with a total of 22 characters, in 0.0 seconds
+Used 4 sprites, with a total of 22 characters, in 0.0 seconds
+Used 4 sprites, with a total of 22 characters, in 0.0 seconds
+Used 4 sprites, with a total of 25 characters, in 0.0 seconds
+call spr gr90107 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gr90107.anm
+Used 5 sprites, with a total of 23 characters, in 0.1 seconds
+Used 5 sprites, with a total of 23 characters, in 0.1 seconds
+Used 5 sprites, with a total of 23 characters, in 0.1 seconds
+Used 5 sprites, with a total of 23 characters, in 0.0 seconds
+Used 5 sprites, with a total of 23 characters, in 0.0 seconds
+Used 5 sprites, with a total of 23 characters, in 0.1 seconds
+Used 5 sprites, with a total of 25 characters, in 0.1 seconds
+call spr gr90108 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gr90108.anm
+Used 3 sprites, with a total of 23 characters, in 0.0 seconds
+Used 5 sprites, with a total of 22 characters, in 0.1 seconds
+Used 5 sprites, with a total of 18 characters, in 0.0 seconds
+Used 5 sprites, with a total of 20 characters, in 0.0 seconds
+Used 4 sprites, with a total of 22 characters, in 0.0 seconds
+Used 3 sprites, with a total of 20 characters, in 0.0 seconds
+Used 3 sprites, with a total of 22 characters, in 0.0 seconds
+Used 3 sprites, with a total of 22 characters, in 0.0 seconds
+Used 4 sprites, with a total of 21 characters, in 0.0 seconds
+Used 4 sprites, with a total of 23 characters, in 0.0 seconds
+call spr gr90109 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gr90109.anm
+Used 4 sprites, with a total of 28 characters, in 0.0 seconds
+Used 7 sprites, with a total of 27 characters, in 0.4 seconds
+Used 8 sprites, with a total of 27 characters, in 1.0 seconds
+Used 8 sprites, with a total of 27 characters, in 1.0 seconds
+Used 4 sprites, with a total of 27 characters, in 0.0 seconds
+Used 5 sprites, with a total of 26 characters, in 0.1 seconds
+Used 8 sprites, with a total of 27 characters, in 1.0 seconds
+call spr gr90110 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gr90110.anm
+Used 5 sprites, with a total of 25 characters, in 0.1 seconds
+Used 5 sprites, with a total of 22 characters, in 0.1 seconds
+Used 5 sprites, with a total of 22 characters, in 0.0 seconds
+Used 5 sprites, with a total of 22 characters, in 0.0 seconds
+Used 5 sprites, with a total of 25 characters, in 0.0 seconds
+Used 4 sprites, with a total of 24 characters, in 0.0 seconds
+Used 4 sprites, with a total of 23 characters, in 0.0 seconds
+Used 7 sprites, with a total of 25 characters, in 0.2 seconds
+Used 5 sprites, with a total of 21 characters, in 0.0 seconds
+Used 6 sprites, with a total of 21 characters, in 0.0 seconds
+Used 6 sprites, with a total of 21 characters, in 0.0 seconds
+call spr gr90111 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gr90111.anm
+Used 5 sprites, with a total of 17 characters, in 0.0 seconds
+Used 3 sprites, with a total of 15 characters, in 0.0 seconds
+Used 4 sprites, with a total of 16 characters, in 0.0 seconds
+Used 4 sprites, with a total of 18 characters, in 0.0 seconds
+Used 5 sprites, with a total of 21 characters, in 0.1 seconds
+Used 4 sprites, with a total of 25 characters, in 0.0 seconds
+call spr gr90112 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gr90112.anm
+Used 5 sprites, with a total of 17 characters, in 0.0 seconds
+Used 3 sprites, with a total of 15 characters, in 0.0 seconds
+Used 3 sprites, with a total of 16 characters, in 0.0 seconds
+Used 4 sprites, with a total of 18 characters, in 0.0 seconds
+Used 4 sprites, with a total of 23 characters, in 0.0 seconds
+Used 6 sprites, with a total of 25 characters, in 0.1 seconds
+call spr gr90113 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gr90113.anm
+Used 6 sprites, with a total of 24 characters, in 0.0 seconds
+Used 6 sprites, with a total of 25 characters, in 0.0 seconds
+Used 7 sprites, with a total of 24 characters, in 0.4 seconds
+Used 4 sprites, with a total of 26 characters, in 0.0 seconds
+Used 7 sprites, with a total of 26 characters, in 0.3 seconds
+Used 7 sprites, with a total of 24 characters, in 0.3 seconds
+Used 5 sprites, with a total of 27 characters, in 0.1 seconds
+Used 5 sprites, with a total of 19 characters, in 0.0 seconds
+Used 3 sprites, with a total of 26 characters, in 0.0 seconds
+Used 6 sprites, with a total of 24 characters, in 0.7 seconds
+call spr gr90114 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gr90114.anm
+Used 1 sprites, with a total of 1 characters, in 0.0 seconds
+Used 2 sprites, with a total of 6 characters, in 0.0 seconds
+Used 5 sprites, with a total of 17 characters, in 0.0 seconds
+Used 5 sprites, with a total of 17 characters, in 0.0 seconds
+Used 5 sprites, with a total of 17 characters, in 0.0 seconds
+Used 4 sprites, with a total of 17 characters, in 0.0 seconds
+Used 5 sprites, with a total of 13 characters, in 0.0 seconds
+call spr gr90115 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gr90115.anm
+Used 1 sprites, with a total of 1 characters, in 0.0 seconds
+Used 2 sprites, with a total of 7 characters, in 0.0 seconds
+Used 5 sprites, with a total of 19 characters, in 0.0 seconds
+Used 5 sprites, with a total of 19 characters, in 0.0 seconds
+Used 5 sprites, with a total of 19 characters, in 0.0 seconds
+Used 5 sprites, with a total of 14 characters, in 0.0 seconds
+Used 3 sprites, with a total of 7 characters, in 0.0 seconds
+call spr gr90116 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gr90116.anm
+Used 2 sprites, with a total of 7 characters, in 0.0 seconds
+Used 2 sprites, with a total of 6 characters, in 0.0 seconds
+Used 2 sprites, with a total of 6 characters, in 0.0 seconds
+Used 3 sprites, with a total of 5 characters, in 0.0 seconds
+Used 2 sprites, with a total of 6 characters, in 0.0 seconds
+Used 1 sprites, with a total of 8 characters, in 0.0 seconds
+Used 2 sprites, with a total of 5 characters, in 0.0 seconds
+Used 1 sprites, with a total of 8 characters, in 0.0 seconds
+call spr gr90117 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gr90117.anm
+Used 2 sprites, with a total of 7 characters, in 0.0 seconds
+Used 2 sprites, with a total of 6 characters, in 0.0 seconds
+Used 2 sprites, with a total of 6 characters, in 0.0 seconds
+Used 3 sprites, with a total of 5 characters, in 0.0 seconds
+Used 2 sprites, with a total of 6 characters, in 0.0 seconds
+Used 1 sprites, with a total of 8 characters, in 0.0 seconds
+Used 2 sprites, with a total of 5 characters, in 0.0 seconds
+Used 1 sprites, with a total of 8 characters, in 0.0 seconds
+call spr gr90118 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gr90118.anm
+Used 5 sprites, with a total of 23 characters, in 0.1 seconds
+Used 6 sprites, with a total of 22 characters, in 0.2 seconds
+Used 5 sprites, with a total of 18 characters, in 0.0 seconds
+Used 5 sprites, with a total of 20 characters, in 0.0 seconds
+Used 6 sprites, with a total of 20 characters, in 0.0 seconds
+Used 3 sprites, with a total of 21 characters, in 0.0 seconds
+Used 3 sprites, with a total of 23 characters, in 0.0 seconds
+Used 4 sprites, with a total of 24 characters, in 0.0 seconds
+Used 4 sprites, with a total of 21 characters, in 0.0 seconds
+Used 6 sprites, with a total of 21 characters, in 0.0 seconds
+rem ** COLLECT the animations **
+call col gr90101
+collect gr90101.col
+call col gr90102
+collect gr90102.col
+call col gr90103
+collect gr90103.col
+call col gr90104
+collect gr90104.col
+call col gr90105
+collect gr90105.col
+call col gr90106
+collect gr90106.col
+call col gr90107
+collect gr90107.col
+call col gr90108
+collect gr90108.col
+call col gr90109
+collect gr90109.col
+call col gr90110
+collect gr90110.col
+call col gr90111
+collect gr90111.col
+call col gr90112
+collect gr90112.col
+call col gr90113
+collect gr90113.col
+call col gr90114
+collect gr90114.col
+call col gr90115
+collect gr90115.col
+call col gr90116
+collect gr90116.col
+call col gr90117
+collect gr90117.col
+call col gr90118
+collect gr90118.col
+call modany2
+
+.ANY FILE FORMATTER V1.00CPS
+
+Sequence # (2 letter prefix+seq # (gg01))? 
+
+OK! All done.

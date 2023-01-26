@@ -1,0 +1,333 @@
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ VRam ALLOCATOR Routines						   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ Originally coded by Cary Hara. (thanx)				   บ
+; บ Modified and added to by Chris Shrigley				   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ INITVRamALLOC - Initialises the VRam allocation tables		   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+InitVRamAlloc		lea	VRamAllocBuff,a0		;VRam Alloc table
+			move.w	a0,VRamAllocFree		;set point to first unUsed record
+ 
+			moveq	#VRamItems-2,d0			;set link list					
+.1			lea	VRam_Len(a0),a1	
+			move.w	a1,VRam_Link(a0)
+			move.l	a1,a0
+			dbra	d0,.1
+			clr.w	VRam_Link(a0)
+
+			clr.w	VRamAllocUsed			;set first un-Used record
+			move.l	#-1,VRamAllocUsed+2		;set pretend Addr & Size (Used in Free search!)
+
+			move.w	#$0000,d1			;set Free areas of VRam
+			move.w	#$c000,d0
+			bra	VRamFree
+
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ VRamAlloc_FF - FINDS VRam AddrS using FIRST FIT			   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ Entry: d0.l = length of required space (.b)				   บ
+; บ  Exit: ne => d1.l = VRam Address					   บ
+; บ        eq => not found						   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ Allocates VRam on a FIRST FIT basis.				   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+VRamAlloc_FF		movem.l	a0/a1,-(sp)
+
+			moveq	#0,d1
+			lea	VRamAllocUsed,a0
+		
+.0			move.w	VRam_Link(a0),d1
+			beq.s	.outofmem
+			move.l	a0,a1
+			move.w	d1,a0
+			cmp.w	VRam_Size(a0),d0
+			bhi.s	.0
+			beq.s	.1
+
+			move.w	VRam_Addr(a0),d1		;Block is bigger than necessary
+			add.w	d0,VRam_Addr(a0)
+			sub.w	d0,VRam_Size(a0)
+			movem.l	(sp)+,a0/a1
+			tst.w	d0
+			rts
+ 								
+.1			move.w	VRam_Addr(a0),d1		;Exact fit, Free up its record
+			move.w	VRam_Link(a0),VRam_Link(a1)
+			move.w	VRamAllocFree,VRam_Link(a0)
+			move.w	a0,VRamAllocFree
+			movem.l	(sp)+,a0/a1
+			tst.w	d0
+			rts
+				  				
+.outofmem		moveq	#0,d1				;no space found
+			movem.l	(sp)+,a0/a1
+			rts
+
+
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ VRamAlloc_BF - FINDS VRam AddrS using BEST FIT			   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ Entry: d3.l = length of required space (.b)				   บ
+; บ  Exit: d1.l = VRam Address						   บ
+; บ        mi = found okay						   บ
+; บ        pl = NOT found okay						   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ Allocates VRam on a BEST FIT basis.					   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+VRamAlloc_BF		movem.l	d0/d3-d5/a0-a1,-(sp)
+			
+			move.l	d3,d0
+
+			moveq	#0,d1
+			lea	VRamAllocUsed,a0
+        	      	move.w  #$ffff,d3			;bestfit so far
+        	      	
+			moveq   #0,d5
+.0			move.w	VRam_Link(a0),d1
+			beq.s	.checkiffound
+			move.l	a0,a1
+			move.w	d1,a0
+        		move.w  VRam_Size(a0),d4
+			cmp.w	d4,d0
+			bhi.s	.0
+        		cmp.w   d4,d3
+        		bls.s   .0				;a better fit was found
+        		move.w  d4,d3
+        		move.l  a0,d5				;save where we found it
+        		move.l  a1,d6				;previous pointer
+        		bra.s   .0
+.Allocate     		move.l  d5,a0
+              		move.l  d6,a1
+              		cmp.w 	d3,d0
+              		beq.s	.1				;exact fit
+
+			move.w	VRam_Addr(a0),d1		;Block is bigger than necessary
+			add.w	d0,VRam_Addr(a0)
+			sub.w	d0,VRam_Size(a0)
+			movem.l	(sp)+,d0/d3-d5/a0-a1
+			tas	yes
+			rts
+								
+.1			move.w	VRam_Addr(a0),d1		;Exact fit, Free up its record
+			move.w	VRam_Link(a0),VRam_Link(a1)
+			move.w	VRamAllocFree,VRam_Link(a0)
+			move.w	a0,VRamAllocFree
+			movem.l	(sp)+,d0/d3-d5/a0-a1
+			tas	yes
+			rts
+
+.checkiffound 		tst.l   d5
+		        bne.s   .Allocate
+.outofmem		movem.l	(sp)+,d0/d3-d5/a0-a1
+			tas	no
+			rts
+
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ VRamFree - Free-up a block of VRam					   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ Entry: d0.l - length of space (.b)					   บ
+; บ  	   d1.l = VRam Address						   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+VRamFree		movem.l	a0/a1/d2,-(sp)
+
+			lea	VRamAllocUsed,a1
+.0			move.l	a1,a0
+			move.w	VRam_Link(a0),a1
+			cmp.w	#0,a1
+			beq.s	.5
+			cmp.w	VRam_Addr(a1),d1
+			bhi.s	.0
+
+			move.w	VRam_Addr(a0),d2
+			add.w	VRam_Size(a0),d2
+			cmp.w	d1,d2				; adjacent to previous block ??
+			bne.s	.3				; branch if not
+
+			add.w	d0,VRam_Size(a0)		; add Size to that of previous block
+			move.w	VRam_Addr(a0),d2
+			add.w	VRam_Size(a0),d2
+			cmp.w	VRam_Addr(a1),d2		; combined block adjacent to next block ??
+			bne.s	.4				; exit if not
+	
+			move.w	VRam_Size(a1),d2
+			add.w	d2,VRam_Size(a0)		; add in Size of next block
+			move.w	VRam_Link(a1),VRam_Link(a0)	; and remove record
+			move.w	VRamAllocFree,VRam_Link(a1)
+			move.w	a1,VRamAllocFree
+.4			movem.l	(sp)+,a0/a1/d2
+			rts
+
+.3			move.w	d0,d2
+			add.w	d1,d2
+			cmp.w	VRam_Addr(a1),d2		; adjacent to next Free block ??
+			bne.s	.5				; branch if not
+
+			add.w	d0,VRam_Size(a1)
+			move.w	d1,VRam_Addr(a1)
+			movem.l	(sp)+,a0/a1/d2
+			rts
+
+.5			move.w	VRamAllocFree,a2		;get new record in a2
+			move.w	VRam_Link(a2),VRamAllocFree
+			move.w	a2,VRam_Link(a0)
+			move.w	a1,VRam_Link(a2)
+			move.w	d1,VRam_Addr(a2)
+			move.w	d0,VRam_Size(a2)
+			movem.l	(sp)+,a0/a1/d2
+			rts
+
+
+
+			if	1=0
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ INITRamAlloc - Initialises the Ram Allocation tables		   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+InitRamAlloc		lea	RamAllocBuff,a0
+			move.w	a0,RamAllocFree
+			
+			moveq	#RamItems-2,d0
+.1			lea	Ram_Len(a0),a1		
+			move.w	a1,Ram_Link(a0)
+			move.l	a1,a0
+			dbra	d0,.1
+			clr.w	Ram_Link(a0)
+
+			clr.w	RamAllocUsed
+			move.l	#-1,RamAllocUsed+2	;set pretend Addr & Size (Used in Free search!)
+			
+			move.l	#OBRAM,d1		;set Free Ram
+			move.l  #$4000,d0
+			bra     RamFree
+
+
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ RamAlloc_BF - FINDS Ram AddrS using BEST FIT			   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ Entry: d0.l = length of required space (.b)				   บ
+; บ  Exit: ne => d1.l = Ram Address					   บ
+; บ        eq => not found						   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ Allocates Ram on a BEST FIT basis.					   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+RamAlloc_BF		movem.l	d3-d5/a0-a1,-(sp)
+
+			moveq	#0,d1
+			lea	RamAllocUsed,a0
+              		move.w  #$ffff,d3                       ;bestfit so far
+              		moveq   #0,d5
+
+.0			move.w	Ram_Link(a0),d1
+			beq.s	.checkiffound
+			move.l	a0,a1
+			move.w	d1,a0
+              		move.w  Ram_Size(a0),d4
+			cmp.w	d4,d0
+			bhi.s	.0
+              		cmp.w   d4,d3
+              		bls.s   .0                              ;a better fit was found
+              		move.w  d4,d3
+              		move.l  a0,d5                           ;save where we found it
+              		move.l  a1,d6                           ;previous pointer
+              		bra.s   .0
+.Allocate     		move.l  d5,a0
+              		move.l  d6,a1
+              		cmp.w   d3,d0
+              		beq     .1                              ;exact fit
+
+			move.w  #$ff,d1				;Block is bigger than necessary
+              		swap    d1
+			move.w	Ram_Addr(a0),d1
+			add.w	d0,Ram_Addr(a0)
+			sub.w	d0,Ram_Size(a0)
+			movem.l	(sp)+,d3-d5/a0-a1
+			tst.w	d0
+			rts
+								
+.1 			move.w  #$ff,d1				;Exact fit, Free up its record
+              		swap    d1
+			move.w	Ram_Addr(a0),d1
+			move.w	Ram_Link(a0),Ram_Link(a1)
+			move.w	RamAllocFree,Ram_Link(a0)
+			move.w	a0,RamAllocFree
+			movem.l	(sp)+,d3-d5/a0-a1
+			tst.w	d0
+			rts
+
+.checkiffound 		tst.l   d5
+              		bne.s   .Allocate
+.outofmem		moveq	#0,d1				;no space found
+			movem.l	(sp)+,d3-d5/a0-a1
+			rts
+
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ RamFree - Free-up a block of Ram					   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ Entry: d0.l - length of space (.b)					   บ
+; บ  	   d1.l = Ram Address						   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+RamFree			movem.l	a0/a1/d2,-(sp)
+
+			lea	RamAllocUsed,a1
+.0			move.l	a1,a0
+			move.w	Ram_Link(a0),a1
+			cmp.w	#0,a1
+			beq.s	.5
+			cmp.w	Ram_Addr(a1),d1
+			bhi.s	.0
+			
+			move.w	Ram_Addr(a0),d2
+			add.w	Ram_Size(a0),d2
+			cmp.w	d1,d2				;adjacent to previous block ??
+			bne.s	.3				;branch if not
+
+			add.w	d0,Ram_Size(a0)			;add Size to that of previous block
+			move.w	Ram_Addr(a0),d2
+			add.w	Ram_Size(a0),d2
+			cmp.w	Ram_Addr(a1),d2			;combined block adjacent to next block ??
+			bne.s	.4				;exit if not
+	
+			move.w	Ram_Size(a1),d2
+			add.w	d2,Ram_Size(a0)			;add in Size of next block
+			move.w	Ram_Link(a1),Ram_Link(a0)	;and remove record
+			move.w	RamAllocFree,Ram_Link(a1)
+			move.w	a1,RamAllocFree
+.4			movem.l	(sp)+,a0/a1/d2
+			rts
+
+.3			move.w	d0,d2
+			add.w	d1,d2
+			cmp.w	Ram_Addr(a1),d2			;adjacent to next Free block ??
+			bne.s	.5				;branch if not
+
+			add.w	d0,Ram_Size(a1)
+			move.w	d1,Ram_Addr(a1)
+			movem.l	(sp)+,a0/a1/d2
+			rts
+
+.5			move.w	RamAllocFree,a2			;get new record in a2
+			move.w	Ram_Link(a2),RamAllocFree
+			move.w	a2,Ram_Link(a0)
+			move.w	a1,Ram_Link(a2)
+			move.w	d1,Ram_Addr(a2)
+			move.w	d0,Ram_Size(a2)
+			movem.l	(sp)+,a0/a1/d2
+			rts
+
+			endif

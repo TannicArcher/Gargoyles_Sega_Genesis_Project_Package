@@ -1,0 +1,11 @@
+;*
+;* Animation from room 'grinder0'
+;*
+AMAP_GRINDER00_START:
+	ani_dma L7M0FNL0_DATA+$1000,$0200,$0180	; Frame  1 ( 1) of  4
+	ani_dma L7M0FNL0_DATA+$1180,$0200,$0180	; Frame  2 ( 2) of  4
+	ani_dma L7M0FNL0_DATA+$1300,$0200,$0180	; Frame  3 ( 3) of  4
+	ani_dma L7M0FNL0_DATA+$1480,$0200,$0180	; Frame  4 ( 4) of  4
+AMAP_GRINDER00_LEN equ *-AMAP_GRINDER00_START
+
+

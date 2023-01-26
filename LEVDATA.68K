@@ -1,0 +1,162 @@
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ LEVEL DATA (Chars/Blocks/floors/contours/Tables/setups et al.)	   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ All the DATA for setting up a LEVEL is contained in this file.	   บ
+; บ 									   บ
+; บ Includes ;								   บ
+; บ RAW and COMPRESSED BINARY DATA					   บ
+; บ DATA TABLES used by SetupDATA (see MAIN.68K)			   บ
+; บ PALETTE TABLES used by SetupPalette (see MAIN.68K)			   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+; - DATA for LEVEL #1 ------------------------------------------------------
+
+		SECTION	GGD_LEVEL01
+
+Lev1Chr			incbin	data\level01\maps\l1m0fnl0.cpk
+			even
+Lev1Blk			incbin	data\level01\maps\l1m0fnl0.blk
+Lev1Flr			incbin	data\level01\maps\l1m0fnl0.fpk
+			even
+Lev1Con			incbin	data\level01\maps\l1m0cnt0.con
+Lev11MapA		incbin	data\level01\maps\l1m1fnl0.mpk
+			even
+Lev12MapA		incbin	data\level01\maps\l1m2fnl0.mpk
+			even
+Lev13MapA		incbin	data\level01\maps\l1m3fnl0.mpk
+			even
+Lev14MapA		incbin	data\level01\maps\l1m4fnl0.mpk
+			even
+Lev1MapB		incbin	data\level01\maps\para1.map
+
+
+; - DATA for LEVEL #2 ------------------------------------------------------
+
+		SECTION	GGD_LEVEL02
+			    
+Lev2Chr			incbin	data\level02\maps\l2m0fnl0.cpk
+			even
+Lev2Blk			incbin	data\level02\maps\l2m0fnl0.blk
+Lev2Flr			incbin	data\level02\maps\l2m0fnl0.fpk
+			even
+Lev2Con			incbin	data\level02\maps\l2m0cnt0.con
+Lev21MapA		incbin	data\level02\maps\l2m1fnl0.mpk
+			even
+Lev22MapA		incbin	data\level02\maps\l2m2fnl0.mpk
+			even
+Lev23MapA		incbin	data\level02\maps\l2m3fnl0.mpk
+			even
+Lev2MapB		incbin	data\level02\maps\para1.map
+
+Lev24Chr		incbin	data\level02\boss\l2m4fnl0.cpk
+			even
+Lev24Blk		incbin	data\level02\boss\l2m4fnl0.blk
+Lev24Flr		incbin	data\level02\boss\l2m4fnl0.fpk
+			even
+Lev24Con		incbin	data\level02\boss\l2m4cnt0.con
+Lev24MapAa		incbin	data\level02\boss\l2m4fnl0.mpk
+Lev24MapAb		incbin	data\level02\boss\l2m4fnl1.mpk
+Lev24MapAc		incbin	data\level02\boss\l2m4fnl2.mpk
+Lev24MapAd		incbin	data\level02\boss\l2m4fnl3.mpk
+			even
+Lev24MapB		incbin	data\level02\boss\para1.map
+
+
+; - DATA for LEVEL #3 ------------------------------------------------------
+
+		SECTION	GGD_LEVEL03
+
+Lev3Chr			incbin	data\level03\maps\l3m0fnl0.cpk
+			even
+Lev3Blk			incbin	data\level03\maps\l3m0fnl0.blk
+Lev3Flr			incbin	data\level03\maps\l3m0fnl0.fpk
+			even
+Lev3Con			incbin	data\level03\maps\l3m0cnt0.con
+Lev31MapA		incbin	data\level03\maps\l3m1fnl0.mpk
+Lev32MapA		incbin	data\level03\maps\l3m2fnl0.mpk
+			even
+Lev33MapA		incbin	data\level03\maps\l3m3fnl0.mpk
+			even
+Lev3MapB		incbin	data\level03\maps\para1.map
+		
+Lev34Chr		incbin	data\level03\boss\l3m4fnl0.cpk
+			even
+Lev34Blk		incbin	data\level03\boss\l3m4fnl0.blk
+Lev34Flr		incbin	data\level03\boss\l3m4fnl0.fpk
+			even
+Lev34Con		incbin	data\level03\boss\l3m4cnt0.con
+Lev34MapAa		incbin	data\level03\boss\car1.mpk
+			even
+Lev34MapAb		incbin	data\level03\boss\car2.mpk
+			even
+Lev34MapAc		incbin	data\level03\boss\car3.mpk
+			even
+Lev34MapAd		incbin	data\level03\boss\car4.mpk
+			even
+Lev34MapBa		incbin	data\level03\boss\para1.map
+Lev34MapBb		incbin	data\level03\boss\para2.map
+Lev34MapBc		incbin	data\level03\boss\para3.map
+Lev34MapBd		incbin	data\level03\boss\para4.map
+Lev34MapBe		incbin	data\level03\boss\para5.map
+	
+
+; - DATA for LEVEL #5 ------------------------------------------------------
+
+		SECTION	GGD_LEVEL05
+
+Lev5Chr			incbin	data\level05\maps\l5m0fnl0.cpk
+			even
+Lev5Blk			incbin	data\level05\maps\l5m0fnl0.blk
+Lev5Flr			incbin	data\level05\maps\l5m0fnl0.fpk
+			even
+Lev5Con			incbin	data\level05\maps\l5m0cnt0.con
+Lev51MapA		incbin	data\level05\maps\l5m1fnl0.mpk
+Lev51MapAa		incbin	data\level05\maps\l5m2fnl0.mpk
+Lev51MapAb		incbin	data\level05\maps\l5m3fnl0.mpk
+Lev51MapAc		incbin	data\level05\maps\l5m4fnl0.mpk
+Lev51MapAd		incbin	data\level05\maps\l5m5fnl0.mpk
+			even
+Lev5MapBa		incbin	data\level05\maps\para1.map
+Lev5MapBb		incbin	data\level05\maps\para2.map
+Lev5MapBc		incbin	data\level05\maps\para3.map
+
+
+; - DATA for LEVEL #7 ------------------------------------------------------
+
+		SECTION	GGD_LEVEL07
+
+Lev7Chr			incbin	data\level07\maps\l7m0fnl0.cpk
+			even
+Lev7Blk			incbin	data\level07\maps\l7m0fnl0.blk
+Lev7Flr			incbin	data\level07\maps\l7m0fnl0.fpk
+			even
+Lev7Con			incbin	data\level07\maps\l7m0cnt0.con
+Lev71MapA		incbin	data\level07\maps\l7m1fnl0.mpk
+			even
+Lev72MapA		incbin	data\level07\maps\l7m2fnl0.mpk
+			even
+Lev73MapA		incbin	data\level07\maps\l7m3fnl0.mpk
+			even
+Lev74MapA		incbin	data\level07\maps\l7m4fnl0.mpk
+			even
+Lev75MapA		incbin	data\level07\maps\l7m5fnl0.mpk
+			even
+Lev76MapA		incbin	data\level07\maps\l7m6fnl0.mpk
+			even
+Lev7MapB		incbin	data\level07\maps\para1.map
+
+Lev77Chr		incbin	data\level07\boss\l7m7fnl0.cpk
+			even
+Lev77Blk		incbin	data\level07\boss\l7m7fnl0.blk
+Lev77Flr		incbin	data\level07\boss\l7m7fnl0.fpk
+			even
+Lev77Con		incbin	data\level07\boss\l7m7cnt0.con
+Lev77MapAa		incbin	data\level07\boss\l7m7fnl0.mpk
+			even
+Lev77MapAb		incbin	data\level07\boss\l7m7fnl1.mpk
+			even
+Lev77MapAc		incbin	data\level07\boss\l7m7fnl2.mpk
+			even
+Lev77MapB		incbin	data\level07\boss\para1.map
+
+

@@ -1,0 +1,11 @@
+tst.b	demo_mode
+		beq.s	.d2
+		move.b	button_a,s_button_a	;preserve settings
+		move.b	button_b,s_button_b
+		move.b	button_c,s_button_c
+		move.b	difficulty,s_difficulty
+		move.b	#6,button_a	;make sure buttons are set correct
+		move.b	#4,button_b	;for demo
+		move.b	#5,button_c
+		move.b	#1,difficulty	;and difficulty=medium
+		

@@ -1,0 +1,13 @@
+	include	testani.68k
+
+	ani_palette	GG3603D
+	ani_sprites	GG3603D
+
+GG3603D_anim	animation
+@1	ani_sprite	GG3603D_0001
+	ani_sprite	GG3603D_0002
+	ani_sprite	GG3603D_0003
+	ani_goto	@1
+	ani_end
+
+	ani_footer

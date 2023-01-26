@@ -1,0 +1,1354 @@
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ OBLOGIC3.68K : OBJECT LOGIC CONTROL ROUTINES ...			   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ This file contains the CONTROL LOGIC routines for			   บ
+; บ the following Objects ;						   บ
+; บ 									   บ
+; บ 									   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ SPIDER BOT CONTROL LOGIC						   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+		StRESET
+		StDEF	SpiBotTestSTATE
+		StDEF	SpiBotSetHorzSTATE
+		StDEF	SpiBotSetVertSTATE
+		StDEF	SpiBotHorzSTATE
+		StDEF	SpiBotVertSTATE
+		StDEF	SpiBotTurnToHSTATE
+		StDEF	SpiBotTurnToVSTATE
+		StDEF	SpiBotTrans2WallSTATE
+		StDEF	SpiBotTrans2FloorSTATE
+		StDEF	SpiBotTrans2WallUpSTATE
+		StDEF	SpiBotTrans2FloorUpSTATE
+		StDEF	SpiBotDropSTATE
+		StDEF	SpiBotDropLandSTATE
+		StDEF	SpiBotFireHorzSTATE
+		StDEF	SpiBotFireVertSTATE
+		StDEF	SpiBotThrownSTATE
+		StDEF	SpiBotThrownFallSTATE
+		StDEF	SpiBotThrownLandSTATE
+		StDEF	SpiBotThrownRecoverSTATE
+		StDEF	SpiBotSlammedSTATE
+		StDEF	SpiBotFallSTATE
+		
+
+SpiderBot_Logic		btst.b	#ob_setup,OB_Flag2(a0)
+			bne.s	.1
+			bset.b	#ob_setup,OB_Flag2(a0)
+			sub.w	#8,OB_Ypos(a0)
+			move.l	#SpiBotSetHits,OB_HitRoutine(a0)
+
+.1			bsr	HandleBeingHit				;Generic handle hit rout
+
+			move.w	OB_State(a0),d1
+			jmp	SpiBotLogicTable(pc,d1.w)		;jump table
+
+
+SpiBotLogicTable	bra	SpiBotTestLOGIC
+			bra	SpiBotSetHorzLOGIC
+			bra	SpiBotSetVertLOGIC
+			bra	SpiBotHorzLOGIC
+			bra	SpiBotVertLOGIC
+			bra	SpiBotTurnToHorzLOGIC
+			bra	SpiBotTurnToVertLOGIC
+			bra	SpiBotTrans2WallLOGIC
+			bra	SpiBotTrans2FloorLOGIC
+			bra	SpiBotTrans2WallUpLOGIC
+			bra	SpiBotTrans2FloorUpLOGIC
+			bra	SpiBotDropLOGIC
+			bra	SpiBotDropLandLOGIC
+			bra	SpiBotFireHorzLOGIC
+			bra	SpiBotFireVertLOGIC
+			bra	SpiBotThrownLOGIC
+			bra	SpiBotThrownFallLOGIC
+			bra	SpiBotThrownLandLOGIC
+			bra	SpiBotThrownRecovrLOGIC
+			bra	SpiBotSlammedLOGIC
+			bra	SpiBotFallLOGIC
+			
+
+; - Hit Routines -----------------------------------------------------------
+
+SpiBotSetHits		move.b	OB_Flag6(a0),d2
+			and.b	#%11000111,OB_Flag6(a0)
+			
+			move.l	Plr_Database,a1
+			cmp.w	#GolGroundGrabSTATE,OB_State(a1)
+			bne.s	.1
+			tst.b	RapBotThrownFLG
+			bne.s	.1
+			btst.b	#grabmode,OB_MasterMode(a1)
+			bne	SpiBotSetThrown
+
+.1			btst	#ob_hit_small,d2
+			bne.s	SpiBotSetExplode
+			btst	#ob_hit_med,d2
+			bne.s	SpiBotSetExplode
+			btst	#ob_hit_big,d2
+			bne.s	SpiBotSetExplode
+			rts
+
+SpiBotSetExplode	cmp.w	#SpiBotVertSTATE,OB_State(a0)
+			beq.s	SpiBotSetAirExplode
+			btst.b	#ob_yflp,OB_Flag1(a0)
+			beq.s	SpiBotSetFlrExplode
+SpiBotSetAirExplode	bsr	SetBigAirExplodeAtOB_XY
+			bpl.s	.1
+			moveq	#2,d7
+			move.w	#5,d3		   			;# of debris peices (NOTE: d1/d2 should comntain x,y)
+			bsr	SetRandomDebris
+.1			bra	HandleEnemyKilled
+SpiBotSetFlrExplode	bsr	SetBigFlrExplodeAtOB_XY
+			bpl.s	.1
+			moveq	#3,d7
+			move.w	#5,d3		   			;# of debris peices (NOTE: d1/d2 should comntain x,y)
+			bsr	SetRandomDebris
+.1			bra	HandleEnemyKilled
+		
+
+; - Throw Routines ---------------------------------------------------------
+
+SpiBotSetThrown		move.w	#SpiBotThrownSTATE,OB_State(a0)
+			SFX	10
+			clr.b	OB_Var1(a0)
+			clr.b	OB_Var3(a0)
+			st.b	RapBotThrownFLG
+			btst.b	#ob_xflp,Plr_Flag1			;make sure enemy faces right way
+			bne.s	.1
+			bset.b	#ob_xflp,OB_Flag1(a0)
+			bra	.2
+.1			bclr.b	#ob_xflp,OB_Flag1(a0)
+.2			lea	SpiBotGrabbedANM,a1			;set anim
+			bsr	SetNewAnim
+			bra	ForceNewAnim
+
+SpiBotThrownLOGIC	tst.b	OB_Var1(a0)
+			bne	.2
+			
+			tst.b	GolThrowReleaseFLG
+			bne.s	.1
+			tst.b	GolSlamFLG
+			bne	SpiBotSetSlammed
+			tst.b	OB_Var3(a0)
+			beq.s	.x
+			
+			bsr	EnemyWallInterupt
+			bmi	SpiBotSetAirExplode
+			bsr	SaveLastThrowXY
+			move.w	GolThrowXPos,OB_Xpos(a0)
+			move.w	GolThrowYPos,OB_Ypos(a0)
+			add.w	#8,OB_Ypos(a0)
+.x			st.b	OB_Var3(a0)
+			rts
+
+.1			st.b	OB_Var1(a0)
+			move.w	#4,OB_Var2(a0)
+			lea	SpiBotThrownANM,a1			;set anim
+			bsr	SetNewAnim
+.2			btst.b	#ob_xflp,OB_Flag1(a0)
+			beq.s	.r
+.l			bsr	GetUnderLEFTLEFT
+			bra	.lr	
+.r			bsr	GetUnderRIGHTRIGHT
+.lr			bsr	TestLevelWalls
+			bmi	SpiBotSetAirExplode
+			moveq	#3,d1
+			bsr	MoveGolLeftRightFLP3
+			addq.b	#1,OB_Var1a(a0)				
+			and.b	#3,OB_Var1a(a0)				
+			bne.s	.3					
+			subq.w	#1,OB_Var2(a0)				;decrease upward velocity				
+			beq	SpiBotSetThrownFall
+.3			move.w	OB_Var2(a0),d1				;get speed
+			bra	MoveGolUp_Smooth			;move up
+
+
+; - SpiderBot falls from thrown --------------------------------------------
+
+SpiBotSetThrownFall	move.w	#SpiBotThrownFallSTATE,OB_State(a0)
+			clr.w	OB_Var1(a0)
+			rts
+
+SpiBotThrownFallLOGIC	moveq	#3,d1
+			bsr	MoveGolLeftRightFLP		
+
+			btst.b	#ob_xflp,OB_Flag1(a0)
+			beq.s	.r
+.l			bsr	GetUnderLEFTLEFT
+			bra	.lr	
+.r			bsr	GetUnderRIGHTRIGHT
+.lr			bsr	TestLevelWalls
+			bmi	SpiBotSetAirExplode
+			
+			addq.b	#1,OB_Var1(a0)
+			and.b	#3,OB_Var1(a0)
+			bne.s	.1
+			addq.b	#1,OB_Var1a(a0)
+.1			moveq	#0,d1
+			move.b	OB_Var1a(a0),d1
+		
+			bsr	MoveGolDown_Smooth
+			bsr	TestLand
+			bmi	SpiBotSetThrownLand
+			rts
+
+
+; - SpiderBot lands from thrown --------------------------------------------
+
+SpiBotSetThrownLand	move.w	#SpiBotThrownLandSTATE,OB_State(a0)
+			move.w	#3,OB_Var1(a0)
+			clr.w	OB_Var2(a0)
+			movem.l	a0/d0,-(sp)
+			SPAWN_HI	Sparks_MAX_Size
+			bpl.s	.1
+			move.l	a0,a1
+			movem.l	(sp)+,d0/a0
+			move.w	#Sparks_OB,OB_Type(a1)
+			bset.b	#ob_tidy,OB_Flag5(a1)
+			move.b	#1,OB_Var4(a1)
+			move.l	a0,OB_Var5(a1)
+			bra	.2
+.1			movem.l	(sp)+,d0/a0
+.2			SFX 	1
+
+SpiBotThrownLandLOGIC	move.w	OB_Var1(a0),d1				;x speed
+			bne.s	.b
+  			jsr	Randy
+			and.w	#1,d6
+			beq	SpiBotSetThrownRecover
+			bra	SpiBotSetExplode
+.b			bsr	MoveGolLeftRightFLP			;move x
+			btst.b	#ob_xflp,OB_Flag1(a0)
+			beq.s	.r
+.l			bsr	GetUnderLEFTLEFT
+			bra	.lr	
+.r			bsr	GetUnderRIGHTRIGHT
+.lr			bsr	TestLevelWalls
+			bpl.s	.ok
+.aa			clr.w	OB_Var1(a0)
+			bra	SpiBotSetExplode
+.ok			bsr	HandleContours
+			bpl.s	.aa
+			addq.b	#1,OB_Var2(a0)				;slow down x 
+			and.b	#$f,OB_Var2(a0)
+			bne.s	.x
+			subq.w	#1,OB_Var1(a0)
+.x			rts
+
+
+; - SpiderBot Recovers after thrown ----------------------------------------
+
+SpiBotSetThrownRecover	move.w	#SpiBotThrownRecoverSTATE,OB_State(a0)
+			clr.b	OB_Var2(a0)
+			lea	SpiBotThrownPRANM,a1			;set anim
+			bsr	SetNewAnim
+			bra	ForceNewAnim
+
+SpiBotThrownRecovrLOGIC	tst.b	OB_Var2(a0)
+			bne.s	.1
+			tst.l	OB_AnSequence(a0)
+			bne.s	.x
+			st.b	OB_Var2(a0)
+;			clr.b	RapBotThrownFLG
+			bsr	ClrHitStuff
+			lea	SpiBotThrownRecoverANM,a1
+			bra	SetNewAnim
+.1			tst.l	OB_AnSequence(a0)
+			beq	SpiBotSetHorzLOGIC
+.x			rts
+
+
+; - SpiderBot Slammed ------------------------------------------------------
+
+SpiBotSetSlammed	move.w	#SpiBotSlammedSTATE,OB_State(a0)
+;			SFX	2
+			clr.w	OB_Var1(a0)
+			move.b	#4,OB_Var2(a0)
+			lea	SpiBotSlammedANM,a1			;set anim
+			bsr	SetNewAnim
+			bra	ForceNewAnim
+						
+SpiBotSlammedLOGIC	tst.b	OB_Var1(a0)
+			bne.s	.2
+
+			bsr	EnemyWallInterupt
+			bmi	SpiBotSetAirExplode
+			move.w	GolThrowXPos,OB_Xpos(a0)
+			move.w	GolThrowYPos,OB_Ypos(a0)
+			add.w	#8,OB_Ypos(a0)
+			
+			subq.b	#1,OB_Var2(a0)
+			bne.s	.x
+			bsr	GetUnderFEET
+			bsr	PullContourUnder
+			beq.s	.f1
+			sub.w	#8,OB_Ypos(a0)
+			st.b	OB_Var1(a0)
+.x			rts
+.f1			st.b	GolSlamOutFLG
+			bra	SpiBotSetAirExplode
+			
+.2			addq.b	#1,OB_Var1a(a0)
+			and.b	#$7,OB_Var1a(a0)
+			bne	.o1
+
+			move.w	OB_Xpos(a0),d1
+			move.w	OB_Ypos(a0),d2
+
+			movem.l	d0/a0,-(sp)
+			movem.l	d1-d3,-(sp)
+			move.w	rndnum,d3
+			and.w	#1,d3
+			beq.s	.2a
+			SPAWN_HI	Spark_MAX_Size
+			bpl.s	.oo
+			move.w	#Spark_OB,OB_Type(a0)
+			bra	.2b		
+.2a			SPAWN_HI	Spark_MAX_Size
+			bpl.s	.oo
+			move.w	#Fireball_OB,OB_Type(a0)
+.2b			movem.l	(sp)+,d1-d3
+			move.w	d1,OB_Xpos(a0)	
+			move.w	d2,OB_Ypos(a0)	
+			bset.b	#ob_tidy,OB_Flag5(a0)
+			bsr	RandomParabolaSmall
+			move.b	second,d3
+			and.b	#1,d3
+			bne.s	.1a
+			move.b	#%00111110,OB_MoveFlags(a0)
+			bra	.1b
+.1a			move.b	#%00111111,OB_MoveFlags(a0)
+.1b			movem.l	(sp)+,d0/a0
+			bra	.o1
+
+.oo			movem.l	(sp)+,d1-d3
+			movem.l	(sp)+,d0/a0
+
+.o1			tst.l	OB_AnSequence(a0)
+			beq	SpiBotSetFlrExplode
+			rts
+
+; - Testbed ----------------------------------------------------------------
+
+SpiBotTestLOGIC		rts
+
+
+; - SpiderBot transition to floor/ceiling up (edges) ------------------
+
+SpiBotSetTrans2FloorUp	move.w	#SpiBotTrans2FloorUpSTATE,OB_State(a0)
+			bsr	SnapXY
+			lea	SpiBotTrans2FloorUpANM,a1
+			bsr	SetNewAnim
+			bra	ForceNewAnim
+
+SpiBotTrans2FloorUpLOGIC
+			tst.l	OB_AnSequence(a0)
+			bne.s	.x
+			btst.b	#ob_xflp,OB_Flag1(a0)
+			beq.s	.r
+.l			sub.w	#$28,OB_Xpos(a0)
+			bra	.lr
+.r			add.w	#$28,OB_Xpos(a0)
+.lr			btst.b	#ob_yflp,OB_Flag1(a0)
+			beq.s	.1
+			add.w	#$20,OB_Ypos(a0)
+			bra	.2
+.1			sub.w	#$20,OB_Ypos(a0)
+.2			bra.s	SpiBotSetHorzLOGIC
+.x			rts
+
+
+; - SpiderBot transition to floor ------------------------------------
+
+SpiBotSetTrans2Floor	move.w	#SpiBotTrans2FloorSTATE,OB_State(a0)
+			bsr	SnapXY
+			eor.b	#_ob_yflp,OB_Flag1(a0)
+			lea	SpiBotTrans2FloorANM,a1
+			bsr	SetNewAnim
+			bra	ForceNewAnim
+
+SpiBotTrans2FloorLOGIC	tst.l	OB_AnSequence(a0)
+			bne.s	.x
+			btst.b	#ob_xflp,OB_Flag1(a0)
+			beq.s	.r
+.l			add.w	#$20,OB_Xpos(a0)
+			bra	.lr
+.r			sub.w	#$20,OB_Xpos(a0)
+.lr			btst.b	#ob_yflp,OB_Flag1(a0)
+			beq.s	.1
+			sub.w	#$20,OB_Ypos(a0)
+			bra	.2
+.1			add.w	#$20,OB_Ypos(a0)
+.2			eor.b	#_ob_xflp,OB_Flag1(a0)
+			bra.s	SpiBotSetHorzLOGIC
+.x			rts
+
+
+; - SpiderBot on floor/ceiling ---------------------------------------------
+
+SpiBotSetHorzLOGIC	move.w	#SpiBotHorzSTATE,OB_State(a0)
+SpiBotSFTH1		jsr	Randy
+			and.w	#$1f,d6
+			or.w	#$20,d6
+			move.b	d6,OB_Var2(a0)
+			lea	SpiBotWalkHorzANM,a1
+			bsr	SetNewAnim
+			bra	ForceNewAnim
+
+SpiBotHorzLOGIC		move.w	Plr_YPos,d1
+			sub.w	OB_Ypos(a0),d1
+			bpl.s	.a
+			neg.w	d1
+.a			cmp.w	#$30,d1
+			bgt.s	.n1
+			move.w	Plr_XPos,d1
+			sub.w	OB_Xpos(a0),d1
+			bpl.s	.b
+			neg.w	d1
+.b			cmp.w	#$30,d1
+			blt.s	.n1
+			jsr	Randy
+			and.w	#$f,d6
+			beq	SpiBotSetFireHorz
+
+.n1			tst.b	OB_Var2(a0)
+			beq.s	.ok
+			sub.b	#1,OB_Var2(a0)
+			bra	.skp1
+
+.ok			bsr	DoesNmeFacePlayer
+			bpl	SpBSTTH1
+			
+.skp1			btst.b	#ob_xflp,OB_Flag1(a0)
+			bne.s	.l
+
+.r			moveq	#2,d1
+			bsr	MoveGolRight_NF_Smooth
+			btst.b	#ob_yflp,OB_Flag1(a0)
+			beq.s	.floor_r
+.ceil_r			bsr	SpiBotTestDropOffCeil
+			bmi	SpiBotSetDrop
+			bsr	GetUnderRIGHTFEET
+			cmp.b	#SB_Climb,d2
+			beq	SpiBotSetTrans2Wall
+			cmp.b	#SB_ClimbR,d2
+			beq	SpiBotSetTrans2Wall
+			bsr	GetUnderRIGHTBOT
+			cmp.b	#SB_CeilingClimb,d2
+			bne	SpiBotSetTrans2WallUp
+			rts
+.floor_r		bsr	GetUnderRIGHT
+			cmp.b	#SB_Climb,d2
+			beq	SpiBotSetTrans2Wall
+			cmp.b	#SB_ClimbR,d2
+			beq	SpiBotSetTrans2Wall
+			bsr	GetUnderRIGHTFEET
+			cmp.b	#SB_ClimbL2StandL,d2
+			beq	SpiBotSetTrans2WallUp
+			bsr	HandleContours
+			bpl	SpiBotSetFall
+			rts
+
+.l			moveq	#2,d1
+			bsr	MoveGolLeft_NF_Smooth
+			btst.b	#ob_yflp,OB_Flag1(a0)
+			beq.s	.floor_l
+.ceil_l			bsr	SpiBotTestDropOffCeil
+			bmi	SpiBotSetDrop
+			bsr	GetXYpos
+			sub.w	#$20,d1
+			bsr	GetFlrData
+			cmp.b	#SB_Climb,d2
+			beq	SpiBotSetTrans2Wall
+			cmp.b	#SB_ClimbR,d2
+			beq	SpiBotSetTrans2Wall
+			bsr	GetUnderLEFTLEFTBOT
+			cmp.b	#SB_CeilingClimb,d2
+			bne	SpiBotSetTrans2WallUp
+			rts
+.floor_l		bsr	GetUnderLEFT
+			cmp.b	#SB_Climb,d2
+			beq	SpiBotSetTrans2Wall
+			cmp.b	#SB_ClimbL,d2
+			beq	SpiBotSetTrans2Wall
+			bsr	GetXYpos
+			sub.w	#$20,d1
+			bsr	GetFlrData
+			cmp.b	#SB_ClimbR2StandR,d2
+			beq	SpiBotSetTrans2WallUp
+			bsr	HandleContours
+			bpl	SpiBotSetFall
+			rts
+
+SpiBotTestDropOffCeil	move.l	Plr_Database,a1
+			btst.b	#grndmode,OB_MasterMode(a1)
+			beq	FlagNOd
+			move.w	Plr_YPos,d1
+			sub.w	OB_Ypos(a0),d1
+			bmi	FlagNOd
+			cmp.w	#$b0,d1
+			bgt	FlagNOd
+			jsr	Randy
+			and.w	#$1f,d6
+			beq	FlagYESd
+			bra	FlagNOd
+
+
+; - SpiderBot falls when no contour -----------------------------------------
+
+SpiBotSetFall		move.w	#SpiBotFallSTATE,OB_State(a0)
+			clr.w	OB_Var1(a0)
+			rts
+
+SpiBotFallLOGIC		addq.b	#1,OB_Var1(a0)
+			and.b	#3,OB_Var1(a0)
+			bne.s	.1
+			addq.b	#1,OB_Var1a(a0)
+.1			moveq	#0,d1
+			move.b	OB_Var1a(a0),d1
+			bsr	MoveGolDown_Smooth
+			bsr	TestLand
+			bmi	SpiBotSetDropLand
+			rts
+
+
+; - SpiderBot Turn to Face Player Horizontal Logic --------------------------
+
+SpBSTTH2		PUSHADDRS SpiBotSFTH2
+			bra	SpiBotSetTurnToHorz
+SpBSTTH1		PUSHADDRS SpiBotSFTH1
+
+SpiBotSetTurnToHorz	PUSHSTATE
+			move.w	#SpiBotTurnToHSTATE,OB_State(a0)
+			lea	SpiBotTurnHorzANM,a1			;set anim
+			bsr	SetNewAnim
+			bra	ForceNewAnim
+
+SpiBotTurnToHorzLOGIC	tst.l	OB_AnSequence(a0)
+			bne.s	.1
+			eor.b	#_ob_xflp,OB_Flag1(a0)
+			POPSTATE
+			POPADDRS
+			jmp	(a1)
+.1			rts
+
+     				
+; - SpiderBot Turn to Face Player Vertical Logic --------------------------
+
+SpBSTTV2		PUSHADDRS SpiBotSFTV2
+		   	bra	SpiBotSetTurnToVert
+SpBSTTV1		PUSHADDRS SpiBotSFTV1
+
+SpiBotSetTurnToVert	PUSHSTATE
+			move.w	#SpiBotTurnToVSTATE,OB_State(a0)
+			lea	SpiBotTurnVertANM,a1			;set anim
+			bsr	SetNewAnim
+			bra	ForceNewAnim
+
+SpiBotTurnToVertLOGIC	tst.l	OB_AnSequence(a0)
+			bne.s	.1
+			eor.b	#_ob_yflp,OB_Flag1(a0)
+			POPSTATE
+			POPADDRS
+			jmp	(a1)
+.1			rts
+
+
+; - SpiderBot transition to wall up/down (over edge) ---------------------------
+
+SpiBotSetTrans2WallUp	move.w	#SpiBotTrans2WallUpSTATE,OB_State(a0)
+			bsr	SnapXY
+			lea	SpiBotTrans2WallUpANM,a1
+			bsr	SetNewAnim
+			bra	ForceNewAnim
+
+SpiBotTrans2WallUpLOGIC	tst.l	OB_AnSequence(a0)
+			bne.s	.x
+			eor.b	#_ob_xflp!_ob_yflp,OB_Flag1(a0)
+			btst.b	#ob_xflp,OB_Flag1(a0)
+			beq.s	.r
+.l			add.w	#$20,OB_Xpos(a0)
+			bra	.lr
+.r			sub.w	#$20,OB_Xpos(a0)
+
+.lr			btst.b	#ob_yflp,OB_Flag1(a0)
+			beq.s	.1
+  			add.w	#$28,OB_Ypos(a0)
+			bra	.2
+.1			sub.w	#$28,OB_Ypos(a0)
+
+.2			bra.s	SpiBotSetVertLOGIC
+.x			rts
+
+
+; - SpiderBot transition to wall ------------------------------------
+
+SpiBotSetTrans2Wall	move.w	#SpiBotTrans2WallSTATE,OB_State(a0)
+			bsr	SnapXY
+			btst.b	#ob_xflp,OB_Flag1(a0)
+			beq.s	.1
+ 			add.w	#$10,OB_Xpos(a0)
+.1			lea	SpiBotTrans2WallANM,a1
+			bsr	SetNewAnim
+			bra	ForceNewAnim
+
+SpiBotTrans2WallLOGIC	tst.l	OB_AnSequence(a0)
+			bne.s	.x
+			btst.b	#ob_xflp,OB_Flag1(a0)
+			beq.s	.r
+.l			sub.w	#$10,OB_Xpos(a0)
+			bra	.lr
+.r			add.w	#$10,OB_Xpos(a0)
+.lr			btst.b	#ob_yflp,OB_Flag1(a0)
+			beq.s	.1
+			add.w	#$28,OB_Ypos(a0)
+			bra	.2
+.1			sub.w	#$20,OB_Ypos(a0)
+.2			bra.s	SpiBotSetVertLOGIC
+.x			rts
+
+
+; - SpiderBot on wall ------------------------------------------------------
+
+SpiBotSetVertLOGIC	move.w	#SpiBotVertSTATE,OB_State(a0)
+SpiBotSFTV1		jsr	Randy
+			and.w	#$1f,d6
+			or.w	#$10,d6
+			move.b	d6,OB_Var2(a0)
+			lea	SpiBotWalkVertANM,a1
+			bsr	SetNewAnim
+			bra	ForceNewAnim
+
+SpiBotVertLOGIC		move.w	Plr_XPos,d1
+			sub.w	OB_Xpos(a0),d1
+			bpl.s	.a
+			neg.w	d1
+.a			cmp.w	#$20,d1
+			bgt.s	.n1
+			jsr	Randy
+			and.w	#$1f,d6
+			beq	SpiBotSetFireVert
+
+.n1			tst.b	OB_Var2(a0)
+			beq.s	.ok
+			sub.b	#1,OB_Var2(a0)
+			bra	.skp1
+
+.ok			bsr	DoesNmeFacePlayerY
+			bpl	SpBSTTV1
+
+.skp1			btst.b	#ob_yflp,OB_Flag1(a0)
+			beq.s	.u
+
+.d			moveq	#2,d1
+			bsr	MoveGolDown_Smooth
+			bset.b	#ob_yflp,OB_Flag1(a0)
+			
+			btst.b	#ob_xflp,OB_Flag1(a0)
+			beq.s	.2
+			bsr	GetXYpos
+			sub.w	#$20,d1
+			add.w	#$10,d2
+			bsr	GetFlrData
+			cmp.b	#SB_CeilingClimb,d2
+			beq	SpiBotSetTrans2FloorUp
+			bsr	GetXYpos
+			sub.w	#$10,d1
+			add.w	#$20,d2
+			bsr	GetFlrData
+			cmp.b	#SB_Climb,d2
+			beq.s	.dx
+			cmp.b	#SB_ClimbL,d2
+			bne	SpiBotSetTrans2Floor
+			rts		
+.2			bsr	GetXYpos
+			add.w	#$10,d1
+			add.w	#$10,d2
+			bsr	GetFlrData
+			cmp.b	#SB_CeilingClimb,d2
+			beq	SpiBotSetTrans2FloorUp
+			bsr	GetUnderUNDERGROUND
+			cmp.b	#SB_Climb,d2
+			beq.s	.dx
+			cmp.b	#SB_ClimbR,d2
+			bne	SpiBotSetTrans2Floor
+			   
+.dx			rts
+
+.u			moveq	#2,d1
+			bsr	MoveGolUp_Smooth
+			bclr.b	#ob_yflp,OB_Flag1(a0)
+			
+			btst.b	#ob_xflp,OB_Flag1(a0)
+			beq.s	.1
+			bsr	GetUnderLEFT
+			cmp.b	#SB_ClimbL2StandL,d2
+			beq	SpiBotSetTrans2FloorUp
+			bsr	GetUnderLEFTTOP
+			cmp.b	#SB_CeilingClimb,d2
+			beq	SpiBotSetTrans2Floor
+			rts	      
+.1			bsr	GetUnder
+			cmp.b	#SB_ClimbR2StandR,d2
+			beq	SpiBotSetTrans2FloorUp
+			bsr	GetUnderTOP
+			cmp.b	#SB_CeilingClimb,d2
+			beq	SpiBotSetTrans2Floor
+			rts
+
+
+; - SpiderBot Drop from ceiling --------------------------------------------
+
+SpiBotSetDrop		move.w	#SpiBotDropSTATE,OB_State(a0)
+			eor.b	#_ob_yflp,OB_Flag1(a0)
+			add.w	#$18,OB_Ypos(a0)
+			clr.b	OB_EventVar1(a0)
+			clr.w	OB_Var1(a0)
+			lea	SpiBotDropANM,a1
+			bsr	SetNewAnim
+			bra	ForceNewAnim
+
+SpiBotDropLOGIC		tst.b	OB_EventVar1(a0)
+			bne.s	.f
+			rts
+.f			addq.b	#1,OB_Var1(a0)
+			and.b	#3,OB_Var1(a0)
+			bne.s	.1
+			addq.b	#1,OB_Var1a(a0)
+.1			moveq	#0,d1
+			move.b	OB_Var1a(a0),d1
+			bsr	MoveGolDown_Smooth
+			bsr	TestLand
+			bmi.s	SpiBotSetDropLand
+			rts
+
+
+; - SpiderBot Land from Drop from ceiling ----------------------------------
+
+SpiBotSetDropLand	move.w	#SpiBotDropLandSTATE,OB_State(a0)
+			lea	SpiBotDropLandANM,a1
+			bsr	SetNewAnim
+			bra	ForceNewAnim
+
+SpiBotDropLandLOGIC	tst.l	OB_AnSequence(a0)
+			beq	SpiBotSetHorzLOGIC
+			rts
+
+
+; - SpiderBot Fire Horizontally ----------------------------------
+
+SpiBotSetFireHorz	move.w	#SpiBotFireHorzSTATE,OB_State(a0)
+			bsr	DoesNmeFacePlayer
+			bpl	SpBSTTH2
+SpiBotSFTH2		clr.b	OB_EventVar1(a0)
+			lea	SpiBotFireHorzANM,a1
+			bsr	SetNewAnim
+			bra	ForceNewAnim
+
+SpiBotFireHorzLOGIC	tst.b	OB_EventVar1(a0)
+			beq.s	.1
+			clr.b	OB_EventVar1(a0)
+			
+			bsr	SetupHorzProj1
+			bpl.s	.1
+			bsr	SetFlipFromMother
+			move.w	OB_Xpos(a0),OB_Xpos(a1)
+			move.w	OB_Ypos(a0),OB_Ypos(a1)			
+			btst.b	#ob_xflp,OB_Flag1(a0)
+			beq.s	.r
+.l			sub.w	#$20,OB_Xpos(a1)
+			bra	.lr
+.r			add.w	#$20,OB_Xpos(a1)
+.lr			btst.b	#ob_yflp,OB_Flag1(a0)
+			beq.s	.u
+.d			add.w	#8,OB_Ypos(a1)
+			bra	.ud
+.u			sub.w	#8,OB_Ypos(a1)
+.ud			move.b	#LaserHitPOWER,OB_HitPower(a1)
+			move.w	#max_las-2,OB_Var1(a1)
+			bsr	SetMediumAttackA1
+			lea	SpiBotHorzProjANM,a2
+			bsr	SetNewAnimA1
+			
+.1			tst.l	OB_AnSequence(a0)
+			beq	SpiBotSetHorzLOGIC
+			rts
+
+
+; - SpiderBot Fire Vertically ----------------------------------
+
+SpiBotSetFireVert	move.w	#SpiBotFireVertSTATE,OB_State(a0)
+			bsr	DoesNmeFacePlayerY
+			bpl	SpBSTTV2
+SpiBotSFTV2		lea	SpiBotFireVertANM,a1
+			bsr	SetNewAnim
+			bra	ForceNewAnim
+
+SpiBotFireVertLOGIC	tst.b	OB_EventVar1(a0)
+			beq.s	.1
+			clr.b	OB_EventVar1(a0)
+			
+			bsr	SetupVertProj1
+			bpl.s	.1
+			bsr	SetFlipFromMother
+			eor.b	#_ob_yflp,OB_Flag1(a1)
+			move.w	OB_Xpos(a0),OB_Xpos(a1)
+			move.w	OB_Ypos(a0),OB_Ypos(a1)			
+			btst.b	#ob_yflp,OB_Flag1(a0)
+			bne.s	.u
+.d			sub.w	#$20,OB_Ypos(a1)
+			bra	.ud
+.u			add.w	#$20,OB_Ypos(a1)
+.ud			btst.b	#ob_xflp,OB_Flag1(a0)
+			beq.s	.r
+.l			add.w	#8,OB_Xpos(a1)
+			bra	.lr
+.r			sub.w	#8,OB_Xpos(a1)
+.lr			move.b	#LaserHitPOWER,OB_HitPower(a1)
+			move.w	#max_las-2,OB_Var1(a1)
+			bsr	SetMediumAttackA1
+			lea	SpiBotVertProjANM,a2
+			bsr	SetNewAnimA1
+			
+.1			tst.l	OB_AnSequence(a0)
+			beq	SpiBotSetVertLOGIC
+			rts
+			
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ WASP ROBOT CONTROL LOGIC						   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+		StRESET
+		StDEF	WaspBotTestSTATE
+		StDEF	WaspBotAirZeroSTATE
+		StDEF	WaspBotFlyToSTATE
+		StDEF	WaspBotFlyToOutSTATE
+		StDEF	WaspBotTurnToSTATE
+		StDEF	WaspBotTrackSTATE
+		StDEF	WaspBotFireSTATE
+		StDEF	WaspBotStrafeSTATE
+		StDEF	WaspBotResetGunSTATE
+		StDEF	WaspBotBackoffSTATE
+
+WaspBot_Logic		btst.b	#ob_setup,OB_Flag2(a0)
+			bne.s	.1
+			bset.b	#ob_setup,OB_Flag2(a0)
+			move.l	#WaspBotSetHits,OB_HitRoutine(a0)
+			bsr	WaspBotSetAirZero
+			clr.w	OB_Var8(a0)
+			
+.1			bsr	HandleBeingHit				;Generic handle hit rout
+
+			move.w	OB_State(a0),d1
+			jmp	WaspBotLogicTable(pc,d1.w)		;jump table
+
+WaspBotLogicTable	bra	WaspBotTestLOGIC
+			bra	WaspBotAirZeroLOGIC
+			bra	WaspBotFlyToLOGIC
+			bra	WaspBotFlyToOutLOGIC
+			bra	WaspBotTurnToLOGIC
+			bra	WaspBotTrackLOGIC
+			bra	WaspBotFireLOGIC
+			bra	WaspBotStrafeLOGIC
+			bra	WaspBotResetGunLOGIC
+			bra	WaspBotBackoffLOGIC
+
+DoWaspBotAI		move.l	d1,AI_Exclude
+			lea	WASP_AI,a1
+			bsr	AI_Routine
+			bpl.s	.1
+			AddStack 4
+			jmp	(a1)
+.1			rts
+
+
+; - Hit Routines -----------------------------------------------------------
+
+WaspBotSetHits		move.b	OB_Flag6(a0),d2
+			and.b	#%11000111,OB_Flag6(a0)
+			
+			btst	#ob_hit_small,d2
+			bne.s	WaspBotSetExplode
+			btst	#ob_hit_med,d2
+			bne.s	WaspBotSetExplode
+			btst	#ob_hit_big,d2
+			bne.s	WaspBotSetExplode
+			rts
+
+WaspBotSetExplode	bsr	SetBigAirExplodeAtOB_XY
+			bpl.s	.1
+			moveq	#3,d7
+			move.w	#$5,d3		   			;# of debris peices (NOTE: d1/d2 should comntain x,y)
+			bsr	SetRandomDebris
+.1			bra	HandleEnemyKilled
+		
+
+; - Testbed ----------------------------------------------------------------
+
+WaspBotTestLOGIC	rts
+
+
+; - Before Wasp Bot sees player --------------------------------------------
+; - Air Zero ---------------------------------------------------------------
+
+WaspBotSetAirZero	move.w	#WaspBotAirZeroSTATE,OB_State(a0)
+			bsr	ClrHitStuff
+			clr.b	OB_MasterMode(a0)
+			clr.w	OB_Var1(a0)
+			btst.b	#ob_generic1,OB_Flag6(a0)
+			bne	WaspBotSetStrafe
+			lea	WaspBotHoverANM,a1			;set anim
+			bsr	SetNewAnim
+			bra	ForceNewAnim
+
+
+WaspBotAirZeroLOGIC	move.l	#WaspBotSetAirZero,d1
+			bsr	DoWaspBotAI
+
+			bsr	WaspBotBob
+			
+			rts
+
+
+WaspBobTab		dc.b	-2,-1,0,0,1,2,2,1,0,0,-1,-2,$80
+  			even
+
+WaspBotBob		addq.b	#1,OB_Var1(a0)
+			and.b	#3,OB_Var1(a0)
+			bne.s	.4
+			addq.b	#1,OB_Var1a(a0)
+
+.1			moveq	#0,d1
+			moveq	#0,d2
+			move.b	OB_Var1a(a0),d1
+			move.b	WaspBobTab(pc,d1.w),d2
+			bpl.s	.2
+			cmp.b	#$80,d2
+			bne.s	.3
+			clr.b	OB_Var1a(a0)
+			bra.s	.1
+.3			neg.b	d2
+			sub.w	d2,OB_Ypos(a0)
+.4			rts
+.2			add.w	d2,OB_Ypos(a0)
+			rts
+
+; - After Wasp Bot sees player ---------------------------------------------
+; - Fly To -----------------------------------------------------------------
+
+WBFTxm			equ	$40
+WBFTym			equ	$50
+WBFTxms			equ	4
+WBFTyms			equ	3
+
+WaspBotSetFlyTo		move.w	#WaspBotFlyToSTATE,OB_State(a0)
+			tst.b	OB_Var8(a0)				;reset gun
+			bne	WBSRG1
+WaspBotSFT3		bsr	DoesNmeFacePlayer
+			bpl	WBSTT1
+WaspBotSFT1		bsr	WaspSetFlyToPos
+			clr.w	OB_Var1(a0)
+			move.w	#$0101,OB_Var2(a0)
+			clr.w	OB_Var3(a0)
+			lea	WaspBotFlyToANM,a1			;set anim
+			bsr	SetNewAnim
+			bra	ForceNewAnim
+.x			rts
+
+WaspBotFlyToLOGIC	addq.b	#1,OB_Var1(a0)
+			and.b	#3,OB_Var1(a0)
+			bne.s	.xy
+
+.x  			tst.b	OB_Var3(a0)
+			beq.s	.xacc
+.xdec			tst.b	OB_Var2(a0)
+			beq.s	.y
+			subq.b	#1,OB_Var2(a0)
+			bra	.y
+.xacc			cmp.b	#WBFTxms,OB_Var2(a0)
+			beq.s	.y
+			addq.b	#1,OB_Var2(a0)
+
+.y			tst.b	OB_Var3a(a0)
+			beq.s	.yacc
+.ydec			tst.b	OB_Var2a(a0)
+			beq.s	.xy
+			subq.b	#1,OB_Var2a(a0)
+			bra	.xy
+.yacc			cmp.b	#WBFTyms,OB_Var2a(a0)
+			beq.s	.xy
+			addq.b	#1,OB_Var2a(a0)
+
+.xy			tst.b	OB_Var2(a0)
+			bne.s	.n1
+			tst.b	OB_Var2a(a0)
+			beq	WaspBotSetFlyToOut
+			
+.n1			moveq	#0,d2
+			move.b	OB_Var2(a0),d2
+			move.w	OB_Var4(a0),d1
+			tst.b	OB_Var6(a0)
+			beq.s	.rte
+.lft			sub.w	d2,OB_Xpos(a0)
+			cmp.w	OB_Xpos(a0),d1
+			blt.s	.o1
+			bra.s	.n2
+.rte			add.w	d2,OB_Xpos(a0)
+			cmp.w	OB_Xpos(a0),d1
+			bgt.s	.o1
+.n2			tst.b	OB_Var3(a0)
+			bne.s	.o1
+   			st.b	OB_Var3(a0)
+
+.o1			moveq	#0,d2
+			move.b	OB_Var2a(a0),d2
+			move.w	OB_Var5(a0),d1
+			tst.b	OB_Var6a(a0)
+			beq.s	.dn
+.up			sub.w	d2,OB_Ypos(a0)
+			cmp.w	OB_Ypos(a0),d1
+			blt.s	.o2
+			bra.s	.n3
+.dn			add.w	d2,OB_Ypos(a0)
+			cmp.w	OB_Ypos(a0),d1
+			bgt.s	.o2
+.n3			tst.b	OB_Var3a(a0)
+			bne.s	.o2
+   			st.b	OB_Var3a(a0)
+.o2			rts
+
+WaspSetFlyToPos		move.w	Plr_XPos,d1   				;set fly to point
+			move.w	Plr_YPos,d2
+			
+			bclr.b	#ob_generic1,OB_Flag6(a0)
+			jsr	Randy
+			and.w	#$f,d6
+			cmp.w	#6,d6
+			blt.s	.RegularL
+			cmp.w	#12,d6
+			blt.s	.RegularR
+			beq.s	.StrafeL
+			cmp.w	#13,d6
+			beq.s	.StrafeR
+			cmp.w	#14,d6
+			beq.s	.LowL
+			cmp.w	#15,d6
+			beq.s	.LowR
+			
+.RegularL		sub.w	#WBFTxm,d1
+			sub.w	#WBFTym,d2
+			bra	.ok
+.RegularR		add.w	#WBFTxm,d1
+			sub.w	#WBFTym,d2
+			bra	.ok
+.StrafeL		sub.w	#WBFTxm+$40,d1
+			sub.w	#WBFTym-$10,d2
+			bset.b	#ob_generic1,OB_Flag6(a0)
+			bra	.ok
+.StrafeR		add.w	#WBFTxm+$40,d1
+			sub.w	#WBFTym-$10,d2
+			bset.b	#ob_generic1,OB_Flag6(a0)
+			bra	.ok
+.LowL			sub.w	#WBFTxm+$20,d1
+			sub.w	#WBFTym-$30,d2
+			bra	.ok
+.LowR			add.w	#WBFTxm+$20,d1
+			sub.w	#WBFTym-$30,d2
+
+.ok			clr.w	OB_Var6(a0)
+			move.w	d1,OB_Var4(a0)
+			move.w	d2,OB_Var5(a0)
+			cmp.w	OB_Xpos(a0),d1
+			bgt.s	.a
+			st.b	OB_Var6(a0)
+.a			cmp.w	OB_Ypos(a0),d2
+			bgt.s	.b
+			st.b	OB_Var6a(a0)
+.b			rts
+
+
+WaspBotSetFlyToOut	move.w	#WaspBotFlyToOutSTATE,OB_State(a0)
+			lea	WaspBotFlyToOutANM,a1			;set anim
+			bsr	SetNewAnim
+			bra	ForceNewAnim
+
+WaspBotFlyToOutLOGIC	tst.l	OB_AnSequence(a0)
+			beq	WaspBotSetAirZero
+			rts
+
+
+; - Wasp Bot turns to face player ------------------------------------------
+
+WBSTT3			PUSHADDRS WaspBotSFT4
+      			bra	WaspBotSetTurnTo
+WBSTT2			PUSHADDRS WaspBotSFT2
+      			bra	WaspBotSetTurnTo
+WBSTT1			PUSHADDRS WaspBotSFT1
+
+WaspBotSetTurnTo	PUSHSTATE
+			move.w	#WaspBotTurnToSTATE,OB_State(a0)
+			lea	WaspBotTurnANM,a1			;set anim
+			bsr	SetNewAnim
+			bra	ForceNewAnim
+
+WaspBotTurnToLOGIC	tst.l	OB_AnSequence(a0)
+			bne.s	.1
+			eor.b	#_ob_xflp,OB_Flag1(a0)
+			POPSTATE
+			POPADDRS
+			jmp	(a1)
+.1			rts
+
+
+; - Wasp Bot gun resets to horzontal ------------------------------------------
+
+WBSRG1			PUSHADDRS WaspBotSFT3
+
+WaspBotSetResetGun	PUSHSTATE
+			move.w	#WaspBotResetGunSTATE,OB_State(a0)
+			move.b	#0,OB_Var8a(a0)
+
+WaspBotResetGunLOGIC	bsr	WaspBotAnimateGun
+			tst.b	OB_Var8(a0)
+			bne.s	.1
+			POPSTATE
+			POPADDRS
+			jmp	(a1)
+.1			rts
+
+
+; - Track player Zero ---------------------------------------------------------------
+
+WaspBotSetTrack		move.w	#WaspBotTrackSTATE,OB_State(a0)
+WaspBotSFT2		lea	WaspBotTrack0ANM,a1			;set anim
+			bsr	SetNewAnim
+			bra	ForceNewAnim
+			
+WaspBotTrackLOGIC	move.l	#-1,AI_Exclude
+			lea	WASP_AI2,a1
+			bsr	AI_Routine
+			bpl.s	.aa
+			jmp	(a1)
+
+.aa			bsr	WaspBotBob
+ 
+			move.w	#$80,d1					;player moved away
+			bsr	TestProxX
+			bpl	WaspBotSetFlyTo
+			
+			bsr	DoesNmeFacePlayer
+			bpl	WBSTT2
+
+			jsr	Randy
+			and.w	#$ff,d6
+			beq	WaspBotSetFlyTo
+			and.w	#$1f,d6
+			beq	WaspBotSetFire
+
+			bsr	WaspBotAnimateGun
+			bsr	AITestPlrIsAbove
+			bmi	.b90
+      
+.below			move.w	#$70,d1
+			bsr	TestProxX
+			bmi.s	.bclose
+
+.bfar			move.w	#$10,d1
+			bsr	TestProxY_Below
+			bmi.s	.b90
+			move.w	#$30,d1
+			bsr	TestProxY_Below
+			bmi.s	.b65
+			move.w	#$50,d1
+			bsr	TestProxY_Below
+			bmi.s	.b45
+			move.w	#$70,d1
+			bsr	TestProxY_Below
+			bmi.s	.b25
+			bra	.b0
+.x			rts
+.bclose			move.w	#$10,d1
+			bsr	TestProxY_Below
+			bmi.s	.b90
+			move.w	#$20,d1
+			bsr	TestProxY_Below
+			bmi.s	.b65
+			move.w	#$30,d1
+			bsr	TestProxY_Below
+			bmi.s	.b45
+			move.w	#$40,d1
+			bsr	TestProxY_Below
+			bmi.s	.b25
+			
+.b0			move.b	#4,OB_Var8a(a0)
+			rts
+.b25			move.b	#3,OB_Var8a(a0)
+			rts
+.b45			move.b	#2,OB_Var8a(a0)
+			rts
+.b65			move.b	#1,OB_Var8a(a0)
+			rts
+.b90			move.b	#0,OB_Var8a(a0)
+			rts
+
+WBTrackAnmTab		dc.l	WaspBotTrack0ANM
+			dc.l	WaspBotTrack1ANM,WaspBotTrack2ANM,WaspBotTrack3ANM,WaspBotTrack4ANM
+
+WaspBotAnimateGun	move.b	OB_Var8a(a0),d1
+			cmp.b	OB_Var8(a0),d1
+			beq.s	.x
+   			bgt.s	.up
+.dn			subq.b	#1,OB_Var8(a0)
+			bra	WBAG1
+.x			rts
+.up			addq.b	#1,OB_Var8(a0)
+
+WBAG1			moveq	#0,d1
+			move.b	OB_Var8(a0),d1
+			asl.b	#2,d1
+			move.l	WBTrackAnmTab(pc,d1.w),a1
+			bsr	SetNewAnim
+			bra	ForceNewAnim
+
+
+; - WaspBot fires projectile (tracking) ------------------------------------
+
+
+WaspBotFireANMTab	dc.l	WaspBotFire0ANM	
+			dc.l	WaspBotFire0ANM,WaspBotFire1ANM,WaspBotFire2ANM,WaspBotFire2ANM
+
+WaspBotFireDIRTab	dc.b	4
+			dc.b	4,5,6,6
+			even
+WaspBotFireDIRTabF	dc.b	12
+			dc.b	12,11,10,10
+			even
+
+WaspBotSetFire		move.w	#WaspBotFireSTATE,OB_State(a0)
+			moveq	#0,d1
+			move.b	OB_Var8(a0),d1
+			asl.b	#2,d1
+			move.l	WaspBotFireANMTab(pc,d1.w),a1
+			bsr	SetNewAnim
+			bsr	ForceNewAnim
+			
+			bsr	SetupDirectionalProj
+			bpl.s	.x
+			sub.w	#$18,OB_Ypos(a1)
+			add.w	#$f,OB_Ypos(a1)
+			bsr	SetFlipFromMother
+			moveq	#0,d1
+			move.b	OB_Var8(a0),d1
+			btst.b	#ob_xflp,OB_Flag1(a0)
+			beq.s	.1
+			move.b	WaspBotFireDIRTabF(pc,d1.w),d1
+			bra	.2
+.1			move.b	WaspBotFireDIRTab(pc,d1.w),d1
+.2			move.b	d1,OB_Var1(a1)
+			move.w	#DirProj2_OB,OB_Type(a1)
+			cmp.b	#4,d1
+			beq.s	.a
+			cmp.b	#12,d1
+			beq.s	.a
+			cmp.b	#5,d1
+			beq.s	.b
+			cmp.b	#11,d1
+			beq.s	.b
+.c			lea	WaspBotProj3ANM,a2
+			bra	.d
+.b			lea	WaspBotProj2ANM,a2
+			bra	.d
+.a			lea	WaspBotProj1ANM,a2
+.d			bra	SetNewAnimA1
+.x			rts			
+			
+WaspBotFireLOGIC	bsr	WaspBotBob
+ 
+			tst.l	OB_AnSequence(a0)
+			bne.s	.x
+			move.w	#WaspBotTrackSTATE,OB_State(a0)
+.x			rts
+
+
+; - WaspBot Strafes ---------------------------------------------------
+
+WaspBotSetStrafe	move.w	#WaspBotStrafeSTATE,OB_State(a0)
+			bsr	DoesNmeFacePlayer
+			bpl	WBSTT3
+WaspBotSFT4		move.b	#$58,OB_Var1(a0)
+			bclr.b	#ob_generic1,OB_Flag6(a0)
+			clr.w	OB_EventVar1(a0)
+			lea	WaspBotStrafeANM,a1
+			bsr	SetNewAnim
+			bra	ForceNewAnim
+			
+WaspBotStrafeLOGIC	tst.b	OB_EventVar1(a0)
+			beq.s	.x
+			
+			subq.b	#1,OB_Var1(a0)
+			beq	WaspBotSetAirZero
+			moveq	#4,d1
+			bsr	MoveGolLeftRightFLP
+	
+			tst.b	OB_EventVar2(a0)
+			beq.s	.x
+ 			clr.b	OB_EventVar2(a0)
+
+			bsr	SetupDirectionalProj
+			bpl.s	.x
+			sub.w	#$9,OB_Ypos(a1)
+			bsr	SetFlipFromMother
+			btst.b	#ob_xflp,OB_Flag1(a0)
+			beq.s	.1a
+			move.b	#10,OB_Var1(a1)
+			sub.w	#$10,OB_Xpos(a1)
+			bra	.2a
+.1a			move.b	#6,OB_Var1(a1)
+			add.w	#$10,OB_Xpos(a1)
+.2a			move.w	#DirProj2_OB,OB_Type(a1)
+			lea	WaspBotProj4ANM,a2
+			bra	SetNewAnimA1
+.x			rts
+
+
+; - WaspBot backs off -------------------------------------------------
+
+WaspBotSetBackoff	move.w	#WaspBotBackoffSTATE,OB_State(a0)
+			move.b	#4,OB_Var1(a0)
+			lea	WaspBotBackoffANM,a1			;set anim
+			bsr	SetNewAnim
+			bra	ForceNewAnim
+
+WaspBotBackoffLOGIC	tst.b	OB_Var1(a0)
+			beq.s	.2
+			addq.b	#1,OB_Var1a(a0)
+			and.b	#7,OB_Var1a(a0)
+			bne.s	.1
+ 			sub.b	#1,OB_Var1(a0)
+			
+.1			moveq	#0,d1
+			move.b	OB_Var1(a0),d1
+			bsr	MoveGolLeftRightXFLP2
+			bsr	MoveGolUp_Smooth
+
+.2			tst.l	OB_AnSequence(a0)
+			beq	WaspBotSetAirZero
+			rts
+
+
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ STTEL CLAN ROBOT CONTROL LOGIC					   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+SteelClan_Logic		btst.b	#ob_setup,OB_Flag2(a0)
+			bne.s	.1
+			bset.b	#ob_setup,OB_Flag2(a0)
+			lea	PigeonANM,a1
+			bra	SetNewAnim
+
+.1			rts	

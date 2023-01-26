@@ -1,0 +1,10 @@
+;* Animation from room 'lift'
+;*
+AMAP_LIFT0_START:
+	ani_dma L3M4FNL0_DATA+$0000,$0000,$0300,4,0	; Frame  1 ( 1) of  6
+	ani_dma L3M4FNL0_DATA+$0300,$0000,$0300,4,0	; Frame  2 ( 2) of  6
+	ani_dma L3M4FNL0_DATA+$0600,$0000,$0300,4,0	; Frame  3 ( 3) of  6
+	ani_dma L3M4FNL0_DATA+$0900,$0000,$0300,4,0	; Frame  4 ( 4) of  6
+	ani_dma L3M4FNL0_DATA+$0c00,$0000,$0300,4,0	; Frame  5 ( 5) of  6
+	ani_dma L3M4FNL0_DATA+$0f00,$0000,$0300,4,0	; Frame  6 ( 6) of  6
+	dc.l	CEnd

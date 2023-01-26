@@ -1,0 +1,23 @@
+	include	testani.68k
+
+	ani_palette	GD40113
+	ani_sprites	GD40113
+
+GD40113_anim	animation
+@1	ani_sprite	GD40113_0001
+	ani_sprite	GD40113_0002
+	ani_sprite	GD40113_0003
+	ani_sprite	GD40113_0004
+	ani_sprite	GD40113_0005
+	ani_sprite	GD40113_0006
+	ani_sprite	GD40113_0007
+	ani_sprite	GD40113_0008
+	ani_sprite	GD40113_0009
+	ani_sprite	GD40113_0010
+	ani_sprite	GD40113_0011
+	ani_sprite	GD40113_0012
+	ani_sprite	GD40113_0013
+	ani_goto	@1
+	ani_end
+
+	ani_footer

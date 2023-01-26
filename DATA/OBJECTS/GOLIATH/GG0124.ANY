@@ -1,0 +1,28 @@
+	include	testani.68k
+
+	ani_palette	GG0124
+	ani_sprites	GG0124
+
+GG0124_anim	animation
+@1	ani_sprite	GG0124_0001
+	ani_sprite	GG0124_0002
+	ani_sprite	GG0124_0003
+	ani_sprite	GG0124_0004
+	ani_sprite	GG0124_0005
+	ani_sprite	GG0124_0006
+	ani_sprite	GG0124_0007
+	ani_sprite	GG0124_0008
+	ani_sprite	GG0124_0009
+	ani_sprite	GG0124_0010
+	ani_sprite	GG0124_0011
+	ani_sprite	GG0124_0012
+	ani_sprite	GG0124_0013
+	ani_sprite	GG0124_0014
+	ani_sprite	GG0124_0015
+	ani_sprite	GG0124_0016
+	ani_sprite	GG0124_0017
+	ani_sprite	GG0124_0018
+	ani_goto	@1
+	ani_end
+
+	ani_footer

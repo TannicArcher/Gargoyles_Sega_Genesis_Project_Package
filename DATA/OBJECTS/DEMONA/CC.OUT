@@ -1,0 +1,253 @@
+chop RaptorBot animations : 2 secs/frame : palette 4
+GOLIATH ANIMATION CONVERTION ...
+rem ** CHOP the animations **
+call spr gd40101 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gd40101.anm
+Used 7 sprites, with a total of 37 characters, in 1.0 seconds
+Used 6 sprites, with a total of 37 characters, in 0.8 seconds
+Used 7 sprites, with a total of 35 characters, in 1.0 seconds
+Used 6 sprites, with a total of 38 characters, in 1.0 seconds
+call spr gd40102 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gd40102.anm
+Used 1 sprites, with a total of 1 characters, in 0.0 seconds
+Used 11 sprites, with a total of 39 characters, in 1.0 seconds
+Used 6 sprites, with a total of 30 characters, in 0.8 seconds
+Used 7 sprites, with a total of 32 characters, in 1.0 seconds
+Used 8 sprites, with a total of 39 characters, in 0.4 seconds
+Used 7 sprites, with a total of 33 characters, in 1.0 seconds
+Used 6 sprites, with a total of 36 characters, in 0.3 seconds
+Used 7 sprites, with a total of 35 characters, in 1.0 seconds
+call spr gd40103 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gd40103.anm
+Used 8 sprites, with a total of 42 characters, in 1.0 seconds
+Used 9 sprites, with a total of 38 characters, in 1.0 seconds
+Used 7 sprites, with a total of 32 characters, in 1.0 seconds
+Used 5 sprites, with a total of 35 characters, in 0.3 seconds
+Used 15 sprites, with a total of 50 characters, in 1.0 seconds
+Used 12 sprites, with a total of 44 characters, in 1.0 seconds
+Used 11 sprites, with a total of 41 characters, in 1.0 seconds
+Used 10 sprites, with a total of 51 characters, in 1.0 seconds
+Used 13 sprites, with a total of 46 characters, in 1.0 seconds
+Used 12 sprites, with a total of 52 characters, in 1.0 seconds
+Used 11 sprites, with a total of 48 characters, in 1.0 seconds
+Used 9 sprites, with a total of 40 characters, in 1.0 seconds
+call spr gd40104 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gd40104.anm
+Used 12 sprites, with a total of 39 characters, in 1.0 seconds
+Used 11 sprites, with a total of 49 characters, in 1.0 seconds
+Used 9 sprites, with a total of 49 characters, in 1.0 seconds
+call spr gd40105 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gd40105.anm
+Used 8 sprites, with a total of 43 characters, in 1.0 seconds
+Used 6 sprites, with a total of 43 characters, in 1.0 seconds
+Used 11 sprites, with a total of 45 characters, in 1.0 seconds
+Used 9 sprites, with a total of 47 characters, in 1.0 seconds
+Used 14 sprites, with a total of 45 characters, in 1.0 seconds
+Used 8 sprites, with a total of 40 characters, in 1.0 seconds
+Used 11 sprites, with a total of 41 characters, in 1.0 seconds
+call spr gd40106 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gd40106.anm
+Used 7 sprites, with a total of 34 characters, in 1.0 seconds
+Used 7 sprites, with a total of 34 characters, in 1.0 seconds
+Used 7 sprites, with a total of 34 characters, in 1.0 seconds
+Used 7 sprites, with a total of 34 characters, in 1.0 seconds
+call spr gd40107 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gd40107.anm
+Used 7 sprites, with a total of 36 characters, in 1.0 seconds
+Used 10 sprites, with a total of 41 characters, in 1.0 seconds
+Used 8 sprites, with a total of 45 characters, in 1.0 seconds
+Used 9 sprites, with a total of 42 characters, in 1.0 seconds
+Used 5 sprites, with a total of 42 characters, in 0.5 seconds
+Used 9 sprites, with a total of 39 characters, in 1.0 seconds
+call spr gd40108 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gd40108.anm
+Used 7 sprites, with a total of 33 characters, in 1.0 seconds
+Used 8 sprites, with a total of 33 characters, in 1.0 seconds
+Used 8 sprites, with a total of 38 characters, in 1.0 seconds
+call spr gd40109 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gd40109.anm
+Used 9 sprites, with a total of 39 characters, in 1.0 seconds
+Used 9 sprites, with a total of 39 characters, in 1.0 seconds
+Used 9 sprites, with a total of 39 characters, in 1.0 seconds
+Used 9 sprites, with a total of 39 characters, in 1.0 seconds
+call spr gd40110 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gd40110.anm
+Used 9 sprites, with a total of 46 characters, in 1.0 seconds
+Used 12 sprites, with a total of 49 characters, in 1.0 seconds
+Used 11 sprites, with a total of 47 characters, in 1.0 seconds
+Used 15 sprites, with a total of 53 characters, in 1.0 seconds
+Used 13 sprites, with a total of 48 characters, in 1.0 seconds
+Used 10 sprites, with a total of 42 characters, in 1.0 seconds
+Used 9 sprites, with a total of 42 characters, in 1.0 seconds
+Used 7 sprites, with a total of 38 characters, in 1.0 seconds
+Used 8 sprites, with a total of 38 characters, in 1.0 seconds
+call spr gd40111 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gd40111.anm
+Used 12 sprites, with a total of 47 characters, in 1.0 seconds
+Used 10 sprites, with a total of 53 characters, in 1.0 seconds
+Used 12 sprites, with a total of 50 characters, in 1.0 seconds
+Used 11 sprites, with a total of 50 characters, in 1.0 seconds
+Used 11 sprites, with a total of 59 characters, in 1.0 seconds
+Used 10 sprites, with a total of 47 characters, in 1.0 seconds
+Used 10 sprites, with a total of 49 characters, in 1.0 seconds
+Used 6 sprites, with a total of 35 characters, in 0.9 seconds
+Used 6 sprites, with a total of 35 characters, in 0.9 seconds
+Used 7 sprites, with a total of 35 characters, in 1.0 seconds
+Used 11 sprites, with a total of 58 characters, in 1.0 seconds
+Used 15 sprites, with a total of 69 characters, in 1.0 seconds
+Used 14 sprites, with a total of 75 characters, in 1.0 seconds
+Used 17 sprites, with a total of 73 characters, in 1.0 seconds
+Used 15 sprites, with a total of 73 characters, in 1.0 seconds
+Used 15 sprites, with a total of 63 characters, in 1.0 seconds
+Used 11 sprites, with a total of 51 characters, in 1.0 seconds
+Used 11 sprites, with a total of 59 characters, in 1.0 seconds
+Used 13 sprites, with a total of 51 characters, in 1.0 seconds
+call spr gd40112 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gd40112.anm
+Used 10 sprites, with a total of 56 characters, in 1.0 seconds
+Used 13 sprites, with a total of 50 characters, in 1.0 seconds
+Used 10 sprites, with a total of 50 characters, in 1.0 seconds
+Used 11 sprites, with a total of 41 characters, in 1.0 seconds
+Used 9 sprites, with a total of 39 characters, in 1.0 seconds
+Used 9 sprites, with a total of 39 characters, in 1.0 seconds
+Used 9 sprites, with a total of 38 characters, in 1.0 seconds
+Used 7 sprites, with a total of 37 characters, in 1.0 seconds
+call spr gd40113 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gd40113.anm
+Used 13 sprites, with a total of 64 characters, in 1.0 seconds
+Used 16 sprites, with a total of 62 characters, in 1.0 seconds
+Used 17 sprites, with a total of 61 characters, in 1.0 seconds
+Used 15 sprites, with a total of 55 characters, in 1.0 seconds
+Used 14 sprites, with a total of 59 characters, in 1.0 seconds
+Used 14 sprites, with a total of 58 characters, in 1.0 seconds
+Used 14 sprites, with a total of 57 characters, in 1.0 seconds
+Used 15 sprites, with a total of 56 characters, in 1.0 seconds
+Used 16 sprites, with a total of 53 characters, in 1.0 seconds
+Used 14 sprites, with a total of 47 characters, in 1.0 seconds
+Used 9 sprites, with a total of 55 characters, in 1.0 seconds
+Used 10 sprites, with a total of 53 characters, in 1.0 seconds
+Used 10 sprites, with a total of 49 characters, in 1.0 seconds
+call spr gd40114 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gd40114.anm
+Used 10 sprites, with a total of 56 characters, in 1.0 seconds
+Used 10 sprites, with a total of 56 characters, in 1.0 seconds
+Used 10 sprites, with a total of 56 characters, in 1.0 seconds
+Used 10 sprites, with a total of 56 characters, in 1.0 seconds
+call spr gd40301 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gd40301.anm
+Used 19 sprites, with a total of 70 characters, in 1.0 seconds
+Used 16 sprites, with a total of 63 characters, in 1.0 seconds
+call spr gd40302 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gd40302.anm
+Used 5 sprites, with a total of 38 characters, in 0.2 seconds
+Used 12 sprites, with a total of 52 characters, in 1.0 seconds
+call spr gd40303 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gd40303.anm
+Used 14 sprites, with a total of 63 characters, in 1.0 seconds
+Used 12 sprites, with a total of 68 characters, in 1.0 seconds
+Used 10 sprites, with a total of 62 characters, in 1.0 seconds
+call spr gd40304 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gd40304.anm
+Used 12 sprites, with a total of 62 characters, in 1.0 seconds
+Used 14 sprites, with a total of 74 characters, in 1.0 seconds
+Used 12 sprites, with a total of 64 characters, in 1.0 seconds
+Used 17 sprites, with a total of 65 characters, in 1.0 seconds
+Used 12 sprites, with a total of 50 characters, in 1.0 seconds
+Used 6 sprites, with a total of 37 characters, in 1.0 seconds
+Used 6 sprites, with a total of 36 characters, in 1.0 seconds
+Used 7 sprites, with a total of 35 characters, in 0.4 seconds
+call spr gd40305 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gd40305.anm
+Used 9 sprites, with a total of 39 characters, in 1.0 seconds
+Used 7 sprites, with a total of 39 characters, in 1.0 seconds
+Used 7 sprites, with a total of 39 characters, in 1.0 seconds
+call spr gd40306 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gd40306.anm
+Used 7 sprites, with a total of 59 characters, in 1.0 seconds
+Used 8 sprites, with a total of 59 characters, in 1.0 seconds
+Used 10 sprites, with a total of 58 characters, in 1.0 seconds
+call spr gd40307 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gd40307.anm
+Used 1 sprites, with a total of 2 characters, in 0.0 seconds
+Used 1 sprites, with a total of 4 characters, in 0.0 seconds
+Used 2 sprites, with a total of 5 characters, in 0.0 seconds
+Used 2 sprites, with a total of 6 characters, in 0.0 seconds
+Used 2 sprites, with a total of 12 characters, in 0.0 seconds
+Used 2 sprites, with a total of 10 characters, in 0.0 seconds
+Used 2 sprites, with a total of 10 characters, in 0.0 seconds
+Used 3 sprites, with a total of 11 characters, in 0.0 seconds
+Used 2 sprites, with a total of 12 characters, in 0.0 seconds
+Used 2 sprites, with a total of 10 characters, in 0.0 seconds
+Used 3 sprites, with a total of 10 characters, in 0.0 seconds
+Used 2 sprites, with a total of 7 characters, in 0.0 seconds
+call spr gd40308 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gd40308.anm
+Used 2 sprites, with a total of 4 characters, in 0.0 seconds
+Used 3 sprites, with a total of 7 characters, in 0.0 seconds
+Used 2 sprites, with a total of 14 characters, in 0.0 seconds
+Used 2 sprites, with a total of 16 characters, in 0.0 seconds
+Used 5 sprites, with a total of 18 characters, in 0.0 seconds
+Used 3 sprites, with a total of 15 characters, in 0.0 seconds
+Used 4 sprites, with a total of 18 characters, in 0.0 seconds
+Used 3 sprites, with a total of 18 characters, in 0.0 seconds
+Used 3 sprites, with a total of 15 characters, in 0.0 seconds
+Used 4 sprites, with a total of 15 characters, in 0.0 seconds
+Used 3 sprites, with a total of 17 characters, in 0.0 seconds
+Used 3 sprites, with a total of 14 characters, in 0.0 seconds
+call spr gd40100 %1 %2
+chop /t1 /b254 /r253 /c240 /p3 gd40100.anm
+Used 4 sprites, with a total of 35 characters, in 0.1 seconds
+rem ** COLLECT the animations **
+call col gd40101
+collect gd40101.col
+call col gd40102
+collect gd40102.col
+call col gd40103
+collect gd40103.col
+call col gd40104
+collect gd40104.col
+call col gd40105
+collect gd40105.col
+call col gd40106
+collect gd40106.col
+call col gd40107
+collect gd40107.col
+call col gd40108
+collect gd40108.col
+call col gd40109
+collect gd40109.col
+call col gd40110
+collect gd40110.col
+call col gd40111
+collect gd40111.col
+call col gd40112
+collect gd40112.col
+call col gd40113
+collect gd40113.col
+call col gd40114
+collect gd40114.col
+call col gd40301
+collect gd40301.col
+call col gd40302
+collect gd40302.col
+call col gd40303
+collect gd40303.col
+call col gd40304
+collect gd40304.col
+call col gd40305
+collect gd40305.col
+call col gd40306
+collect gd40306.col
+call col gd40307
+collect gd40307.col
+call col gd40308
+collect gd40308.col
+call col gd40100
+collect gd40100.col
+call modany2
+
+.ANY FILE FORMATTER V1.00CPS
+
+Sequence # (2 letter prefix+seq # (gg01))? 
+
+OK! All done.

@@ -1,0 +1,16 @@
+.5			addq.b	#1,OB_Var1a(a0)				;do variable height jumping
+			cmp.b	#GolGrav1,OB_Var1a(a0)			;depending on length of jump button
+			blt.s	.2					;depression
+			clr.b	OB_Var1a(a0)
+			tst.b	OB_Var1(a0)
+			beq.s	.3
+			subq.b	#1,OB_Var1(a0)
+			bsr	tst_button_a				;keep checking jump button
+			bne.s	.2
+			clr.b	OB_Var1(a0)				;flag button released
+.3			subq.w	#1,OB_Var2(a0)				;decrease upward velocity				
+			beq	GolSetFall  				;set fall if up vel=0
+.2			move.w	OB_Var2(a0),d1				;get speed
+			move.w	d1,OB_Yspd(a0)
+			bra	MoveGolUp				;move up
+.x			rts

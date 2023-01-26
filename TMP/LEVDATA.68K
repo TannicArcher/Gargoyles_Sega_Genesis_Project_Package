@@ -1,0 +1,177 @@
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ LEVEL DATA (Chars/Blocks/floors/contours/Tables/setups et al.)	   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ All the DATA for setting up a LEVEL is contained in this file.	   บ
+; บ 									   บ
+; บ Includes ;								   บ
+; บ RAW and COMPRESSED BINARY DATA					   บ
+; บ DATA TABLES used by SetupDATA (see MAIN.68K)			   บ
+; บ PALETTE TABLES used by SetupPalette (see MAIN.68K)			   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+; - DATA for LEVEL #1 ------------------------------------------------------
+
+		SECTION	GGD_LEVEL01
+
+Lev11ChrA		incbin	data\level01\map01\l1m1fnl0.cpk
+Lev11BlkA		incbin	data\level01\map01\l1m1fnl0.blk
+Lev11MapB		incbin	data\level01\map01\para1.map
+
+Lev11MapA		incbin	data\level01\map01\l1m1fnl0.mpk
+Lev11Flr		incbin	data\level01\map01\l1m1fnl0.fpk
+Lev11Con		incbin	data\level01\map01\l1m1cnt0.con
+Lev12MapA		incbin	data\level01\map01\l1m1fnl0.mpk
+Lev12Flr		incbin	data\level01\map01\l1m1fnl0.fpk
+Lev12Con		incbin	data\level01\map01\l1m1cnt0.con
+Lev13MapA		incbin	data\level01\map01\l1m1fnl0.mpk
+Lev13Flr		incbin	data\level01\map01\l1m1fnl0.fpk
+Lev13Con		incbin	data\level01\map01\l1m1cnt0.con
+Lev14MapA		incbin	data\level01\map01\l1m1fnl0.mpk
+Lev14Flr		incbin	data\level01\map01\l1m1fnl0.fpk
+Lev14Con		incbin	data\level01\map01\l1m1cnt0.con
+
+; - DATA for LEVEL #2 ------------------------------------------------------
+
+		SECTION	GGD_LEVEL02
+
+Lev21ChrA		incbin	data\level01\map01\l1m1fnl0.cpk
+Lev21BlkA		incbin	data\level01\map01\l1m1fnl0.blk
+Lev21MapB		incbin	data\level01\map01\para1.map
+
+Lev21MapA		incbin	data\level01\map01\l1m1fnl0.mpk
+Lev21Flr		incbin	data\level01\map01\l1m1fnl0.fpk
+Lev21Con		incbin	data\level01\map01\l1m1cnt0.con
+Lev22MapA		incbin	data\level01\map01\l1m1fnl0.mpk
+Lev22Flr		incbin	data\level01\map01\l1m1fnl0.fpk
+Lev22Con		incbin	data\level01\map01\l1m1cnt0.con
+Lev23MapA		incbin	data\level01\map01\l1m1fnl0.mpk
+Lev23Flr		incbin	data\level01\map01\l1m1fnl0.fpk
+Lev23Con		incbin	data\level01\map01\l1m1cnt0.con
+Lev24MapA		incbin	data\level01\map01\l1m1fnl0.mpk
+Lev24Flr		incbin	data\level01\map01\l1m1fnl0.fpk
+Lev24Con		incbin	data\level01\map01\l1m1cnt0.con
+
+; - DATA for LEVEL #3 ------------------------------------------------------
+
+		SECTION	GGD_LEVEL03
+
+Lev31ChrA		incbin	data\level03\map01\l3m1fnl0.cpk
+Lev31BlkA		incbin	data\level03\map01\l3m1fnl0.blk
+Lev31MapA		incbin	data\level03\map01\l3m1fnl0.mpk
+Lev31MapB		incbin	data\level03\map01\para1.map
+Lev31Flr		incbin	data\level03\map01\l3m1fnl0.fpk
+Lev31Con		incbin	data\level03\map01\l3m1cnt0.con
+     			even
+Lev32ChrA		incbin	data\level03\map02\l3m2fnl0.cpk
+Lev32BlkA		incbin	data\level03\map02\l3m2fnl0.blk
+Lev32MapA		incbin	data\level03\map02\l3m2fnl0.mpk
+Lev32MapB		incbin	data\level03\map02\para1.map
+Lev32Flr		incbin	data\level03\map02\l3m2fnl0.fpk
+Lev32Con		incbin	data\level03\map02\l3m2cnt0.con
+			even
+Lev33ChrA		incbin	data\level03\map03\l3m3fnl0.cpk
+Lev33BlkA		incbin	data\level03\map03\l3m3fnl0.blk
+Lev33MapA		incbin	data\level03\map03\l3m3fnl0.mpk
+Lev33MapB		incbin	data\level03\map03\para1.map
+Lev33Flr		incbin	data\level03\map03\l3m3fnl0.fpk
+Lev33Con		incbin	data\level03\map03\l3m3cnt0.con
+			even
+Lev34ChrA		incbin	data\level03\map04\l3m4fnl0.cpk
+Lev34BlkA		incbin	data\level03\map04\l3m4fnl0.blk
+Lev34MapA		incbin	data\level03\map04\l3m4fnl0.mpk
+Lev34MapB		incbin	data\level03\map04\para1.map
+Lev34Flr		incbin	data\level03\map04\l3m4fnl0.fpk
+Lev34Con		incbin	data\level03\map04\l3m4cnt0.con
+
+	
+; - DATA for LEVEL #4 ------------------------------------------------------
+
+		SECTION	GGD_LEVEL04
+
+Lev41ChrA		incbin	data\level01\map01\l1m1fnl0.cpk
+Lev41BlkA		incbin	data\level01\map01\l1m1fnl0.blk
+Lev41MapB		incbin	data\level01\map01\para1.map
+
+Lev41MapA		incbin	data\level01\map01\l1m1fnl0.mpk
+Lev41Flr		incbin	data\level01\map01\l1m1fnl0.fpk
+Lev41Con		incbin	data\level01\map01\l1m1cnt0.con
+Lev42MapA		incbin	data\level01\map01\l1m1fnl0.mpk
+Lev42Flr		incbin	data\level01\map01\l1m1fnl0.fpk
+Lev42Con		incbin	data\level01\map01\l1m1cnt0.con
+Lev43MapA		incbin	data\level01\map01\l1m1fnl0.mpk
+Lev43Flr		incbin	data\level01\map01\l1m1fnl0.fpk
+Lev43Con		incbin	data\level01\map01\l1m1cnt0.con
+Lev44MapA		incbin	data\level01\map01\l1m1fnl0.mpk
+Lev44Flr		incbin	data\level01\map01\l1m1fnl0.fpk
+Lev44Con		incbin	data\level01\map01\l1m1cnt0.con
+
+
+; - DATA for LEVEL #5 ------------------------------------------------------
+
+		SECTION	GGD_LEVEL05
+
+Lev51ChrA		incbin	data\level01\map01\l1m1fnl0.cpk
+Lev51BlkA		incbin	data\level01\map01\l1m1fnl0.blk
+Lev51MapB		incbin	data\level01\map01\para1.map
+
+Lev51MapA		incbin	data\level01\map01\l1m1fnl0.mpk
+Lev51Flr		incbin	data\level01\map01\l1m1fnl0.fpk
+Lev51Con		incbin	data\level01\map01\l1m1cnt0.con
+
+; - DATA for LEVEL #6 ------------------------------------------------------
+
+		SECTION	GGD_LEVEL06
+
+Lev61ChrA		incbin	data\level01\map01\l1m1fnl0.cpk
+Lev61BlkA		incbin	data\level01\map01\l1m1fnl0.blk
+Lev61MapB		incbin	data\level01\map01\para1.map
+
+Lev61MapA		incbin	data\level01\map01\l1m1fnl0.mpk
+Lev61Flr		incbin	data\level01\map01\l1m1fnl0.fpk
+Lev61Con		incbin	data\level01\map01\l1m1cnt0.con
+Lev62MapA		incbin	data\level01\map01\l1m1fnl0.mpk
+Lev62Flr		incbin	data\level01\map01\l1m1fnl0.fpk
+Lev62Con		incbin	data\level01\map01\l1m1cnt0.con
+Lev63MapA		incbin	data\level01\map01\l1m1fnl0.mpk
+Lev63Flr		incbin	data\level01\map01\l1m1fnl0.fpk
+Lev63Con		incbin	data\level01\map01\l1m1cnt0.con
+Lev64MapA		incbin	data\level01\map01\l1m1fnl0.mpk
+Lev64Flr		incbin	data\level01\map01\l1m1fnl0.fpk
+Lev64Con		incbin	data\level01\map01\l1m1cnt0.con
+
+
+; - DATA for LEVEL #7 ------------------------------------------------------
+
+		SECTION	GGD_LEVEL07
+
+Lev71ChrA		incbin	data\level01\map01\l1m1fnl0.cpk
+Lev71BlkA		incbin	data\level01\map01\l1m1fnl0.blk
+Lev71MapB		incbin	data\level01\map01\para1.map
+
+Lev71MapA		incbin	data\level01\map01\l1m1fnl0.mpk
+Lev71Flr		incbin	data\level01\map01\l1m1fnl0.fpk
+Lev71Con		incbin	data\level01\map01\l1m1cnt0.con
+Lev72MapA		incbin	data\level01\map01\l1m1fnl0.mpk
+Lev72Flr		incbin	data\level01\map01\l1m1fnl0.fpk
+Lev72Con		incbin	data\level01\map01\l1m1cnt0.con
+Lev73MapA		incbin	data\level01\map01\l1m1fnl0.mpk
+Lev73Flr		incbin	data\level01\map01\l1m1fnl0.fpk
+Lev73Con		incbin	data\level01\map01\l1m1cnt0.con
+Lev74MapA		incbin	data\level01\map01\l1m1fnl0.mpk
+Lev74Flr		incbin	data\level01\map01\l1m1fnl0.fpk
+Lev74Con		incbin	data\level01\map01\l1m1cnt0.con
+			even
+
+
+; - DATA for PLAYROOM ------------------------------------------------------
+
+		SECTION	GGD_LEVEL99
+
+Lev99ChrA		incbin	data\level99\playroom.cpk
+Lev99BlkA		incbin	data\level99\playroom.blk
+Lev99MapA		incbin	data\level99\playroom.mpk
+Lev99Flr		incbin	data\level99\playroom.fpk
+Lev99Con		incbin	data\level99\playcnt0.con
+			even
+
+

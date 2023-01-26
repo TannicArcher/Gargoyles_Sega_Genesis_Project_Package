@@ -1,0 +1,7 @@
+			move.l	DMA_Stack,a6
+			move.w	d1,-(a6)				;dest
+			move.l	#MapA_Buff/2,-(a6)			;source
+			lsr.w	#1,d3
+			move.w	d3,-(a6)				;len
+			move.w	#_DMATransfer,-(a6)			;flag this data package is a dma transfer
+			move.l	a6,DMA_Stack

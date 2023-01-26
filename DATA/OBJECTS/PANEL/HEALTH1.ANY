@@ -1,0 +1,21 @@
+	include	testani.68k
+
+	ani_palette	HEALTH1
+	ani_sprites	HEALTH1
+
+HEALTH1_anim	animation
+@1	ani_sprite	HEALTH1_0001
+	ani_sprite	HEALTH1_0002
+	ani_sprite	HEALTH1_0003
+	ani_sprite	HEALTH1_0004
+	ani_sprite	HEALTH1_0005
+	ani_sprite	HEALTH1_0006
+	ani_sprite	HEALTH1_0007
+	ani_sprite	HEALTH1_0008
+	ani_sprite	HEALTH1_0009
+	ani_sprite	HEALTH1_0010
+	ani_sprite	HEALTH1_0011
+	ani_goto	@1
+	ani_end
+
+	ani_footer

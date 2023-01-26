@@ -1,0 +1,591 @@
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ Universal DETECTION Routines					   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ Entry: n/a								   บ
+; บ  Exit: a1=Addrs of contour data : d2=Special # (3rd layer)		   บ
+; บ        d3=Object # (4th layer)    		         		   บ
+; บ  Used: n/a								   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ Herein is contained all that is detection related ...		   บ
+; บ 									   บ
+; บ OBJECT to OBJECT							   บ
+; บ OBJECT to BACKROUND							   บ
+; บ et al								   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+
+GetUnderALL		bsr	GetUnderHEAD
+			move.b	d2,UnderHEAD
+			move.l	a1,UnderHEAD_c
+			bsr	GetUnderTOP
+			move.b	d2,UnderTOP
+			move.l	a1,UnderTOP_c
+			bsr	GetUnder
+			move.b	d2,Under
+			move.l	a1,Under_c
+			bsr	GetUnderBOT
+			move.b	d2,UnderBOT
+			move.l	a1,UnderBOT_c
+			bsr	GetUnderFEET
+			move.b	d2,UnderFEET
+			move.l	a1,UnderFEET_c
+
+			bsr	GetUnderLEFTHEAD
+			move.b	d2,UnderLEFTHEAD
+			move.l	a1,UnderLEFTHEAD_c
+			bsr	GetUnderLEFTTOP
+			move.b	d2,UnderLEFTTOP
+			move.l	a1,UnderLEFTTOP_c
+			bsr	GetUnderLEFT
+			move.b	d2,UnderLEFT
+			move.l	a1,UnderLEFT_c
+			bsr	GetUnderLEFTBOT
+			move.b	d2,UnderLEFTBOT
+			move.l	a1,UnderLEFTBOT_c
+			bsr	GetUnderLEFTFEET
+			move.b	d2,UnderLEFTFEET
+			move.l	a1,UnderLEFTFEET_c
+
+			bsr	GetUnderRIGHTHEAD
+			move.b	d2,UnderRIGHTHEAD
+			move.l	a1,UnderRIGHTHEAD_c
+			bsr	GetUnderRIGHTTOP
+			move.b	d2,UnderRIGHTTOP
+			move.l	a1,UnderRIGHTTOP_c
+			bsr	GetUnderRIGHT
+			move.b	d2,UnderRIGHT
+			move.l	a1,UnderRIGHT_c
+			bsr	GetUnderRIGHTBOT
+			move.b	d2,UnderRIGHTBOT
+			move.l	a1,UnderRIGHTBOT_c
+			bsr	GetUnderRIGHTFEET
+			move.b	d2,UnderRIGHTFEET
+			move.l	a1,UnderRIGHTFEET_c
+			rts
+			
+
+GetUnderHEAD		bsr	GetXYpos
+			sub.w	#$40,d2
+			bra	GetFlrData
+GetUnderTOP		bsr	GetXYpos
+			sub.w	#$30,d2
+			bra	GetFlrData
+GetUnder		bsr	GetXYpos
+			sub.w	#$20,d2
+			bra	GetFlrData
+GetUnderBOT		bsr	GetXYpos
+			sub.w	#$10,d2
+			bra	GetFlrData
+GetUnderFEET		bsr	GetXYpos
+			bra	GetFlrData
+GetUnderGROUND		bsr	GetXYpos
+			add.w	#$10,d2
+			bra	GetFlrData
+GetUnderUNDERGROUND	bsr	GetXYpos
+			add.w	#$20,d2
+			bra	GetFlrData
+
+GetUnderLEFTHEAD	bsr	GetXYpos
+			sub.w	#$10,d1
+			sub.w	#$40,d2
+			bra	GetFlrData
+GetUnderLEFTTOP		bsr	GetXYpos
+			sub.w	#$10,d1
+			sub.w	#$30,d2
+			bra	GetFlrData
+GetUnderLEFTLEFTTOP	bsr	GetXYpos
+			sub.w	#$20,d1
+			sub.w	#$30,d2
+			bra	GetFlrData
+GetUnderLEFT		bsr	GetXYpos
+			sub.w	#$10,d1
+			sub.w	#$20,d2
+			bra	GetFlrData
+GetUnderLEFTLEFT	bsr	GetXYpos
+			sub.w	#$20,d1
+			sub.w	#$20,d2
+			bra	GetFlrData
+GetUnderLEFTLEFTLEFT	bsr	GetXYpos
+			sub.w	#$30,d1
+			sub.w	#$20,d2
+			bra	GetFlrData
+GetUnderLEFTBOT		bsr	GetXYpos
+			sub.w	#$10,d1
+			sub.w	#$10,d2
+			bra	GetFlrData
+GetUnderLEFTLEFTBOT	bsr	GetXYpos
+			sub.w	#$20,d1
+			sub.w	#$10,d2
+			bra	GetFlrData
+GetUnderLEFTFEET	bsr	GetXYpos
+			sub.w	#$10,d1
+			bra	GetFlrData
+GetUnderLEFTGROUND	bsr	GetXYpos
+			sub.w	#$10,d1
+			add.w	#$10,d2
+			bra	GetFlrData
+
+GetUnderRIGHTHEAD	bsr	GetXYpos
+			add.w	#$10,d1
+			sub.w	#$40,d2
+			bra	GetFlrData
+GetUnderRIGHTTOP	bsr	GetXYpos
+			add.w	#$10,d1
+			sub.w	#$30,d2
+			bra	GetFlrData
+GetUnderRIGHT		bsr	GetXYpos
+			add.w	#$10,d1
+			sub.w	#$20,d2
+			bra	GetFlrData
+GetUnderRIGHTRIGHT	bsr	GetXYpos
+			add.w	#$20,d1
+			sub.w	#$20,d2
+			bra	GetFlrData
+GetUnderRIGHTRIGHTRIGHT	bsr	GetXYpos
+			add.w	#$30,d1
+			sub.w	#$20,d2
+			bra	GetFlrData
+GetUnderRIGHTRIGHTBOT	bsr	GetXYpos
+			add.w	#$20,d1
+			sub.w	#$10,d2
+			bra	GetFlrData
+GetUnderRIGHTBOT	bsr	GetXYpos
+			add.w	#$10,d1
+			sub.w	#$10,d2
+			bra	GetFlrData
+GetUnderRIGHTFEET	bsr	GetXYpos
+			add.w	#$10,d1
+			bra	GetFlrData
+GetUnderRIGHTGROUND	bsr	GetXYpos
+			add.w	#$10,d1
+			add.w	#$10,d2
+			bra	GetFlrData
+
+
+GetUnderGENERIC		bsr	GetXYpos
+			add.w	d3,d1
+			add.w	d4,d2
+			bra	GetFlrData
+
+GetXYpos		moveq	#0,d1
+			move.w	OB_Xpos(a0),d1
+			bpl.s	.1
+			moveq	#0,d1
+.1			move.w	OB_Ypos(a0),d2
+			bpl.s	.2
+			moveq	#0,d2
+.2			rts
+
+GetFlrData		bsr	GetUnderAddrs
+			move.w	(a5),d1			;get block
+			lsr.w	#1,d1			;/2 for .FLR index
+			btst	#0,d1
+			bne.s	.aa
+			move.l	LevelFlr,a1		;get .FLR table
+			move.b	2(a1,d1.w),d2		;Special from 3rd layer
+			move.b	3(a1,d1.w),d3		;Object from 4th layer
+			move.w	0(a1,d1.w),d1		;get index(*16) into .CON table
+			move.l	LevelCon,a1
+			add.l	d1,a1			;a1=addrs of contour data
+			rts
+.aa			moveq	#0,d2			;Special from 3rd layer
+			moveq	#0,d3			;Object from 4th layer
+			moveq	#0,d1			;get index(*16) into .CON table
+			move.l	LevelCon,a1
+			rts
+			
+
+GetSpecialContour	move.w	(a5),d1			;get block
+			lsr.w	#1,d1			;/2 for .FLR index
+			move.l	LevelFlr,a1		;get .FLR table
+			move.b	2(a1,d1.w),d2		;Special from 3rd layer
+			move.w	0(a1,d1.w),d1		;get index(*16) into .CON table
+			move.l	LevelCon,a1
+			add.l	d1,a1			;a1=addrs of contour data
+			rts
+GetSpecialObject	move.w	(a5),d1			;get block
+			lsr.w	#1,d1			;/2 for .FLR index
+			move.l	LevelFlr,a1		;get .FLR table
+			move.b	2(a1,d1.w),d2		;Special from 3rd layer
+			move.b	3(a1,d1.w),d3		;Object from 4th layer
+			rts
+GetSpecial		move.w	(a5),d1			;get block
+			lsr.w	#1,d1			;/2 for .FLR index
+			move.l	LevelFlr,a1		;get .FLR table
+			move.b	2(a1,d1.w),d2		;Special from 3rd layer
+			rts
+GetObject		move.w	(a5),d1			;get block
+			lsr.w	#1,d1			;/2 for .FLR index
+			move.l	LevelFlr,a1		;get .FLR table
+			move.b	3(a1,d1.w),d3		;Object from 4th layer
+			rts
+GetContour		move.w	(a5),d1			;get block
+			lsr.w	#1,d1			;/2 for .FLR index
+			move.l	LevelFlr,a1		;get .FLR table
+			move.w	0(a1,d1.w),d1		;get index(*16) into .CON table
+			move.l	LevelCon,a1
+			add.l	d1,a1			;a1=addrs of contour data
+			rts
+
+
+ScanAheadFLP		btst.b	#ob_xflp,OB_Flag1(a0)		;floor in landing area?
+			beq.s	.1
+			neg.w	d3
+.1			bra	GetUnderGENERIC
+ScanAheadXFLP		btst.b	#ob_xflp,OB_Flag1(a0)		;floor in landing area?
+			bne.s	.1
+			neg.w	d3
+.1			bra	GetUnderGENERIC
+
+
+GetXInBlock		move.w	OB_Xpos(a0),d7
+			and.w	#$f,d7
+			rts
+				
+
+GetUnderAddrs		lsr.w	#4,d1
+			asl.w	#1,d1
+			lsr.w	#4,d2		
+			ext.l	d1
+
+			lea	MapA_Buff,a5
+			lea	mapline_tab,a4
+			asl.w	#1,d2
+			moveq	#0,d4
+			move.w	0(a4,d2.w),d4
+			add.l	d4,a5
+			add.l	d1,a5
+			rts
+
+		
+TestLevelWalls		btst	#7,d2				;not a wall
+			beq	FlagNOd
+			move.w	levnum,d3
+			asl.w	#2,d3
+			jmp	TWLJumpTab(pc,d3.w)
+
+TWLJumpTab		bra	TWL1
+			bra	TWL1
+			bra	TWL1
+			bra	TWL1
+
+			bra	TWL1
+			bra	TWL1
+			bra	TWL1
+			bra	TWL1
+
+			bra	TWL31
+			bra	TWL31
+			bra	TWL31
+			bra	TWL31
+
+			bra	TWL1
+			bra	TWL1
+			bra	TWL1
+			bra	TWL1
+
+			bra	TWL1
+
+			bra	TWL1
+			bra	TWL1
+			bra	TWL1
+			bra	TWL1
+
+			bra	TWL1
+			bra	TWL1
+			bra	TWL1
+			bra	TWL1
+
+			bra	TWL99
+
+
+TestLevelFloors		move.w	levnum,d1
+			asl.w	#2,d1
+			jmp	TFLJumpTab(pc,d1.w)
+
+TFLJumpTab		bra	TWLNull
+			bra	TWLNull
+			bra	TWLNull
+			bra	TWLNull
+
+			bra	TWLNull
+			bra	TWLNull
+			bra	TWLNull
+			bra	TWLNull
+
+			bra	TFL31
+			bra	TFL31
+			bra	TFL31
+			bra	TFL31
+
+			bra	TWLNull
+			bra	TWLNull
+			bra	TWLNull
+			bra	TWLNull
+
+			bra	TWLNull
+
+			bra	TWLNull
+			bra	TWLNull
+			bra	TWLNull
+			bra	TWLNull
+
+			bra	TWLNull
+			bra	TWLNull
+			bra	TWLNull
+			bra	TWLNull
+
+			bra	TWLNull
+
+
+; - NON LEVEL Specific detection -------------------------------------------
+
+SB_Wall			equ	$80		;general wall (non climbable)
+SB_Ceiling		equ	$81		;general ceiling (non climbable)
+SB_CeilingClimb		equ	$82		;climbable ceiling
+SB_ClimbR		equ	$83		;R climb only
+SB_ClimbL		equ	$84		;L climb only
+SB_Climb		equ	$85		;R or L climbable
+SB_ClimbR2StandR	equ	$86		;R climb to Stand R
+SB_ClimbL2StandL	equ	$87		;L climb to Stand L
+SB_Climb2StandLR	equ	$8a		;Climb to stand (left/right)
+
+SB_GrabSwing		equ	$70		;grab and swing
+
+
+TestGenericWalls	cmp.b	#$90,d2
+			blt	FlagYESd
+			bra	FlagNOd
+
+
+GolGetOnWall		btst.b	#ob_xflp,OB_Flag1(a0)
+			bne.s	.l
+			move.b	UnderRIGHT,d2
+			cmp.b	#SB_Climb,d2
+			beq	FlagYESd
+			cmp.b	#SB_ClimbR,d2
+			beq	FlagYESd
+			bra	FlagNOd
+.l			move.b	UnderLEFT,d2
+			cmp.b	#SB_Climb,d2
+			beq	FlagYESd
+			cmp.b	#SB_ClimbL,d2
+			beq	FlagYESd
+			bra	FlagNOd
+
+GolJumpOnWall		btst.b	#ob_xflp,OB_Flag1(a0)
+			bne.s	.l
+			btst.b	#right,joy1
+			beq	FlagNOd
+			move.b	UnderRIGHTTOP,d2
+			cmp.b	#SB_Climb,d2
+			beq.s	.r1
+			cmp.b	#SB_ClimbR,d2
+			bne	FlagNOd
+.r1			move.b	UnderRIGHT,d2
+			cmp.b	#SB_Climb,d2
+			beq.s	.r2
+			cmp.b	#SB_ClimbR,d2
+			bne	FlagNOd
+.r2			move.b	UnderRIGHTBOT,d2
+			cmp.b	#SB_Climb,d2
+			beq	FlagYESd
+			cmp.b	#SB_ClimbR,d2
+			beq	FlagYESd
+			bra	FlagNOd
+
+.l			btst.b	#left,joy1
+			beq	FlagNOd
+			move.b	UnderLEFTTOP,d2
+			cmp.b	#SB_Climb,d2
+			beq.s	.l1
+			cmp.b	#SB_ClimbL,d2
+			bne	FlagNOd
+.l1			move.b	UnderLEFT,d2
+			cmp.b	#SB_Climb,d2
+			beq.s	.l2
+			cmp.b	#SB_ClimbL,d2
+			bne	FlagNOd
+.l2			move.b	UnderLEFTBOT,d2
+			cmp.b	#SB_Climb,d2
+			beq	FlagYESd
+			cmp.b	#SB_ClimbL,d2
+			beq	FlagYESd
+			bra	FlagNOd
+
+
+GolJumpToHangSwing	btst.b	#ob_xflp,OB_Flag1(a0)
+			beq.s	.r
+.l			move.b	UnderLEFTTOP,d2			;check for ceiling stop/transition 
+			cmp.b	#SB_GrabSwing,d2		;is this block a climbable
+			beq	FlagYESd			;.s	.joyup
+			bra	FlagNOd
+.r			move.b	UnderRIGHTTOP,d2			;check for ceiling stop/transition 
+			cmp.b	#SB_GrabSwing,d2		;is this block a climbable
+			beq	FlagYESd			;.s	.joyup
+			bra	FlagNOd
+			
+
+GolJumpOnCeiling	move.b	UnderHEAD,d2			;check for ceiling stop/transition 
+			cmp.b	#SB_CeilingClimb,d2		;is this block a climbable
+			beq.s	.joyup
+			bra	FlagNOd
+.joyup			btst.b	#up,joy1			;only grab climbable cieling if pushing up
+			bne	FlagYESd			;jump to ceiling transition
+			bra	FlagNOd
+
+GolTestRightSide	move.b	UnderRIGHTTOP,d2
+			bsr	TestLevelWalls
+			bmi	FlagYESd
+			move.b	UnderRIGHT,d2
+			bsr	TestLevelWalls
+			bmi	FlagYESd
+			move.b	UnderRIGHTBOT,d2
+			bsr	TestLevelWalls
+			bmi	FlagYESd
+			bra	FlagNOd
+
+GolTestLeftSide		move.b	UnderLEFTTOP,d2
+			bsr	TestLevelWalls
+			bmi	FlagYESd
+			move.b	UnderLEFT,d2
+			bsr	TestLevelWalls
+			bmi	FlagYESd
+			move.b	UnderLEFTBOT,d2
+			bsr	TestLevelWalls
+			bmi	FlagYESd
+			bra	FlagNOd
+			
+
+; - LEVEL1.1 SPECIAL DETECTION ---------------------------------------------
+
+SB_FlameRockGen1	equ	$60
+SB_FlameRockGen2	equ	$61
+SB_Projectile1		equ	$62
+SB_Projectile2		equ	$63
+SB_Thermal1		equ	$70
+SB_Thermal2		equ	$71
+SB_CampFire1		equ	$90
+SB_CampFire2		equ	$91
+SB_RockPile1		equ	$92
+SB_RockPile2		equ	$93
+SB_RockPile3		equ	$94
+SB_RockPile4		equ	$95
+SB_Tent1		equ	$96
+SB_Tent2		equ	$97
+SB_FloorSmash1		equ	$a0
+SB_FloorSmash2		equ	$a1
+SB_FloorSmash3		equ	$a2
+SB_Support1		equ	$a3
+SB_Support2		equ	$a4
+SB_Support3		equ	$a5
+SB_CrumbleWall		equ	$b0
+SB_CrumbleCeiling	equ	$b1
+SB_WallSmash1		equ	$b2
+SB_WallSmash2		equ	$b3
+SB_WallDentR1		equ	$c0
+SB_WallDentR2		equ	$c1
+SB_WallDentR3		equ	$c2
+SB_WallDentL1		equ	$c3
+SB_WallDentL2		equ	$c4
+SB_WallDentL3		equ	$c5
+SB_CataShield1		equ	$d0
+SB_CataShield2		equ	$d1
+SB_CataShield3		equ	$d2
+
+TWL1			bsr	TestGenericWalls
+			bmi.s	FlagYESd
+			bra	FlagNOd
+
+
+TWLNull
+FlagNOd			tas	no
+			rts
+FlagYESd		tas	yes
+			rts
+
+
+; - LEVEL 3.1 .. 3.3 DETECTION ---------------------------------------------
+
+SB_AutoRun1		equ	1
+SB_AutoRun2		equ	2
+SB_AutoJump1		equ	3
+SB_AutoJump2		equ	4
+
+SB_BeginWind		equ	$20
+SB_EndWind		equ	$21
+
+SB_Sign			equ	$91
+
+SB_SkylightS		equ	$a0
+SB_SkylightE		equ	$af
+
+SB_BreakWallS		equ	$c0
+SB_BreakWallE		equ	$c7
+
+TWL31			cmp.l	Plr_Database,a0				;player has extra detection
+			beq.s	.a
+			bra	TestGenericWalls			;other objects don't
+
+.a			bsr	TestGenericWalls
+			bpl.s	.more
+			
+.stop			tst.b	walking_left
+			beq.s	.2
+			bset.b	#ob_blockleft,OB_Flag4(a0)
+			bra	FlagYESd
+.2			bset.b	#ob_blockright,OB_Flag4(a0)
+			bra	FlagYESd
+
+.more			cmp.b	#SB_BreakWallS,d2
+			blt.s	.b
+			cmp.b	#SB_BreakWallE,d2
+			bgt.s	.b
+			move.w	d2,d3
+			sub.b	#SB_BreakWallS,d3
+			lea	LevelWalls,a2
+			tst.b	0(a2,d3.w)
+			beq.s	.stop
+
+.b			cmp.b	#SB_Sign,d2
+			beq.s	.stop
+			
+			bra	FlagNOd
+
+
+TFL31			cmp.b	#SB_SkylightS,d2
+			blt.s	.a
+			cmp.b	#SB_SkylightE,d2
+			bgt.s	.a
+			move.w	d2,d3
+			sub.b	#SB_SkylightS,d3
+			lea	LevelSkylights,a2
+			tst.b	0(a2,d3.w)
+			bne	FlagYESd
+			bra	FlagNOd
+
+.a			
+			bra	FlagNOd
+
+			
+
+
+; - LEVEL99 PLAYROOM DETECTION ---------------------------------------------
+		    
+	
+TWL99			bsr	TestGenericWalls
+			bpl.s	.1
+			tst.b	walking_left
+			beq.s	.2
+			bset.b	#ob_blockleft,OB_Flag4(a0)
+			bra	FlagYESd
+.2			tst.b	walking_right
+			beq.s	.3
+			bset.b	#ob_blockright,OB_Flag4(a0)
+			bra	FlagYESd
+
+
+.3
+
+.1			
+			bra	FlagNOd

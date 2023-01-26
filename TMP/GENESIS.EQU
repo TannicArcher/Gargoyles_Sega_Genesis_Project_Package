@@ -1,0 +1,337 @@
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออปบ
+; บบ GENESIS VDP REGISTERS                                                บบ
+; บฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออนบ
+; บบ                                                                      บบ
+; บบ  0  --0/--0/--0/ie1/--0/--1/-m3/--0          Mode Set Register 1     บบ
+; บบ                                                                      บบ
+; บบ  1  --0/ena/ie0/-m1/-m2/--1/--0/--0          Mode Set Register 2     บบ
+; บบ                                                                      บบ
+; บบ  2  --0/--0/saF/saE/saD/--0/--0/--0          Base Address Scroll A   บบ
+; บบ                                                                      บบ
+; บบ  3  --0/--0/waF/waE/waD/waC/--0/--0          Base Address Window     บบ
+; บบ                                                                      บบ
+; บบ  4  --0/--0/--0/--0/--0/sbF/sbE/sbD          Base Address Scroll B   บบ
+; บบ                                                                      บบ
+; บบ  5  --0/atF/atE/atD/atC/atB/atA/--0          Sprite Attribute Table  บบ
+; บบ                                                                      บบ
+; บบ  6  --0/--0/--0/--0/--0/--0/--0/--0                                  บบ
+; บบ                                                                      บบ
+; บบ  7  --0/--0/cp1/cp0/cr3/cr2/cr1/cr0          Background Colour       บบ
+; บบ                                                                      บบ
+; บบ  8  --0/--0/--0/--0/--0/--0/--0/--0                                  บบ
+; บบ                                                                      บบ
+; บบ  9  --0/--0/--0/--0/--0/--0/--0/--0                                  บบ
+; บบ                                                                      บบ
+; บบ 10  hi7/hi6/hi5/hi4/hi3/hi2/hi1/hi0          H Interrupt Counter     บบ
+; บบ                                                                      บบ
+; บบ 11  --0/--0/--0/--0/ie2/vsc/hsc/lsc          Mode Set Register 3     บบ
+; บบ                                                                      บบ
+; บบ 12  rs0/--0/--0/--0/ste/il1/il0/rs1          Mode Set Register 4     บบ
+; บบ                                                                      บบ
+; บบ 13  --0/--0/hsF/hsE/hsD/hsC/hsB/hsA          H Scroll Data Table     บบ
+; บบ                                                                      บบ
+; บบ 14  --0/--0/--0/--0/--0/--0/--0/--0                                  บบ
+; บบ                                                                      บบ
+; บบ 15  in7/in6/in5/in4/in3/in2/in1/in0          Auto Increment Data     บบ
+; บบ                                                                      บบ
+; บบ 16  --0/--0/vh1/vh0/--0/--0/hw1/hw0          Scroll Size             บบ
+; บบ                                                                      บบ
+; บบ 17  rgt/--0/--0/wp5/wp4/wp3/wp2/wp1          Window H Position       บบ
+; บบ                                                                      บบ
+; บบ 18  dwn/--0/--0/wp4/wp3/wp2/wp1/wp0          Window V Position       บบ
+; บบ                                                                      บบ
+; บบ 19  lg7/lg6/lg5/lg4/lg3/lg2/lg1/lg0          DMA Length Lo           บบ
+; บบ                                                                      บบ
+; บบ 20  lgF/lgE/lgD/lgC/lgB/lgA/lg9/lg8          DMA Length Hi           บบ
+; บบ                                                                      บบ
+; บบ 21  sa08/sa07/sa06/sa05/sa04/sa03/sa02/sa01  DMA Source Lo           บบ
+; บบ                                                                      บบ
+; บบ 22  sa10/sa0F/sa0E/sa0D/sa0C/sa0B/sa0A/sa0A  DMA Source Mid          บบ
+; บบ                                                                      บบ
+; บบ 23  dmd1/dmd0/sa16/sa15/sa14/sa13/sa12/sa11  DMA Source Hi           บบ
+; บบ                                                                      บบ
+; บศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผบ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออปบ
+; บบ GENESIS HARDWARE DATA FORMATS                                        บบ
+; บฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออนบ
+; บบ                                                                      บบ
+; บบ DISPLAY PRIORITY                                                     บบ
+; บบ                                                                      บบ
+; บบ S A B   priority                                                     บบ
+; บบ                                                                      บบ
+; บบ 0 0 0 = S A B G                                                      บบ
+; บบ 0 0 1 = B S A G                                                      บบ
+; บบ 0 1 0 = A S B G                                                      บบ
+; บบ 0 1 1 = A B S G                                                      บบ
+; บบ 1 0 0 = S A B G                                                      บบ
+; บบ 1 0 1 = S B A G                                                      บบ
+; บบ 1 1 0 = S A B G                                                      บบ
+; บบ 1 1 1 = S A B G                                                      บบ
+; บบ                                                                      บบ
+; บวฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤถบ
+; บบ                                                                      บบ
+; บบ PATTERN NAME FORMAT                                                  บบ
+; บบ                                                                      บบ
+; บบ +0  pri/cp1/cp0/vff/hff/pnA/pn9/pn8/pn7/pn6/pn5/pn4/pn3/pn2/pn1/pn0  บบ
+; บบ                                                                      บบ
+; บวฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤถบ
+; บบ                                                                      บบ
+; บบ SPRITE ATTRIBUTE TABLE FORMAT                                        บบ
+; บบ                                                                      บบ
+; บบ +0  ---/---/---/---/---/---/vp9/vp8/vp7/vp6/vp5/vp4/vp3/vp2/vp1/vp0  บบ
+; บบ +2  ---/---/---/---/hs1/hs0/vs1/vs0/---/ld6/ld5/ld4/ld3/ld2/ld1/ld0  บบ
+; บบ +4  pri/cp1/cp0/vff/hff/snA/sn9/sn8/sn7/sn6/sn5/sn4/sn3/sn2/sn1/sn0  บบ
+; บบ +6  ---/---/---/---/---/---/---/hp8/hp7/hp6/hp5/hp4/hp3/hp2/hp1/hp0  บบ
+; บบ                                                                      บบ
+; บศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผบ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออปบ
+; บบ SEGA GENESIS GENERAL PURPOSE EQUATES                                 บบ
+; บศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผบ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+On		EQU	1
+Off		EQU	0
+
+Yo		EQU	1
+No		EQU	0
+
+VDPData		EQU	$C00000
+VDPCtrl		EQU	$C00004
+VDPCounter	EQU	$C00008
+
+PSGPort		EQU	$C00011
+
+VersionNo	EQU	$A10001
+Data1		EQU	$A10003
+Data2		EQU	$A10005
+Data3		EQU	$A10007
+Ctrl1		EQU	$A10009
+Ctrl2		EQU	$A1000B
+Ctrl3		EQU	$A1000D
+TData1		EQU	$A1000F
+RData1		EQU	$A10011
+SCtrl1		EQU	$A10013
+TData2		EQU	$A10015
+RData2		EQU	$A10017
+SCtrl2		EQU	$A10019
+TData3		EQU	$A1001B
+RData3		EQU	$A1001C
+SCtrl3		EQU	$A1001F
+
+Z80Ram		EQU	$A00000
+Z80FM1Ctrl	EQU	$A04000
+Z80FM1Data	EQU	$A04001
+Z80FM2Ctrl	EQU	$A04002
+Z80FM2Data	EQU	$A04003
+Z80Bank		EQU	$A06000
+Z80PSGPort	EQU	$A07F11
+
+Z80BusReq	EQU	$A11100
+Z80Reset	EQU	$A11200
+
+REG00		EQU	$8004
+REG01		EQU	$8104
+REG02		EQU	$8200
+REG03		EQU	$8300
+REG04		EQU	$8400
+REG05		EQU	$8500
+REG06		EQU	$8600
+REG07		EQU	$8700
+REG08		EQU	$8800
+REG09		EQU	$8900
+REG10		EQU	$8A00
+REG11		EQU	$8B00
+REG12		EQU	$8C00
+REG13		EQU	$8D00
+REG14		EQU	$8E00
+REG15		EQU	$8F00
+REG16		EQU	$9000
+REG17		EQU	$9100
+REG18		EQU	$9200
+REG19		EQU	$9300
+REG20		EQU	$9400
+REG21		EQU	$9500
+REG22		EQU	$9600
+REG23		EQU	$9700
+
+NTSC		EQU	0
+PAL		EQU	8
+Full		EQU	%00
+Line		EQU	%11
+CellX1		EQU	%10
+CellX2		EQU	%01
+CellX32		EQU	%10000001
+CellX40		EQU	%10000001
+LaceX1		EQU	%01
+LaceX2		EQU	%11
+
+Scroll_MapA	EQU	REG02	;!addr>>10
+Window_Map	EQU	REG03	;!addr>>10
+Scroll_MapB	EQU	REG04	;!addr>>13
+Sprite_Attr	EQU	REG05	;!addr>>9
+Background	EQU	REG07	;!%00PPCCCC
+Hint_Count	EQU	REG10
+Hscroll_Data	EQU	REG13	;!addr>>10
+AutoInc		EQU	REG15
+HVSize		EQU	REG16   ;!%00VV00HH
+Window_H	EQU	REG17	;!%RCCCCCCC
+Window_V	EQU	REG18	;!%DCCCCCCC
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออปบ
+; บบ SEGA CD GENERAL PURPOSE MACROS	                                  บบ
+; บศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผบ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+SLED		EQU	$FFFF8000
+SRESET		EQU	$FFFF8001
+SPROTECT	EQU	$FFFF8002
+SMEM_MODE	EQU	$FFFF8003
+SCDC_MODE	EQU	$FFFF8004
+SCDC_RS0 	EQU	$FFFF8005
+SCDC_RS1	EQU	$FFFF8007
+SCDC_HOST	EQU	$FFFF8008
+SCDC_DMA	EQU	$FFFF800A
+SWATCH		EQU	$FFFF800C
+SCOM_MFLAG	EQU	$FFFF800E
+SCOM_SFLAG	EQU	$FFFF800F
+SCOM_MDATA	EQU	$FFFF8010
+SCOM_SDATA	EQU	$FFFF8020
+STIMER		EQU	$FFFF8031
+SINTMASK	EQU	$FFFF8033
+SCDD_FADE	EQU	$FFFF8034
+SCDD_CTRL	EQU	$FFFF8036
+SCDD_COM	EQU	$FFFF8038
+SFONT_COL	EQU	$FFFF804D
+SFONT_BIT 	EQU	$FFFF804E
+SFONT_DATA	EQU	$FFFF8050
+SROT_DATA	EQU	$FFFF8058
+SROT_SIZE	EQU	$FFFF8058
+SROT_MAP	EQU	$FFFF805A
+SROT_VCELL	EQU	$FFFF805C
+SROT_BUFF	EQU	$FFFF805E
+SROT_BOFF	EQU	$FFFF8060
+SROT_HDOT	EQU	$FFFF8062
+SROT_VDOT	EQU	$FFFF8064
+SROT_TRACE	EQU	$FFFF8066
+SCODE_ADDR	EQU	$FFFF8068
+SCODE_BUFF	EQU	$FFFF8100
+SCODE_BIMG	EQU	$FFFF8180
+SWORD_RAM	EQU	$80000
+
+MIFL2		EQU	$A12000
+MRESET		EQU	$A12001
+MPROTECT	EQU	$A12002
+MMEM_MODE	EQU	$A12003
+MCDC_MODE	EQU	$A12004
+MHINT		EQU	$A12006
+MCDC_HOST	EQU	$A12008
+MWATCH		EQU	$A1200C
+MCOM_MFLAG	EQU	$A1200E
+MCOM_SFLAG	EQU	$A1200F
+MCOM_MDATA	EQU	$A12010
+MCOM_SDATA	EQU	$A12020
+MPRG_RAM	EQU	$20000
+MWORD_RAM	EQU	$200000
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออปบ
+; บบ SEGA GENESIS GENERAL PURPOSE MACROS                                  บบ
+; บศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผบ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+Hint_HV		MACRO
+		MOVE.W	#REG00!\1<<4!(1&(~\2))<<1,VDPCtrl
+		ENDM
+
+DISP_Vint_DMA	MACRO
+		MOVE.W	#REG01!\1<<6!\2<<5!\3<<4!DisplayType,VDPCtrl
+		ENDM
+
+EXint_Vset_Hset	MACRO
+		MOVE.W	#REG11!\1<<3!\2<<2!\3,VDPCtrl
+		ENDM
+
+Hcell_Shad_Lace	MACRO
+		MOVE.W	#REG12!\1!\2<<3!\3,VDPCtrl
+		ENDM
+
+WVRAM		MACRO
+		MOVE.L	#($4000!($3FFF&\1))*$10000+\1>>14,VDPCtrl
+		ENDM
+
+RVRAM		MACRO
+		MOVE.L	#($3FFF&\1)*$10000+\1>>14,VDPCtrl
+		ENDM
+
+WCRAM		MACRO
+		MOVE.L	#($C000!\1)*$10000,VDPCtrl
+		ENDM
+
+RCRAM		MACRO
+		MOVE.L	#\1*$10000+$20,VDPCtrl
+		ENDM
+
+WVSRAM		MACRO
+		MOVE.L	#($4000!\1)*$10000+$10,VDPCtrl
+		ENDM
+
+RVSRAM		MACRO
+		MOVE.L	#\1*$10000+$10,VDPCtrl
+		ENDM
+
+DC_WVR		MACRO
+		DC.L	($4000!($3FFF&\1))*$10000+\1>>14
+		ENDM
+
+DC_DWVR		MACRO
+		DC.L	(($4000!($3FFF&\1))*$10000+\1>>14)!$80
+		ENDM
+
+DMAvram		MACRO
+		DC.W	\1
+		DC.W	REG21!((\2>>1)&$FF)
+		DC.B	(\2>>9)&$FF
+		DC.B	(\2>>17)&$7F
+		DC.L	($4000!($3FFF&\3))*$10000+\3>>14+$80
+		ENDM
+
+DMAcram		MACRO
+		DC.W	\1
+		DC.W	REG21!((\2>>1)&$FF)
+		DC.B	(\2>>9)&$FF
+		DC.B	(\2>>17)&$7F
+		DC.L	($C000!\3)*$10000+$80
+		ENDM
+
+PUSH		MACRO
+		MOVE.\0	\1,-(SP)
+		ENDM
+
+POP		MACRO
+		MOVE.\0	(SP)+,\1
+		ENDM
+
+PUSHM		MACRO
+		MOVEM.\0	\1,-(SP)
+		ENDM
+
+POPM		MACRO
+		MOVEM.\0	(SP)+,\1
+		ENDM
+
+BORDER		MACRO
+		MOVE.L	#$C0000000,VDPCtrl
+		MOVE.W	#\1,VDPData
+		ENDM
+

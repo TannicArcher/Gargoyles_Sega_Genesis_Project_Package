@@ -1,0 +1,316 @@
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ CHR BINARIES & INC FILES FOR ALL SPRITE OBJECTS			   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ CHR DATA for GOLIATH						   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+	
+;KEY : 		*=FlatFill : **=Rendered
+;
+
+			SECTION	GGD_GOLIATH
+GolChr1			incbin	data\objects\goliath\gg0101.chr		;*
+GolChr2			incbin	data\objects\goliath\gg0102.chr		;*
+GolChr3a		incbin	data\objects\goliath\gg0103a.chr	;*
+GolChr3b		incbin	data\objects\goliath\gg0103b.chr	;*
+GolChr3c		incbin	data\objects\goliath\gg0103c.chr	;*
+GolChr4			incbin	data\objects\goliath\gg0104.chr		;*
+GolChr5			incbin	data\objects\goliath\gg0105.chr		;*
+GolChr6			incbin	data\objects\goliath\gg0106.chr		;*
+GolChr7			incbin	data\objects\goliath\gg0107.chr		;*
+GolChr8			incbin	data\objects\goliath\gg0108.chr		;*
+GolChr9			incbin	data\objects\goliath\gg0109.chr		;*
+GolChr10		incbin	data\objects\goliath\gg0110.chr		;*
+GolChr11		incbin	data\objects\goliath\gg0111.chr		;*
+GolChr13		incbin	data\objects\goliath\gg0113.chr		;*
+GolChr15		incbin	data\objects\goliath\gg0115.chr		;*
+GolChr14		incbin	data\objects\goliath\gg0114.chr		;*
+GolChr16		incbin	data\objects\goliath\gg0116.chr		;*
+GolChr17		incbin	data\objects\goliath\gg0117.chr		;*
+GolChr18		incbin	data\objects\goliath\gg0118.chr		;*
+GolChr19		incbin	data\objects\goliath\gg0119.chr		;*
+GolChr20		incbin	data\objects\goliath\gg0120.chr		
+GolChr21		incbin	data\objects\goliath\gg0121.chr		;*
+GolChr22		incbin	data\objects\goliath\gg0122.chr		;*
+GolChr23		incbin	data\objects\goliath\gg0123.chr		
+GolChr24		incbin	data\objects\goliath\gg0124.chr		;*
+GolChr25		incbin	data\objects\goliath\gg0125.chr		
+GolChr26		incbin	data\objects\goliath\gg0126.chr		;*
+GolChr27		incbin	data\objects\goliath\gg0127.chr		;*
+GolChr28		incbin	data\objects\goliath\gg0128.chr		;*
+GolChr29		incbin	data\objects\goliath\gg0129.chr		;*
+GolChr30		incbin	data\objects\goliath\gg0130.chr		;*
+GolChr31		incbin	data\objects\goliath\gg0131.chr		;*
+GolChr32		incbin	data\objects\goliath\gg0132.chr		;*
+GolChr33		incbin	data\objects\goliath\gg0133.chr		;*
+GolChr34		incbin	data\objects\goliath\gg0134.chr		;*
+GolChr35		incbin	data\objects\goliath\gg0135.chr		;*
+GolChr36		incbin	data\objects\goliath\gg0136.chr		;*
+GolChr37		incbin	data\objects\goliath\gg0137.chr		;*
+GolChr38		incbin	data\objects\goliath\gg0138.chr		;*
+GolChr39		incbin	data\objects\goliath\gg0139.chr		;*
+GolChr40		incbin	data\objects\goliath\gg0140.chr		;*
+GolChr41		incbin	data\objects\goliath\gg0141.chr		;*
+GolChr42		incbin	data\objects\goliath\gg0142.chr		;*
+GolChr43		incbin	data\objects\goliath\gg0143.chr		;*
+GolChr44		incbin	data\objects\goliath\gg0144.chr		;*
+GolChr45		incbin	data\objects\goliath\gg0145.chr		;*
+GolChr46		incbin	data\objects\goliath\gg0146.chr		;*
+GolChr47		incbin	data\objects\goliath\gg0147.chr		;*
+;GolChr48		incbin	data\objects\goliath\gg0148.chr		
+;GolChr49		incbin	data\objects\goliath\gg0149.chr		
+GolChr50		incbin	data\objects\goliath\gg0150.chr		;*
+GolChr51		incbin	data\objects\goliath\gg0151.chr		;*
+GolChr52		incbin	data\objects\goliath\gg0152.chr		;*
+GolChr53		incbin	data\objects\goliath\gg0153.chr		;*
+GolChr54		incbin	data\objects\goliath\gg0154.chr		;*	
+GolChr55		incbin	data\objects\goliath\gg0155.chr		;*
+GolChr72		incbin	data\objects\goliath\gg0172.chr		;*
+GolChr73		incbin	data\objects\goliath\gg0173.chr		;*
+GolChr74		incbin	data\objects\goliath\gg0174.chr		;*
+GolChr77		incbin	data\objects\goliath\gg0177.chr		;*
+GolChr98		incbin	data\objects\goliath\gg0198.chr		
+GolChr99		incbin	data\objects\goliath\gg0199.chr		
+
+CornerChr		incbin	data\objects\corners\corners.chr
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ CHR DATA for PANEL							   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+		SECTION	GGD_HEALTH
+
+Health1Chr		incbin	data\objects\panel\health1.fnt
+Health2Chr		incbin	data\objects\panel\health2.fnt
+NumeralChr		incbin	data\objects\panel\numbersg.chr
+
+IconChr			incbin	data\objects\panel\icons.chr
+
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ CHR DATA for RAPTORBOT						   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+		SECTION	GGD_RAPTORBOT
+
+RapChr2		incbin	data\objects\rapbot\gr90502.chr
+RapChr1		incbin	data\objects\rapbot\gr90501.chr
+RapChr3		incbin	data\objects\rapbot\gr90503.chr
+RapChr4		incbin	data\objects\rapbot\gr90504.chr
+RapChr5		incbin	data\objects\rapbot\gr90505.chr
+RapChr6		incbin	data\objects\rapbot\gr90506.chr
+RapChr7		incbin	data\objects\rapbot\gr90507.chr
+RapChr8		incbin	data\objects\rapbot\gr90508.chr
+RapChr9		incbin	data\objects\rapbot\gr90509.chr
+RapChr10	incbin	data\objects\rapbot\gr90510.chr
+RapChr11	incbin	data\objects\rapbot\gr90511.chr
+		ds.b	$1360+$80
+RapChr12	incbin	data\objects\rapbot\gr90512.chr
+
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ CHR DATA for SNIPERBOT						   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+		SECTION	GGD_SNIPERBOT
+
+SniChr1		incbin	data\objects\sniprbot\gr90201.chr
+SniChr2a	incbin	data\objects\sniprbot\gr90202a.chr
+SniChr2b	incbin	data\objects\sniprbot\gr90202b.chr
+SniChr3a	incbin	data\objects\sniprbot\gr90203a.chr
+SniChr3b	incbin	data\objects\sniprbot\gr90203b.chr
+SniChr3c	incbin	data\objects\sniprbot\gr90203c.chr
+SniChr3d	incbin	data\objects\sniprbot\gr90203d.chr
+SniChr3e	incbin	data\objects\sniprbot\gr90203e.chr
+SniChr4		incbin	data\objects\sniprbot\gr90204.chr
+SniChr5		incbin	data\objects\sniprbot\gr90205.chr
+SniChr6		incbin	data\objects\sniprbot\gr90206.chr
+SniChr7		incbin	data\objects\sniprbot\gr90207.chr
+SniChr8		incbin	data\objects\sniprbot\gr90208.chr
+
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ CHR DATA for WASPBOT						   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+		SECTION	GGD_WASPBOT
+
+WaspChr1	incbin	data\objects\waspbot\gr90301.chr
+WaspChr3	incbin	data\objects\waspbot\gr90303.chr
+WaspChr4	incbin	data\objects\waspbot\gr90304.chr
+WaspChr5	incbin	data\objects\waspbot\gr90305.chr
+WaspChr6	incbin	data\objects\waspbot\gr90306.chr
+WaspChr7	incbin	data\objects\waspbot\gr90307.chr
+WaspChr8	incbin	data\objects\waspbot\gr90308.chr
+WaspChr9	incbin	data\objects\waspbot\gr90309.chr
+WaspChr10	incbin	data\objects\waspbot\gr90310.chr
+WaspChr11	incbin	data\objects\waspbot\gr90311.chr
+
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ CHR DATA for SPIDERBOT						   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+		SECTION	GGD_SPIDERBOT
+
+SpiChr1		incbin	data\objects\spidrbot\gr90101.chr
+SpiChr2		incbin	data\objects\spidrbot\gr90102.chr
+SpiChr3		incbin	data\objects\spidrbot\gr90103.chr
+SpiChr4		incbin	data\objects\spidrbot\gr90104.chr
+SpiChr5		incbin	data\objects\spidrbot\gr90105.chr
+SpiChr6		incbin	data\objects\spidrbot\gr90106.chr
+SpiChr7		incbin	data\objects\spidrbot\gr90107.chr
+SpiChr8		incbin	data\objects\spidrbot\gr90108.chr
+;SpiChr9		incbin	data\objects\spidrbot\gr90109.chr
+SpiChr10	incbin	data\objects\spidrbot\gr90110.chr
+SpiChr11	incbin	data\objects\spidrbot\gr90111.chr
+SpiChr12	incbin	data\objects\spidrbot\gr90112.chr
+SpiChr13	incbin	data\objects\spidrbot\gr90113.chr
+SpiChr14	incbin	data\objects\spidrbot\gr90114.chr
+SpiChr15	incbin	data\objects\spidrbot\gr90115.chr
+SpiChr16	incbin	data\objects\spidrbot\gr90116.chr
+SpiChr17	incbin	data\objects\spidrbot\gr90117.chr
+SpiChr18	incbin	data\objects\spidrbot\gr90118.chr
+
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ CHR DATA for EXPLOSIONS/DEBRIS					   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+		SECTION	GGD_EXPLOSIONS
+
+BigExpChr1	incbin	data\objects\effects\ge1903a.chr
+BigExpChr2	incbin	data\objects\effects\ge1903b.chr
+SmallExpChr1	incbin	data\objects\effects\gg1904.chr
+FireBallChr1	incbin	data\objects\effects\ge1905a.chr
+FireBallChr2	incbin	data\objects\effects\ge1905b.chr
+FireBallChr3	incbin	data\objects\effects\ge1905c.chr
+FireBallChr4	incbin	data\objects\effects\ge1905d.chr
+GlassChr1	incbin	data\objects\effects\gg5802a.chr
+GlassChr2	incbin	data\objects\effects\gg5802b.chr
+GlassChr3	incbin	data\objects\effects\gg5802c.chr
+;HorElecChr1	incbin	data\objects\effects\gg8401.chr
+;VerElecChr1	incbin	data\objects\effects\gg8402.chr
+SparkChr1	incbin	data\objects\effects\gg8405.chr
+SparksChr1	incbin	data\objects\effects\gg8406.chr
+Sparks2Chr1	incbin	data\objects\effects\gg8406b.chr
+MetalChr1	incbin	data\objects\effects\ge8701a.chr
+MetalChr2	incbin	data\objects\effects\ge8701b.chr
+MetalChr3	incbin	data\objects\effects\ge8701c.chr
+MetalChr4	incbin	data\objects\effects\ge8701d.chr
+MetalChr5	incbin	data\objects\effects\ge8701e.chr
+MetalChr6	incbin	data\objects\effects\ge8701f.chr
+
+		
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ CHR DATA for TRILOBOT 						   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+		SECTION	GGD_TRILOBOT
+
+TriloBotChr13		incbin	data\objects\trilobot\gg97713.Chr		
+TriloBotChr1		incbin	data\objects\trilobot\gg97701.Chr		
+TriloBotChr2		incbin	data\objects\trilobot\gg97702.Chr		
+TriloBotChr3		incbin	data\objects\trilobot\gg97703.Chr		
+TriloBotChr4		incbin	data\objects\trilobot\gg97704.Chr		
+TriloBotChr5		incbin	data\objects\trilobot\gg97705.Chr		
+TriloBotChr6		incbin	data\objects\trilobot\gg97706.Chr		
+TriloBotChr8		incbin	data\objects\trilobot\gg97708.Chr		
+TriloBotChr9		incbin	data\objects\trilobot\gg97709.Chr		
+TriloBotChr10		incbin	data\objects\trilobot\gg97710.Chr		
+TriloBotChr11		incbin	data\objects\trilobot\gg97711.Chr		
+
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ CHR DATA for L3M1 MECHANICS/EFFECTS					   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+		SECTION	GGD_L3M1MFX
+
+PiecePaperChr1	incbin	data\level03\map01\anims\gg3606.chr
+SkyLightChr1	incbin	data\level03\map01\anims\gg5801.chr
+BreakLightChr1	incbin	data\level03\map01\anims\gg3601.chr
+BreakPipeChr1	incbin	data\level03\map01\anims\gg3602.chr
+ThrowCrateChr1	incbin	data\level03\map01\anims\gg3605.chr
+WoodDebrisChr1	incbin	data\level03\map01\anims\gg3605a.chr
+WoodDebrisChr2	incbin	data\level03\map01\anims\gg3605b.chr
+WoodDebrisChr3	incbin	data\level03\map01\anims\gg3605c.chr
+PigeonCoopChr1	incbin	data\level03\map01\anims\gg6101.chr
+PigeonChr1	incbin	data\level03\map01\anims\gg6102.chr
+BreakEdgeLChr1	incbin	data\level03\map01\anims\gg3603a.chr
+BreakEdgeRChr1	incbin	data\level03\map01\anims\gg3603b.chr
+WallOverChr1	incbin	data\level03\map01\anims\gg6201.chr
+WallDebrisChr1	incbin	data\level03\map01\anims\gg1705.chr
+
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ CHR DATA for MISC LEVEL1 OBJECTS					   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+		SECTION	GGD_LEV1MISC
+
+SunSetChr1	incbin	data\objects\lev1misc\sunset.chr
+
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ 			COMPOSITE OBJECT DATA				   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ CHR & INC & OUT DATA for STRAWMAN					   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+		SECTION	GGD_STRAWMAN
+		
+StrawmanChr		incbin	data\objects\strawman\strwprts.chr
+
+						
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ 			CHARACTER ANIMATION DATA			   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+; - LEVEL 1.1 .. 1.3 -------------------------------------------------------
+
+		SECTION	GGD_L1CHRANIM
+
+;L1M1FNL0_DATA		incbin	data\level01\l1m1fnl0.adt
+;  			even
+
+
+			
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

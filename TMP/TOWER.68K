@@ -1,0 +1,342 @@
+; ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+; บ Texture mapped rotating tower logic					   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ Entry: n/a								   บ
+; บ  Exit: n/a								   บ
+; บ  Used: d1-d7/a1-a6							   บ
+; ฬออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออน
+; บ Takes a 16x2 character graphic and mappes it onto a	cylider.	   บ
+; ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+; - TOWER variables -------------------------------------------------------
+
+Tower_xb		dc.w	0
+TowerRotateSpeed	dc.w	0
+TowerMapFlag		dc.b	0
+			even
+TowerBuffer1		ds.b	33*32
+			ds.b	32
+TowerBuffer2		ds.b	33*32
+			ds.b	32
+
+
+HandleTower		move.w	#(1*4)-1,TowerRotateSpeed
+			
+			btst.b	#left,joy1
+			bne.s	.rte
+			btst.b	#right,joy1
+			bne.s	.lft
+			rts
+.lft			move.w	TowerRotateSpeed,d1
+			asl.w	#1,d1
+			add.w	d1,Tower_xb
+			bsr	RotTowerLeft
+			bra	dmatower
+.rte			move.w	TowerRotateSpeed,d1
+			asl.w	#1,d1
+			sub.w	d1,Tower_xb
+			bsr	RotTowerRight
+dmatower		bsr	MapTower
+			move.l	DMA_Stack,a6
+			move.w	#0,-(a6)			;dest
+			move.l	#TowerBuffer2,d1		;source
+			lsr.l	#1,d1  				;/2
+			move.l	d1,-(a6)
+			move.w	#17*32,-(a6)			;len
+			move.w	#_DMATransfer,-(a6)		;flag this data package is a dma transfer
+			move.l	a6,DMA_Stack
+			rts
+
+
+RotTowerLeft		lea	TowerBuffer1+32,a1
+			moveq	#7,d1
+.l1			move.w	TowerRotateSpeed,d2
+.l2			and.b	#$0f,ccr
+			roxl.w	29*32+2(a1)
+			roxl.w	29*32(a1)
+			roxl.w	28*32+2(a1)
+			roxl.w	28*32(a1)
+			roxl.w	25*32+2(a1)
+			roxl.w	25*32(a1)
+			roxl.w	24*32+2(a1)
+			roxl.w	24*32(a1)
+			roxl.w	21*32+2(a1)
+			roxl.w	21*32(a1)
+			roxl.w	20*32+2(a1)
+			roxl.w	20*32(a1)
+			roxl.w	17*32+2(a1)
+			roxl.w	17*32(a1)
+			roxl.w	16*32+2(a1)
+			roxl.w	16*32(a1)
+			roxl.w	13*32+2(a1)
+			roxl.w	13*32(a1)
+			roxl.w	12*32+2(a1)
+			roxl.w	12*32(a1)
+			roxl.w	9*32+2(a1)
+			roxl.w	9*32(a1)
+			roxl.w	8*32+2(a1)
+			roxl.w	8*32(a1)
+			roxl.w	5*32+2(a1)
+			roxl.w	5*32(a1)
+			roxl.w	4*32+2(a1)
+			roxl.w	4*32(a1)
+			roxl.w	1*32+2(a1)
+			roxl.w	1*32(a1)
+			roxl.w	0*32+2(a1)
+			roxl.w	0*32(a1)
+			bcc.s	.1
+			or.w	#%0000000000000001,29*32+2(a1)
+.1			and.b	#$0f,ccr
+			roxl.w	31*32+2(a1)
+			roxl.w	31*32(a1)
+			roxl.w	30*32+2(a1)
+			roxl.w	30*32(a1)
+			roxl.w	27*32+2(a1)
+			roxl.w	27*32(a1)
+			roxl.w	26*32+2(a1)
+			roxl.w	26*32(a1)
+			roxl.w	23*32+2(a1)
+			roxl.w	23*32(a1)
+			roxl.w	22*32+2(a1)
+			roxl.w	22*32(a1)
+			roxl.w	19*32+2(a1)
+			roxl.w	19*32(a1)
+			roxl.w	18*32+2(a1)
+			roxl.w	18*32(a1)
+			roxl.w	15*32+2(a1)
+			roxl.w	15*32(a1)
+			roxl.w	14*32+2(a1)
+			roxl.w	14*32(a1)
+			roxl.w	11*32+2(a1)
+			roxl.w	11*32(a1)
+			roxl.w	10*32+2(a1)
+			roxl.w	10*32(a1)
+			roxl.w	7*32+2(a1)
+			roxl.w	7*32(a1)
+			roxl.w	6*32+2(a1)
+			roxl.w	6*32(a1)
+			roxl.w	3*32+2(a1)
+			roxl.w	3*32(a1)
+			roxl.w	2*32+2(a1)
+			roxl.w	2*32(a1)
+			bcc.s	.2
+			or.w	#%00000000 00000001,31*32+2(a1)
+.2			dbra	d2,.l2
+			addq.l	#4,a1
+			dbra	d1,.l1
+			rts
+
+RotTowerRight		lea	TowerBuffer1+32,a1
+			moveq	#7,d1
+.l1			move.w	TowerRotateSpeed,d2
+.l2			and.b	#$0f,ccr
+			roxr.w	0*32(a1)
+			roxr.w	0*32+2(a1)
+			roxr.w	1*32(a1)
+			roxr.w	1*32+2(a1)
+			roxr.w	4*32(a1)
+			roxr.w	4*32+2(a1)
+			roxr.w	5*32(a1)
+			roxr.w	5*32+2(a1)
+			roxr.w	8*32(a1)
+			roxr.w	8*32+2(a1)
+			roxr.w	9*32(a1)
+			roxr.w	9*32+2(a1)
+			roxr.w	12*32(a1)
+			roxr.w	12*32+2(a1)
+			roxr.w	13*32(a1)
+			roxr.w	13*32+2(a1)
+			roxr.w	16*32(a1)
+			roxr.w	16*32+2(a1)
+			roxr.w	17*32(a1)
+			roxr.w	17*32+2(a1)
+			roxr.w	20*32(a1)
+			roxr.w	20*32+2(a1)
+			roxr.w	21*32(a1)
+			roxr.w	21*32+2(a1)
+			roxr.w	24*32(a1)
+			roxr.w	24*32+2(a1)
+			roxr.w	25*32(a1)
+			roxr.w	25*32+2(a1)
+			roxr.w	28*32(a1)
+			roxr.w	28*32+2(a1)
+			roxr.w	29*32(a1)
+			roxr.w	29*32+2(a1)
+			bcc.s	.1
+			or.w	#%10000000 00000000,0(a1)
+.1			and.b	#$0f,ccr
+			roxr.w	2*32(a1)
+			roxr.w	2*32+2(a1)
+			roxr.w	3*32(a1)
+			roxr.w	3*32+2(a1)
+			roxr.w	6*32(a1)
+			roxr.w	6*32+2(a1)
+			roxr.w	7*32(a1)
+			roxr.w	7*32+2(a1)
+			roxr.w	10*32(a1)
+			roxr.w	10*32+2(a1)
+			roxr.w	11*32(a1)
+			roxr.w	11*32+2(a1)
+			roxr.w	14*32(a1)
+			roxr.w	14*32+2(a1)
+			roxr.w	15*32(a1)
+			roxr.w	15*32+2(a1)
+			roxr.w	18*32(a1)
+			roxr.w	18*32+2(a1)
+			roxr.w	19*32(a1)
+			roxr.w	19*32+2(a1)
+			roxr.w	22*32(a1)
+			roxr.w	22*32+2(a1)
+			roxr.w	23*32(a1)
+			roxr.w	23*32+2(a1)
+			roxr.w	26*32(a1)
+			roxr.w	26*32+2(a1)
+			roxr.w	27*32(a1)
+			roxr.w	27*32+2(a1)
+			roxr.w	30*32(a1)
+			roxr.w	30*32+2(a1)
+			roxr.w	31*32(a1)
+			roxr.w	31*32+2(a1)
+			bcc.s	.2
+			or.w	#%10000000 00000000,2*32(a1)
+.2			dbra	d2,.l2
+			addq.l	#4,a1
+			dbra	d1,.l1
+			rts
+
+
+Tower_Column		macro
+			move.w	0(\1,d1.w),d4		;get char for top line
+			move.l	0(a1,d4.w),d4		;get line of char
+			and.l	d3,d4			;mask out nibble we need
+			cmp.w	d2,d6			;calculate # of shifts to position extracted nibble
+			beq.s	.put\@
+			blt.s	.lft\@
+.rte\@			move.w	d6,d5
+			sub.w	d2,d5			;=times to shift/4
+			asl.w	#2,d5
+			lsr.l	d5,d4			;shift the masked nibble into place
+			bra	.put\@
+.lft\@			move.w	d2,d5
+			sub.w	d6,d5
+			asl.w	#2,d5
+			asl.l	d5,d4			;d4 now comtains the nibble that can be dropped into place
+.put\@			move.w	0(\1,d7.w),d5
+			or.l	d4,0(a2,d5.w)		;or nibble into destination char
+			addq.l	#4,a1
+			addq.l	#4,a2
+      			endm
+
+
+MapTower		lea	TowerBuffer2,a1		;wipe build buffer
+			move.w	#32,d1			;33 chars
+.l3			clr.l	(a1)+			
+			clr.l	(a1)+
+			clr.l	(a1)+
+			clr.l	(a1)+
+			clr.l	(a1)+
+			clr.l	(a1)+
+			clr.l	(a1)+
+			clr.l	(a1)+
+			dbra	d1,.l3
+			
+			lea	TowerMap,a3
+			lea	MapORTable,a4
+			lea	Line1Chars,a5
+			lea	Line2Chars,a6
+			
+			moveq	#0,d6			;nibble # within current char
+			moveq	#0,d7			;char # for destination
+
+			move.w	#$7f,d3
+.l2			move.l	d3,-(sp)			
+
+			lea	TowerBuffer1+32,a1
+			lea	TowerBuffer2+32,a2
+			
+			moveq	#0,d1
+			moveq	#0,d2
+			move.b	0(a3),d1		;get pixel to pull
+			move.b	d1,d2	
+			lsr.b	#3,d1			;/8 to get char
+			asl.b	#1,d1			;*2 for .w
+			and.b	#7,d2			;&7 to get pixel in char
+			asl.b	#2,d2			;*4 for .l
+			move.l	0(a4,d2.w),d3		;get OR mask
+			lsr.b	#2,d2
+
+			Tower_Column a5			;do all 8 pixels in column
+			Tower_Column a5
+			Tower_Column a5
+			Tower_Column a5
+			Tower_Column a5
+			Tower_Column a5
+			Tower_Column a5
+			Tower_Column a5
+				       
+			lea	TowerBuffer1+32,a1
+			lea	TowerBuffer2+32,a2
+			
+			moveq	#0,d1
+			moveq	#0,d2
+			move.b	0(a3),d1		;get pixel to pull
+			move.b	d1,d2	
+			lsr.b	#3,d1			;/8 to get char
+			asl.b	#1,d1			;*2 for .w
+			and.b	#7,d2			;&7 to get pixel in char
+			asl.b	#2,d2			;*4 for .l
+			move.l	0(a4,d2.w),d3		;get OR mask
+			lsr.w	#2,d2
+
+			Tower_Column a6			;do all 8 pixels in column
+			Tower_Column a6
+			Tower_Column a6
+			Tower_Column a6
+			Tower_Column a6
+			Tower_Column a6
+			Tower_Column a6
+			Tower_Column a6
+			
+			addq.w	#1,d6			;next nibble	
+			cmp.w	#8,d6			;over
+			bne.s	.1
+			moveq	#0,d6			;zero nibble
+			addq.w	#2,d7			;next char
+.1			addq.l	#1,a3			;next pixel
+
+			move.l	(sp)+,d3
+			dbra	d3,.l2
+			rts
+			
+			
+Line1Chars		dc.w	0*32,1*32,4*32,5*32,8*32,9*32,12*32,13*32,16*32,17*32,20*32,21*32,24*32,25*32,28*32,29*32
+Line2Chars		dc.w	2*32,3*32,6*32,7*32,10*32,11*32,14*32,15*32,18*32,19*32,22*32,23*32,26*32,27*32,30*32,31*32
+
+			;	0     1    2    3    4    5    6    7
+MapORTable		dc.l	%1111 0000 0000 0000 0000 0000 0000 0000
+			dc.l	%0000 1111 0000 0000 0000 0000 0000 0000
+			dc.l	%0000 0000 1111 0000 0000 0000 0000 0000
+			dc.l	%0000 0000 0000 1111 0000 0000 0000 0000
+			dc.l	%0000 0000 0000 0000 1111 0000 0000 0000
+			dc.l	%0000 0000 0000 0000 0000 1111 0000 0000
+			dc.l	%0000 0000 0000 0000 0000 0000 1111 0000
+			dc.l	%0000 0000 0000 0000 0000 0000 0000 1111
+
+			;represents the pixel # to pull from char
+TowerMap		hex 191b1d1e21222425262728292a2a2b2c
+			hex 2c2D2E2E2F3030313132323333333434
+			hex 3535363637373738383939393A3A3A3B
+			hex 3B3B3B3C3C3C3D3D3D3E3E3E3F3F4040
+			HEX 40404141414242434343434444444545
+			hex 4546464647474748484849494A4A4B4B
+			hex 4B4C4C4D4D4E4E4F4F50505152525354
+			hex 545556565758595a5b5c5e5f61636567
+
+TowerCol		hex 00000000000000000000000000000000
+			hex 00000000000000000000000000000000
+			hex 00000000000000000000000000000000
+			hex 00000000000000000000000000000000
+			hex 00000000000000000000000000000000
+			hex 00000000000000000000000000000000
+			hex 00000000000000000000000000000000
+			hex 00000000000000000000000000000000
